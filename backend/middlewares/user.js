@@ -4,7 +4,7 @@ const User = require('../models/user');
 const ResetToken = require('../models/resetToken');
 
 exports.isResetTokenValid = async (req, res, next) => {
-  const { token, id } = req.query;
+  const { token, id } = req.body;
   if (!token || typeof token !== 'string' || !token.trim() || !id)
     return sendError(res, 400, 'Invalid request');
 

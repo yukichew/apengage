@@ -149,18 +149,21 @@ exports.forgetPassword = async (req, res) => {
     to: user.email,
     subject: 'Reset Password',
     html: generateResetPasswordEmailTemplate(
-      `http://localhost:3000/reset-password?token=${OTP}&id=${user._id}`,
+      `http://localhost:3000/reset-password`,
       'Click the link to reset your password'
     ),
   });
 
   res.json({
     message: 'Password reset link sent to your email!',
+    token: OTP,
   });
 };
 
 exports.resetPassword = async (req, res) => {
-  const { password } = req.body;
+  const { token, id, password } = req.body;
+
+  if (!token || !id || !password) return sendError(res, 400, 'Invalid request');
 
   const user = await User.findById(req.user._id).select('+password');
   if (!user) return sendError(res, 404, 'User not found!');
