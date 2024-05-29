@@ -22,6 +22,13 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: String,
       default: '',
+      // tpye: Object,
+      // url: {
+      //   type: String,
+      // },
+      // public_id: {
+      //   type: String,
+      // },
     },
     verified: {
       type: Boolean,
