@@ -3,6 +3,11 @@ const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema(
   {
+    apkey: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     fullname: {
       type: String,
       required: true,
@@ -19,16 +24,34 @@ const userSchema = new mongoose.Schema(
       required: true,
       select: false,
     },
-    avatar: {
+    profile: {
+      type: Object,
+      url: {
+        type: String,
+      },
+      public_id: {
+        type: String,
+      },
+    },
+    gender: {
       type: String,
-      default: '',
-      // tpye: Object,
-      // url: {
-      //   type: String,
-      // },
-      // public_id: {
-      //   type: String,
-      // },
+      trim: true,
+    },
+    contact: {
+      type: String,
+      trim: true,
+    },
+    course: {
+      type: String,
+      trim: true,
+    },
+    intake: {
+      type: String,
+      trim: true,
+    },
+    nric: {
+      type: String,
+      trim: true,
     },
     verified: {
       type: Boolean,

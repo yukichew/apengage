@@ -7,32 +7,48 @@ const {
   plainEmailTemplate,
   generateResetPasswordEmailTemplate,
 } = require('../helpers/mail');
-const User = require('../models/user');
-const VerificationToken = require('../models/verificationToken');
-const ResetToken = require('../models/resetToken');
+const User = require('../models/auth/user');
+const VerificationToken = require('../models/auth/verificationToken');
+const ResetToken = require('../models/auth/resetToken');
 const cloudinary = require('../cloud');
 
 const jwt = require('jsonwebtoken');
 
 exports.createUser = async (req, res) => {
-  const { fullname, email, password } = req.body;
-  // const { file } = req;
+  const {
+    apkey,
+    fullname,
+    email,
+    password,
+    gender,
+    contact,
+    course,
+    intake,
+    nric,
+  } = req.body;
+  const { file } = req;
 
   const user = await User.findOne({ email });
   if (user) sendError(res, 400, 'User already exists');
 
   const newUser = new User({
+    apkey,
     fullname,
     email,
     password,
+    gender,
+    contact,
+    course,
+    intake,
+    nric,
   });
 
-  // if (file) {
-  //   const { secure_url: url, public_id } = await cloudinary.uploader.upload(
-  //     file.path
-  //   );
-  //   newUser.avatar = { url, public_id };
-  // }
+  if (file) {
+    const { secure_url: url, public_id } = await cloudinary.uploader.upload(
+      file.path
+    );
+    newUser.profile = { url, public_id };
+  }
 
   const OTP = generateTOTP();
   const verificationTken = new VerificationToken({
@@ -59,7 +75,7 @@ exports.createUser = async (req, res) => {
       id: newUser._id,
       name: newUser.fullname,
       email: newUser.email,
-      // avatar: newUser.avatar?.url,
+      profile: newUser.profile?.url,
     },
   });
 };
