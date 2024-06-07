@@ -8,13 +8,16 @@ const cors = require('cors');
 
 const { sendError } = require('./helpers/error');
 const userRouter = require('./routers/user');
+const eventRouter = require('./routers/event');
 
 const app = express();
+
 app.use(express.json());
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(morgan('dev'));
 
 app.use('/api/user', userRouter);
+app.use('api/event', eventRouter);
 
 app.use((err, req, res, next) => {
   sendError(res, 500, err.message);
