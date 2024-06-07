@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const { fieldSchema } = require('./form');
 
-const detailsSchema = new mongoose.Schema(
+const eventSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -39,10 +40,16 @@ const detailsSchema = new mongoose.Schema(
         type: String,
       },
     },
+    creator: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    fields: [fieldSchema],
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model('EventDetails', detailsSchema);
+module.exports = mongoose.model('Event', eventSchema);
