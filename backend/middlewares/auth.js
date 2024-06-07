@@ -1,7 +1,7 @@
 const { isValidObjectId } = require('mongoose');
 const { sendError } = require('../helpers/error');
 const User = require('../models/auth/user');
-const ResetToken = require('../models/auth/resetToken');
+const ResetToken = require('../models/auth/token');
 const jwt = require('jsonwebtoken');
 
 exports.isResetTokenValid = async (req, res, next) => {

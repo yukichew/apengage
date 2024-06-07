@@ -8,8 +8,8 @@ const {
   generateResetPasswordEmailTemplate,
 } = require('../helpers/mail');
 const User = require('../models/auth/user');
-const VerificationToken = require('../models/auth/verificationToken');
-const ResetToken = require('../models/auth/resetToken');
+const VerificationToken = require('../models/auth/token');
+const ResetToken = require('../models/auth/token');
 const cloudinary = require('../cloud');
 
 const jwt = require('jsonwebtoken');
