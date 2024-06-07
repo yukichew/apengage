@@ -1,10 +1,9 @@
 require('express-async-errors');
 require('./db');
-const express = require('express');
 require('dotenv').config();
 
+const express = require('express');
 const morgan = require('morgan');
-
 const cors = require('cors');
 
 const { sendError } = require('./helpers/error');
