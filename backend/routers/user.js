@@ -5,7 +5,7 @@ const {
   verifyEmail,
   forgetPassword,
   resetPassword,
-} = require('../controllers/user');
+} = require('../controllers/userController');
 const multer = require('../middlewares/multer');
 const { isResetTokenValid, authenticate } = require('../middlewares/auth');
 const { userValidator, validate } = require('../middlewares/validator');

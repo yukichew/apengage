@@ -1,4 +1,5 @@
 const { check, validationResult } = require('express-validator');
+const { sendError } = require('../helpers/error');
 
 exports.userValidator = [
   check('apkey')
@@ -42,10 +43,32 @@ exports.userValidator = [
     ),
 ];
 
+exports.eventFormValidator = [
+  check('name').trim().not().isEmpty().withMessage('Event name is missing'),
+  check('desc')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Event description is missing'),
+  check('date').trim().not().isEmpty().withMessage('Event date is missing'),
+  check('location')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Event location is missing'),
+  check('tags').trim().not().isEmpty().withMessage('Event tags are missing'),
+  check('price').trim().not().isEmpty().withMessage('Event price is missing'),
+  check('organizer')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Event organizer is missing'),
+];
+
 exports.validate = (req, res, next) => {
   const error = validationResult(req).array();
   if (error.length) {
-    return res.status(401).json({ error: error[0].msg });
+    return sendError(res, 401, error[0].msg);
   }
   next();
 };

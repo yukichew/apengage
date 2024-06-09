@@ -1,41 +1,61 @@
 const mongoose = require('mongoose');
+const { fieldSchema } = require('./field');
 
-exports.fieldSchema = new mongoose.Schema(
+const eventSchema = new mongoose.Schema(
   {
-    required: {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    desc: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    location: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    tags: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    thumbnail: {
+      type: Object,
+      url: {
+        type: String,
+      },
+      public_id: {
+        type: String,
+      },
+    },
+    isActive: {
       type: Boolean,
-      default: false,
+      default: true,
+    },
+    organizer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
-    label: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    type: {
-      type: String,
-      required: true,
-      enum: [
-        'text',
-        'textarea',
-        'select',
-        'radio',
-        'checkbox',
-        'date',
-        'time',
-        'file',
-      ],
-    },
-    options: {
-      type: [String],
+    fields: {
+      type: [fieldSchema],
     },
   },
   {
     timestamps: true,
   }
 );
+
+module.exports = mongoose.model('Event', eventSchema);
