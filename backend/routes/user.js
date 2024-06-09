@@ -21,5 +21,6 @@ router.post('/signin', signin);
 router.post('/verify-email', verifyEmail);
 router.post('/forget-password', forgetPassword);
 router.post('/reset-password', isResetTokenValid, resetPassword);
+router.post('/logout', authenticate);
 
 module.exports = router;

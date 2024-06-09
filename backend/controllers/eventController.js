@@ -1,5 +1,5 @@
-const { defaultFields } = require('../default/fields');
-const cloudinary = require('../cloud');
+const { defaultFields } = require('../db/fields');
+const cloudinary = require('../config/cloud');
 const Event = require('../models/event/form');
 
 exports.createForm = async (req, res) => {

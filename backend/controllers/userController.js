@@ -10,7 +10,7 @@ const {
 const User = require('../models/auth/user');
 const VerificationToken = require('../models/auth/token');
 const ResetToken = require('../models/auth/token');
-const cloudinary = require('../cloud');
+const cloudinary = require('../config/cloud');
 
 const jwt = require('jsonwebtoken');
 

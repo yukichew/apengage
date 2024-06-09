@@ -1,14 +1,14 @@
 require('express-async-errors');
-require('./db');
 require('dotenv').config();
+require('./config/db');
 
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 
 const { sendError } = require('./helpers/error');
-const userRouter = require('./routers/user');
-const eventRouter = require('./routers/event');
+const userRouter = require('./routes/user');
+const eventRouter = require('./routes/event');
 
 const app = express();
 
