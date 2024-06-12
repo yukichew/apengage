@@ -37,9 +37,9 @@ exports.updateCategory = async (req, res) => {
 
   res.json({
     category: {
-      id: newCategory._id,
-      name: newCategory.name,
-      desc: newCategory.desc,
+      id: category._id,
+      name: category.name,
+      desc: category.desc,
     },
   });
 };

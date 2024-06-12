@@ -219,3 +219,50 @@ exports.resetPassword = async (req, res) => {
     message: 'Password reset successfully!',
   });
 };
+
+exports.editProfile = async (req, res) => {
+  const { fullname, gender, contact, course, intake, nric } = req.body;
+  const { file } = req;
+  const { id } = req.params;
+
+  if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid category id');
+
+  const user = await User.findById(id);
+  if (!user) sendError(res, 400, 'User not found!');
+
+  user.fullname = fullname;
+  user.gender = gender;
+  user.contact = contact;
+  user.course = course;
+  user.intake = intake;
+  user.nric = nric;
+
+  const public_id = user.profile?.public_id;
+
+  if (file && public_id) {
+    const { result } = await cloudinary.uploader.destroy(public_id);
+    if (result !== 'ok')
+      return sendError(res, 500, 'Failed to update profile picture');
+
+    if (file) {
+      const { secure_url: url, public_id } = await cloudinary.uploader.upload(
+        file.path
+      );
+      user.profile = { url, public_id };
+    }
+  }
+
+  await user.save();
+
+  res.json({
+    user: {
+      id: user._id,
+      name: user.fullname,
+      profile: user.profile?.url,
+      gender: user.gender,
+      course: user.course,
+      intake: user.intake,
+      nric: user.nric,
+    },
+  });
+};

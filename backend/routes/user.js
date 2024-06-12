@@ -5,6 +5,7 @@ const {
   verifyEmail,
   forgetPassword,
   resetPassword,
+  editProfile,
 } = require('../controllers/userController');
 const multer = require('../middlewares/multer');
 const { isResetTokenValid, authenticate } = require('../middlewares/auth');
@@ -21,6 +22,13 @@ router.post('/signin', signin);
 router.post('/verify-email', verifyEmail);
 router.post('/forget-password', forgetPassword);
 router.post('/reset-password', isResetTokenValid, resetPassword);
-router.post('/logout', authenticate);
+
+router.get('/profile', authenticate);
+router.post(
+  '/edit-profile',
+  authenticate,
+  multer.single('profile'),
+  editProfile
+);
 
 module.exports = router;
