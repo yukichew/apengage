@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const { fieldSchema } = require('./field');
-const { categorySchema } = require('./category');
 
 const eventSchema = new mongoose.Schema(
   {
