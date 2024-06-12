@@ -56,13 +56,22 @@ exports.eventFormValidator = [
     .not()
     .isEmpty()
     .withMessage('Event location is missing'),
-  check('tags').trim().not().isEmpty().withMessage('Event tags are missing'),
+  check('categories').not().isEmpty().withMessage('Event category is missing'),
   check('price').trim().not().isEmpty().withMessage('Event price is missing'),
   check('organizer')
     .trim()
     .not()
     .isEmpty()
     .withMessage('Event organizer is missing'),
+];
+
+exports.categoryValidator = [
+  check('name').trim().not().isEmpty().withMessage('Category name is missing'),
+  check('desc')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Category description is missing'),
 ];
 
 exports.validate = (req, res, next) => {

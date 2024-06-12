@@ -73,9 +73,14 @@ exports.createUser = async (req, res) => {
   res.json({
     user: {
       id: newUser._id,
+      apkey: newUser.apkey,
       name: newUser.fullname,
       email: newUser.email,
       profile: newUser.profile?.url,
+      gender: newUser.gender,
+      course: newUser.course,
+      intake: newUser.intake,
+      nric: newUser.nric,
     },
   });
 };

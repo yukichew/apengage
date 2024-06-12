@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { fieldSchema } = require('./field');
+const { categorySchema } = require('./category');
 
 const eventSchema = new mongoose.Schema(
   {
@@ -22,10 +23,10 @@ const eventSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    tags: {
-      type: String,
+    categories: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'Category',
       required: true,
-      trim: true,
     },
     price: {
       type: Number,

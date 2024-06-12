@@ -1,9 +1,9 @@
-const { defaultFields } = require('../db/fields');
-const cloudinary = require('../config/cloud');
-const Event = require('../models/event/form');
+const { defaultFields } = require('../../db/fields');
+const cloudinary = require('../../config/cloud');
+const Event = require('../../models/event/form');
 
 exports.createForm = async (req, res) => {
-  const { name, desc, date, location, tags, price, organizer, fields } =
+  const { name, desc, date, location, categories, price, organizer, fields } =
     req.body;
 
   const { file } = req;
@@ -15,7 +15,7 @@ exports.createForm = async (req, res) => {
     desc,
     date,
     location,
-    tags,
+    categories,
     price,
     organizer,
     fields: allFields,
