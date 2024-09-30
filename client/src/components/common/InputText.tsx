@@ -1,74 +1,91 @@
+import { useFormikContext } from 'formik';
 import React from 'react';
-import {StyleSheet, TextInput, View} from 'react-native';
+import {
+  NativeSyntheticEvent,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputFocusEventData,
+  View,
+} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 type Props = {
-  value: string;
+  value?: string;
   placeholder: string;
-  onChangeText: (text: string) => void;
-  iconName: string;
-  iconLibrary:
-    | 'FontAwesome'
-    | 'AntDesign'
-    | 'MaterialIcons'
-    | 'Ionicons'
-    | 'Fontisto'
-    | 'Entypo'
-    | 'Feather'
-    | 'MaterialCommunityIcons'
-    | 'MaterialIcons'
-    | 'FontAwesome5Icon';
+  onChangeText?: (text: string) => void;
+  onBlur?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
+  leftIcon?: string;
+  rightIcon?: string;
+  leftIconLibrary?: keyof typeof Icons;
+  rightIconLibrary?: keyof typeof Icons;
+  name: string;
+};
+
+const Icons = {
+  AntDesign,
+  MaterialIcons,
+  Ionicons,
+  FontAwesome5Icon,
+  MaterialCommunityIcons,
+  Entypo,
+  Feather,
+  FontAwesome,
+  Fontisto,
+};
+
+const renderIcon = (iconName: string, iconLibrary?: keyof typeof Icons) => {
+  if (!iconLibrary) {
+    return null;
+  }
+  const IconComponent = Icons[iconLibrary];
+  return <IconComponent name={iconName} style={styles.icon} />;
 };
 
 const InputText = ({
-  value,
   placeholder,
-  iconName,
-  iconLibrary,
-  onChangeText,
+  leftIcon,
+  rightIcon,
+  leftIconLibrary,
+  rightIconLibrary,
+  name,
   ...props
 }: Props) => {
-  const renderIcon = () => {
-    switch (iconLibrary) {
-      case 'FontAwesome5Icon':
-        return <FontAwesome5Icon name={iconName} style={styles.icon} />;
-      case 'AntDesign':
-        return <AntDesign name={iconName} style={styles.icon} />;
-      case 'MaterialIcons':
-        return <MaterialIcons name={iconName} style={styles.icon} />;
-      case 'Ionicons':
-        return <Ionicons name={iconName} style={styles.icon} />;
-      case 'MaterialCommunityIcons':
-        return <MaterialCommunityIcons name={iconName} style={styles.icon} />;
-      case 'Entypo':
-        return <Entypo name={iconName} style={styles.icon} />;
-      case 'Feather':
-        return <Feather name={iconName} style={styles.icon} />;
-      case 'FontAwesome':
-        return <FontAwesome name={iconName} style={styles.icon} />;
-      default:
-        return null;
-    }
-  };
+  const { handleChange, values, errors, touched, handleBlur } =
+    useFormikContext<any>();
+  const handleBlurWrapper = handleBlur(name) as (
+    e: NativeSyntheticEvent<TextInputFocusEventData>
+  ) => void;
+  const value = values[name];
+  const error = errors[name] as string;
+  const isInputTouched = touched[name];
 
   return (
-    <View style={styles.field}>
-      {renderIcon()}
-      <TextInput
-        value={value}
-        placeholder={placeholder}
-        onChangeText={onChangeText}
-        style={styles.input}
-        {...props}
-      />
-    </View>
+    <>
+      {error && isInputTouched ? (
+        <Text style={styles.errorMessage}>{error}</Text>
+      ) : null}
+      <View style={styles.field}>
+        {leftIcon && renderIcon(leftIcon, leftIconLibrary)}
+        <TextInput
+          value={value}
+          placeholder={placeholder}
+          onChangeText={handleChange(name)}
+          onBlur={handleBlurWrapper}
+          style={styles.input}
+          {...props}
+        />
+        {rightIcon && renderIcon(rightIcon, rightIconLibrary)}
+      </View>
+    </>
   );
 };
 
@@ -91,6 +108,10 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 22,
     marginRight: 10,
+  },
+  errorMessage: {
+    color: 'red',
+    paddingVertical: 3,
   },
 });
 

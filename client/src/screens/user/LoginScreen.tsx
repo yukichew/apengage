@@ -1,36 +1,54 @@
-import {StyleSheet, View} from 'react-native';
-import AuthContainer from '../../components/containers/AuthContainer';
-import TextInput from '../../components/common/InputText';
+import { StyleSheet, Text, View } from 'react-native';
 import Button from '../../components/common/Button';
+import TextInput from '../../components/common/InputText';
 import TextLink from '../../components/common/TextLink';
+import Title from '../../components/common/Title';
+import AuthContainer from '../../components/containers/AuthContainer';
+import { Navigation } from '../../navigation/types';
 
-const LoginScreen = () => {
+type Props = {
+  navigation: Navigation;
+};
+
+const LoginScreen = ({ navigation }: Props) => {
   return (
-    <AuthContainer>
+    <AuthContainer
+      footer={
+        <View style={styles.signUpContainer}>
+          <Text>Don't have an account? </Text>
+          <TextLink
+            text='Sign Up'
+            onPress={() => navigation.navigate('SignUp')}
+          />
+        </View>
+      }
+    >
+      <Title text='Welcome Back' />
+
       <TextInput
-        value=""
-        placeholder="Enter Email"
+        value=''
+        placeholder='Enter Email'
         onChangeText={() => console.log('Email')}
-        iconName="user-circle"
-        iconLibrary="FontAwesome5Icon"
+        leftIcon='mail-outline'
+        leftIconLibrary='Ionicons'
       />
 
       <TextInput
-        value=""
-        placeholder="Enter Password"
+        value=''
+        placeholder='Enter Password'
         onChangeText={() => console.log('Password')}
-        iconName="lock-outline"
-        iconLibrary="MaterialIcons"
+        leftIcon='lock-outline'
+        leftIconLibrary='MaterialIcons'
       />
 
       <View style={styles.forgetPasswordContainer}>
         <TextLink
-          text="Forget password?"
-          onPress={() => console.log('Forget password')}
+          text='Forget password?'
+          onPress={() => navigation.navigate('ForgetPassword')}
         />
       </View>
 
-      <Button title="Login" onPress={() => console.log('Login')} />
+      <Button title='LOGIN' onPress={() => console.log('Login')} />
     </AuthContainer>
   );
 };
@@ -39,6 +57,11 @@ const styles = StyleSheet.create({
   forgetPasswordContainer: {
     alignSelf: 'flex-end',
     marginBottom: 25,
+  },
+  signUpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

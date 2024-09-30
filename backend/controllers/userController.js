@@ -51,12 +51,12 @@ exports.createUser = async (req, res) => {
   }
 
   const OTP = generateTOTP();
-  const verificationTken = new VerificationToken({
+  const verificationToken = new VerificationToken({
     owner: newUser._id,
     token: OTP,
   });
 
-  await verificationTken.save();
+  await verificationToken.save();
   await newUser.save();
 
   mailTransport().sendMail({
