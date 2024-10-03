@@ -86,24 +86,28 @@ exports.createUser = async (req, res) => {
 };
 
 exports.signin = async (req, res) => {
-  const { email, password } = req.body;
-  if (!email.trim() || !password.trim())
-    return sendError(res, 401, 'Email and password are required');
+  try {
+    const { email, password } = req.body;
+    if (!email.trim() || !password.trim())
+      return sendError(res, 401, 'Email and password are required');
 
-  const user = await User.findOne({ email }).select('+password');
-  if (!user) return sendError(res, 401, 'User not found!');
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) return sendError(res, 401, 'User not found!');
 
-  const isPasswordMatched = await user.comparePassword(password);
-  if (!isPasswordMatched) return sendError(res, 401, 'Invalid credentials!');
+    const isPasswordMatched = await user.comparePassword(password);
+    if (!isPasswordMatched) return sendError(res, 401, 'Invalid credentials!');
 
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-    expiresIn: '1d',
-  });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '1d',
+    });
 
-  res.json({
-    user: { id: user._id, name: user.fullname, email: user.email },
-    token,
-  });
+    res.json({
+      user: { id: user._id, name: user.fullname, email: user.email },
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 exports.verifyEmail = async (req, res) => {

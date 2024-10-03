@@ -28,6 +28,7 @@ type Props = {
   leftIconLibrary?: keyof typeof Icons;
   rightIconLibrary?: keyof typeof Icons;
   name: string;
+  secureTextEntry?: boolean;
 };
 
 const Icons = {

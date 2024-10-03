@@ -4,12 +4,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Navigation } from '../../navigation/types';
 
 type Props = {
-  onPress: () => void;
+  navigation: Navigation;
 };
 
-const BackButton = ({ onPress }: Props) => {
+const BackButton = ({ navigation }: Props) => {
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={() => navigation.goBack()}>
       <Icon name='arrow-back' style={styles.backBtn} />
     </Pressable>
   );

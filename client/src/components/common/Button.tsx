@@ -13,7 +13,7 @@ type Props = {
 };
 
 const Button = ({ title, onPress }: Props) => {
-  const { handleSubmit } = useFormikContext(); // prevent the unused import error
+  const { handleSubmit, isSubmitting } = useFormikContext(); // prevent the unused import error
   const handlePress = (event: GestureResponderEvent) => {
     if (onPress) {
       onPress();
@@ -22,7 +22,13 @@ const Button = ({ title, onPress }: Props) => {
     }
   };
   return (
-    <Pressable onPress={handlePress} style={styles.btnContainer}>
+    <Pressable
+      onPress={isSubmitting ? null : handlePress}
+      style={[
+        styles.btnContainer,
+        { backgroundColor: isSubmitting ? 'gray' : 'black' },
+      ]}
+    >
       <Text style={styles.btnText}>{title}</Text>
     </Pressable>
   );
