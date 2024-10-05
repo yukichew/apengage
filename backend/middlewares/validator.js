@@ -37,7 +37,7 @@ exports.userValidator = [
     .not()
     .isEmpty()
     .withMessage('Password is missing')
-    .matches(/^(?=.*[A-Z])(?=.*[\W_])[a-zA-Z\d\W_]{8,}$/)
+    .matches(/^(?=.*[A-Z])(?=.*[\W_])(?=.*\d)[a-zA-Z\d\W_]{8,}$/)
     .withMessage(
       'Password must be at least 8 characters long, contain at least 1 uppercase letter, and 1 special character'
     ),

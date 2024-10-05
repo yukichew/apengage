@@ -1,14 +1,34 @@
+import { useFormikContext } from 'formik';
 import React from 'react';
-import {Pressable, StyleSheet, Text, TextInputBase, View} from 'react-native';
+import {
+  GestureResponderEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+} from 'react-native';
 
 type Props = {
   title: string;
-  onPress: () => void;
+  onPress?: () => void;
 };
 
-const Button = ({title, onPress}: Props) => {
+const Button = ({ title, onPress }: Props) => {
+  const { handleSubmit, isSubmitting } = useFormikContext(); // prevent the unused import error
+  const handlePress = (event: GestureResponderEvent) => {
+    if (onPress) {
+      onPress();
+    } else {
+      handleSubmit();
+    }
+  };
   return (
-    <Pressable onPress={onPress} style={styles.btnContainer}>
+    <Pressable
+      onPress={isSubmitting ? null : handlePress}
+      style={[
+        styles.btnContainer,
+        { backgroundColor: isSubmitting ? 'gray' : 'black' },
+      ]}
+    >
       <Text style={styles.btnText}>{title}</Text>
     </Pressable>
   );
@@ -23,15 +43,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 30,
   },
   btnText: {
     color: 'white',
     fontSize: 24,
     textAlign: 'center',
     lineHeight: 50,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
+    letterSpacing: 2,
   },
 });
 

@@ -1,8 +1,20 @@
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import LoginScreen from './src/screens/user/LoginScreen';
+import Toast from 'react-native-toast-message';
+import TabNavigator from './src/navigation/TabNavigator';
+
+const theme = {
+  ...DefaultTheme,
+  colors: { ...DefaultTheme.colors, background: '#fff' },
+};
 
 const App = () => {
-  return <LoginScreen />;
+  return (
+    <NavigationContainer theme={theme}>
+      <TabNavigator />
+      <Toast />
+    </NavigationContainer>
+  );
 };
 
 export default App;
