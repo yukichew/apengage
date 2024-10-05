@@ -5,7 +5,7 @@ export type RootStackNavigatorParamsList = {
   SignUp: undefined;
   ForgetPassword: undefined;
   Verification: { profile: any };
-  Home: undefined;
+  HomeScreen: undefined;
 };
 
 export type Navigation =

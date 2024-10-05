@@ -1,3 +1,4 @@
+import { StackActions } from '@react-navigation/native';
 import { StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
@@ -40,6 +41,8 @@ const LoginScreen = ({ navigation }: Props) => {
     formikActions: any
   ) => {
     const res = await signin(values);
+    console.log(values);
+    console.log(res);
     formikActions.setSubmitting(false);
 
     if (!res.success) {
@@ -52,13 +55,16 @@ const LoginScreen = ({ navigation }: Props) => {
       });
       return;
     }
-    formikActions.resetForm();
+
     Toast.show({
       type: 'success',
       text1: 'Login Successful',
       text2: 'Welcome to the app!',
     });
-    console.log(res);
+    navigation.dispatch(
+      StackActions.replace('HomeScreen', { profile: res.user })
+    );
+    formikActions.resetForm();
   };
 
   return (

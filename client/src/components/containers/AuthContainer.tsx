@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Navigation } from '../../navigation/types';
 import BackButton from '../common/BackButton';
+
 type Props = {
   children: React.ReactNode;
   footer?: React.ReactNode;

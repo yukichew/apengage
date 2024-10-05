@@ -58,7 +58,6 @@ export const signin = async (values: SigninData): Promise<ApiResponse> => {
     return {
       success: true,
       user: response.data.user,
-      token: response.data.token,
     };
   } catch (error: any) {
     return catchAxiosError(error);
