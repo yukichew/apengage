@@ -10,8 +10,9 @@ import Event from '../screens/Event';
 import History from '../screens/History';
 import Home from '../screens/Home';
 import Profile from '../screens/Profile';
+import { RootStackNavigatorParamsList } from './types';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<RootStackNavigatorParamsList>();
 
 const TabNavigator: FC = () => {
   return (
@@ -41,7 +42,7 @@ const TabNavigator: FC = () => {
                 name='home'
                 style={{
                   color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
+                    ? 'rgba(37, 37, 37, 0.6)'
                     : 'rgba(37, 37, 37, 0.3)',
                   fontSize: 25,
                 }}
@@ -49,7 +50,7 @@ const TabNavigator: FC = () => {
               <Text
                 style={{
                   color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
+                    ? 'rgba(37, 37, 37, 0.6)'
                     : 'rgba(37, 37, 37, 0.3)',
                   fontSize: 10,
                   fontFamily: 'Poppins-Regular',
@@ -72,7 +73,7 @@ const TabNavigator: FC = () => {
                 name='newspaper-outline'
                 style={{
                   color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
+                    ? 'rgba(37, 37, 37, 0.6)'
                     : 'rgba(37, 37, 37, 0.3)',
                   fontSize: 25,
                 }}
@@ -80,7 +81,7 @@ const TabNavigator: FC = () => {
               <Text
                 style={{
                   color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
+                    ? 'rgba(37, 37, 37, 0.6)'
                     : 'rgba(37, 37, 37, 0.3)',
                   fontSize: 10,
                   fontFamily: 'Poppins-Regular',
@@ -130,7 +131,7 @@ const TabNavigator: FC = () => {
                 name='history'
                 style={{
                   color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
+                    ? 'rgba(37, 37, 37, 0.6)'
                     : 'rgba(37, 37, 37, 0.3)',
                   fontSize: 25,
                 }}
@@ -138,7 +139,7 @@ const TabNavigator: FC = () => {
               <Text
                 style={{
                   color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
+                    ? 'rgba(37, 37, 37, 0.6)'
                     : 'rgba(37, 37, 37, 0.3)',
                   fontSize: 10,
                   fontFamily: 'Poppins-Regular',
@@ -160,7 +161,7 @@ const TabNavigator: FC = () => {
                 name='circle-user'
                 style={{
                   color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
+                    ? 'rgba(37, 37, 37, 0.6)'
                     : 'rgba(37, 37, 37, 0.3)',
                   fontSize: 25,
                 }}
@@ -168,7 +169,7 @@ const TabNavigator: FC = () => {
               <Text
                 style={{
                   color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
+                    ? 'rgba(37, 37, 37, 0.6)'
                     : 'rgba(37, 37, 37, 0.3)',
                   fontSize: 10,
                   fontFamily: 'Poppins-Regular',

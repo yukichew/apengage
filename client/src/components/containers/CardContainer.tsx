@@ -1,12 +1,12 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-const Header = () => {
+const CardContainer = () => {
   return (
     <View>
-      <Text>Header</Text>
+      <Text>CardContainer</Text>
     </View>
   );
 };
 
-export default Header;
+export default CardContainer;
