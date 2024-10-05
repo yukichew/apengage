@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
 import Button from '../../components/common/Button';
@@ -62,11 +62,21 @@ const ForgotPasswordScreen = ({ navigation }: Props) => {
           leftIconLibrary='Ionicons'
         />
         <Button title='SEND' />
+        <Text style={styles.text}>
+          You will receive an email with a link to reset your password.
+        </Text>
       </CustomFormik>
     </AuthContainer>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  text: {
+    fontFamily: 'Poppins-Regular',
+    margin: 12,
+    textAlign: 'center',
+    color: 'rgba(37, 37, 37, 0.9)',
+  },
+});
 
 export default ForgotPasswordScreen;

@@ -11,10 +11,11 @@ const Title = ({ text }: Props) => {
 
 const styles = StyleSheet.create({
   title: {
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     fontSize: 27,
     textAlign: 'center',
     marginBottom: 25,
+    fontFamily: 'Poppins-Bold',
   },
 });
 

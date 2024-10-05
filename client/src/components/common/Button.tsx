@@ -49,7 +49,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: 'center',
     lineHeight: 50,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
+    letterSpacing: 2,
   },
 });
 

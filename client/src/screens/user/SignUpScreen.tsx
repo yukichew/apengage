@@ -70,11 +70,12 @@ const SignUpScreen = ({ navigation }: Props) => {
 
   return (
     <AuthContainer
-      showBackButton
       navigation={navigation}
       footer={
         <View style={styles.signUpContainer}>
-          <Text>Already have an account? </Text>
+          <Text style={{ fontFamily: 'Poppins-Regular' }}>
+            Already have an account?{' '}
+          </Text>
           <TextLink text='Login' onPress={() => navigation.navigate('Login')} />
         </View>
       }
@@ -88,8 +89,8 @@ const SignUpScreen = ({ navigation }: Props) => {
         <TextInput
           placeholder='Enter APKey'
           name='apkey'
-          leftIcon='user-circle'
-          leftIconLibrary='FontAwesome5Icon'
+          leftIcon='idcard'
+          leftIconLibrary='AntDesign'
         />
         <TextInput
           placeholder='Enter Full Name'

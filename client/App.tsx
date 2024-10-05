@@ -1,7 +1,8 @@
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme } from '@react-navigation/native';
 import React from 'react';
-import Toast from 'react-native-toast-message';
-import AuthNavigator from './src/navigation/AuthNavigator';
+import Home from './src/screens/Home';
+// import Toast from 'react-native-toast-message';
+// import AuthNavigator from './src/navigation/AuthNavigator';
 
 const theme = {
   ...DefaultTheme,
@@ -10,10 +11,11 @@ const theme = {
 
 const App = () => {
   return (
-    <NavigationContainer theme={theme}>
-      <AuthNavigator />
-      <Toast />
-    </NavigationContainer>
+    // <NavigationContainer theme={theme}>
+    //   <AuthNavigator />
+    //   <Toast />
+    // </NavigationContainer>
+    <Home />
   );
 };
 

@@ -24,7 +24,11 @@ const AuthContainer = ({
   return (
     <KeyboardAvoidingView style={styles.container}>
       <View style={styles.contentContainer}>
-        {showBackButton && <BackButton navigation={navigation} />}
+        {showBackButton ? (
+          <BackButton navigation={navigation} />
+        ) : (
+          <View style={{ padding: 15 }}></View>
+        )}
         <Image source={require('../../assets/logo.png')} style={styles.logo} />
         <View style={styles.content}>{children}</View>
         <View style={styles.footer}>{footer}</View>
@@ -41,14 +45,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    marginTop: height * 0.08,
+    marginTop: height * 0.1,
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     flex: 1,
   },
   logo: {
-    width: width - 65,
-    height: 110,
+    width: width - 70,
+    height: 100,
     alignSelf: 'center',
     marginTop: 15,
   },

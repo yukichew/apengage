@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, TextInputBase, View } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 type Props = {
   text: string;
@@ -16,8 +16,9 @@ const TextLink = ({ text, onPress }: Props) => {
 
 const styles = StyleSheet.create({
   linkText: {
-    color: 'blue',
+    color: '#2A29FF',
     fontWeight: '500',
+    fontFamily: 'Poppins-Regular',
   },
 });
 

@@ -96,19 +96,21 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     height: 50,
     borderRadius: 10,
-    borderColor: 'black',
+    borderColor: 'rgba(37, 37, 37, 0.5)',
     borderWidth: 1,
     paddingHorizontal: 15,
     flexDirection: 'row',
     alignItems: 'center',
   },
   input: {
-    fontSize: 20,
+    fontSize: 16,
     flex: 1,
+    fontFamily: 'Poppins-Regular',
   },
   icon: {
     fontSize: 22,
     marginRight: 10,
+    color: 'rgba(37, 37, 37, 0.5)',
   },
   errorMessage: {
     color: 'red',

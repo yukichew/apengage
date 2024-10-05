@@ -56,7 +56,7 @@ const LoginScreen = ({ navigation }: Props) => {
     Toast.show({
       type: 'success',
       text1: 'Login Successful',
-      text2: 'Welcome back!',
+      text2: 'Welcome to the app!',
     });
     console.log(res);
   };
@@ -66,7 +66,9 @@ const LoginScreen = ({ navigation }: Props) => {
       navigation={navigation}
       footer={
         <View style={styles.signUpContainer}>
-          <Text>Don't have an account? </Text>
+          <Text style={{ fontFamily: 'Poppins-Regular' }}>
+            Don't have an account?{' '}
+          </Text>
           <TextLink
             text='Sign Up'
             onPress={() => navigation.navigate('SignUp')}
@@ -74,7 +76,7 @@ const LoginScreen = ({ navigation }: Props) => {
         </View>
       }
     >
-      <Title text='Welcome Back' />
+      <Title text='Welcome Back!' />
       <CustomFormik
         initialValues={initialValues}
         validationSchema={validationSchema}
