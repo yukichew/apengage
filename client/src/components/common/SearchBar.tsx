@@ -1,7 +1,6 @@
 import React from 'react';
 import { Dimensions, StyleSheet, TextInput, View } from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Feather from 'react-native-vector-icons/Feather';
+import IconButton from './IconButton';
 
 type Props = {
   value?: string;
@@ -12,14 +11,18 @@ type Props = {
 const SearchBar = ({ value, ...props }: Props) => {
   return (
     <View style={styles.field}>
-      <Feather name='search' style={styles.icon} />
+      <IconButton icon='search' iconLibrary='Feather' />
       <TextInput
         value={value}
         placeholder='Search'
         style={styles.input}
         {...props}
       />
-      <AntDesign name='close' style={styles.icon} />
+      <IconButton
+        icon='close'
+        iconLibrary='AntDesign'
+        onPress={() => console.log('close')}
+      />
     </View>
   );
 };
@@ -43,10 +46,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: 'Poppins-Regular',
     marginLeft: 10,
-  },
-  icon: {
-    fontSize: 22,
-    color: 'rgba(37, 37, 37, 0.6)',
   },
 });
 

@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import { Navigation } from '../../navigation/types';
-import BackButton from '../common/BackButton';
+import BackButton from '../common/IconButton';
 
 type Props = {
   children: React.ReactNode;

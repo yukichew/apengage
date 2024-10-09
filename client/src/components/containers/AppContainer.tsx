@@ -8,9 +8,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Octicons from 'react-native-vector-icons/Octicons';
 import { Navigation } from '../../navigation/types';
-import BackButton from '../common/BackButton';
+import IconButton from '../common/IconButton';
 
 type Props = {
   children: React.ReactNode;
@@ -30,7 +29,11 @@ const AppContainer = ({
       <SafeAreaView style={styles.container}>
         <View style={styles.headerContainer}>
           {showBackButton ? (
-            <BackButton navigation={navigation} />
+            <IconButton
+              icon='arrow-back'
+              iconLibrary='MaterialIcons'
+              onPress={() => navigation.goBack()}
+            />
           ) : (
             <Pressable
               style={styles.left}
@@ -48,10 +51,11 @@ const AppContainer = ({
           </View>
 
           <Pressable style={styles.right}>
-            <Octicons
-              name='bell-fill'
-              size={16}
-              style={{ color: 'rgba(37, 37, 37, 0.4)' }}
+            <IconButton
+              icon='bell-fill'
+              iconLibrary='Octicons'
+              style={{ fontSize: 16, color: 'rgba(37, 37, 37, 0.4)' }}
+              onPress={() => console.log('notification')}
             />
           </Pressable>
         </View>
