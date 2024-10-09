@@ -54,7 +54,7 @@ const AppContainer = ({
             <IconButton
               icon='bell-fill'
               iconLibrary='Octicons'
-              style={{ fontSize: 16, color: 'rgba(37, 37, 37, 0.4)' }}
+              style={{ fontSize: 16, color: 'rgba(0, 0, 0, 0.4)' }}
               onPress={() => console.log('notification')}
             />
           </Pressable>

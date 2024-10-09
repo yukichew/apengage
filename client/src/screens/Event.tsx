@@ -1,8 +1,8 @@
 import React from 'react';
 import { FlatList } from 'react-native';
-import FlatListItem from '../components/common/FlatListItem';
 import SearchBar from '../components/common/SearchBar';
 import AppContainer from '../components/containers/AppContainer';
+import FlatListItem from '../components/items/EventItem';
 import { Navigation } from '../navigation/types';
 
 type Props = {
@@ -22,7 +22,7 @@ type EventItem = {
 const data: EventItem[] = [
   {
     id: 1,
-    title: 'Item 1',
+    title: 'Dolores nonumy',
     date: new Date(),
     poster: 'https://picsum.photos/270/250',
     description: 'Description 1',
@@ -31,7 +31,7 @@ const data: EventItem[] = [
   },
   {
     id: 2,
-    title: 'Item 2',
+    title: 'Dolores nonumy amet duo',
     date: new Date(),
     poster: 'https://picsum.photos/270/250',
     description: 'Description 2',
@@ -40,7 +40,7 @@ const data: EventItem[] = [
   },
   {
     id: 3,
-    title: 'Item 3',
+    title: 'Dolores nonumy amet',
     date: new Date(),
     poster: 'https://picsum.photos/270/250',
     description: 'Description 3',

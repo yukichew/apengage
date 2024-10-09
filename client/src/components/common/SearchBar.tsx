@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     height: 50,
     borderRadius: 10,
-    backgroundColor: 'rgba(37, 37, 37, 0.1)',
+    backgroundColor: 'rgba(0, 0, 0, 0.07)',
     paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',

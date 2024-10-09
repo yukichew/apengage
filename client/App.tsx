@@ -5,7 +5,7 @@ import TabNavigator from './src/navigation/TabNavigator';
 
 const theme = {
   ...DefaultTheme,
-  colors: { ...DefaultTheme.colors, background: '#fff' },
+  colors: { ...DefaultTheme.colors, background: 'white' },
 };
 
 const App = () => {

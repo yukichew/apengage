@@ -42,7 +42,7 @@ const FlatListItem = ({ item, onPress }: Props) => {
 
 export default FlatListItem;
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     shadowColor: 'black',
@@ -74,16 +74,17 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 10,
     fontFamily: 'Poppins-Medium',
-    color: 'rgba(37, 37, 37, 0.5)',
+    color: 'rgba(0, 0, 0, 0.5)',
   },
   title: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: 'Poppins-SemiBold',
+    marginTop: 4,
   },
   locationText: {
     fontSize: 13,
     fontFamily: 'Poppins-Regular',
-    color: 'rgba(37, 37, 37, 0.7)',
+    color: 'rgba(0, 0, 0, 0.6)',
     marginLeft: 5,
   },
   locationContainer: {
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    marginTop: 15,
+    marginTop: 10,
   },
   priceContainer: {
     flex: 1,

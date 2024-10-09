@@ -20,7 +20,7 @@ const IconButton = ({ icon, iconLibrary, onPress, style }: Props) => {
 
 const styles = StyleSheet.create({
   iconBtn: {
-    color: 'rgba(37, 37, 37, 0.6)',
+    color: 'rgba(0, 0, 0, 0.6)',
     fontSize: 22,
   },
 });

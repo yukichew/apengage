@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     height: 50,
     borderRadius: 10,
-    borderColor: 'rgba(37, 37, 37, 0.5)',
+    borderColor: 'rgba(0, 0, 0, 0.5)',
     borderWidth: 1,
     paddingHorizontal: 15,
     flexDirection: 'row',
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 22,
-    color: 'rgba(37, 37, 37, 0.5)',
+    color: 'rgba(0, 0, 0, 0.5)',
   },
   errorMessage: {
     color: 'red',
