@@ -95,14 +95,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
     color: 'black',
-    // textAlign: 'center',
-    // backgroundColor: 'red',
     paddingStart: 12,
   },
   right: {
     alignItems: 'flex-end',
     flex: 1,
     paddingEnd: 5,
-    // backgroundColor: 'blue',
   },
 });

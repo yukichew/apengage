@@ -14,7 +14,7 @@ type CarouselItem = {
   description: string;
 };
 
-const data: CarouselItem[] = [
+export const data: CarouselItem[] = [
   {
     title: 'Item 1',
     date: new Date(),

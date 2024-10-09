@@ -106,10 +106,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     fontFamily: 'Poppins-Regular',
+    marginLeft: 10,
   },
   icon: {
     fontSize: 22,
-    marginRight: 10,
     color: 'rgba(37, 37, 37, 0.5)',
   },
   errorMessage: {
