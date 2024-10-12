@@ -61,7 +61,7 @@ const Profile = ({ navigation }: Props) => {
               title='My Account'
               desc='Desc'
               onPress={() => console.log('Item pressed')}
-              icon={
+              leftIcon={
                 <IconButton
                   icon='mode-edit'
                   iconLibrary='MaterialIcons'
@@ -74,7 +74,7 @@ const Profile = ({ navigation }: Props) => {
               title='Change Password'
               desc='Desc'
               onPress={() => console.log('Item pressed')}
-              icon={
+              leftIcon={
                 <IconButton
                   icon='form-textbox-password'
                   iconLibrary='MaterialCommunityIcons'
@@ -87,7 +87,7 @@ const Profile = ({ navigation }: Props) => {
               title='Logout'
               desc='Desc'
               onPress={() => console.log('Item pressed')}
-              icon={
+              leftIcon={
                 <IconButton
                   icon='logout'
                   iconLibrary='MaterialIcons'
@@ -109,7 +109,7 @@ const Profile = ({ navigation }: Props) => {
               title='Push Notification'
               desc='Desc'
               onPress={() => console.log('Item pressed')}
-              icon={
+              leftIcon={
                 <IconButton
                   icon='notifications-outline'
                   iconLibrary='Ionicons'
@@ -117,17 +117,33 @@ const Profile = ({ navigation }: Props) => {
                   style={{ color: '#2A29FF' }}
                 />
               }
+              rightIcon={
+                <IconButton
+                  icon='toggle-on'
+                  iconLibrary='Fontisto'
+                  style={{ color: '#2A29FF', fontSize: 30 }}
+                  onPress={() => console.log('notification')}
+                />
+              }
             />
             <ProfileItem
               title='Email Notification'
               desc='Desc'
               onPress={() => console.log('Item pressed')}
-              icon={
+              leftIcon={
                 <IconButton
                   icon='email-alert-outline'
                   iconLibrary='MaterialCommunityIcons'
                   onPress={() => console.log('edit profile')}
                   style={{ color: '#2A29FF' }}
+                />
+              }
+              rightIcon={
+                <IconButton
+                  icon='toggle-off'
+                  iconLibrary='Fontisto'
+                  style={{ color: 'rgba(0, 0, 0, 0.4)', fontSize: 30 }}
+                  onPress={() => console.log('notification')}
                 />
               }
             />

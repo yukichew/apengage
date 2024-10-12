@@ -1,9 +1,9 @@
 import React from 'react';
 import { FlatList } from 'react-native';
-import SearchBar from '../components/common/SearchBar';
-import AppContainer from '../components/containers/AppContainer';
-import FlatListItem from '../components/items/EventItem';
-import { Navigation } from '../navigation/types';
+import SearchBar from '../../components/common/SearchBar';
+import AppContainer from '../../components/containers/AppContainer';
+import FlatListItem from '../../components/items/EventItem';
+import { Navigation } from '../../navigation/types';
 
 type Props = {
   navigation: Navigation;

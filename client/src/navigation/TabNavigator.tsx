@@ -6,7 +6,7 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
-import Event from '../screens/Event';
+import Event from '../screens/event/Event';
 import History from '../screens/History';
 import Home from '../screens/Home';
 import Profile from '../screens/Profile';

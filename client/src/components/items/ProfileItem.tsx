@@ -9,27 +9,31 @@ import {
 import IconButton from '../common/IconButton';
 
 type Props = {
-  icon: React.ReactNode;
+  leftIcon?: React.ReactNode;
   title: String;
   desc: String;
   onPress: () => void;
+  rightIcon?: React.ReactNode;
 };
 
-const ProfileItem = ({ icon, title, desc, onPress }: Props) => {
+const ProfileItem = ({ leftIcon, title, desc, onPress, rightIcon }: Props) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
-      <View style={styles.iconContainer}>{icon}</View>
+      <View style={styles.iconContainer}>{leftIcon}</View>
       <View style={styles.contentContainer}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.desc}>{desc}</Text>
       </View>
-
-      <IconButton
-        icon='right'
-        iconLibrary='AntDesign'
-        style={{ fontSize: 17 }}
-        onPress={() => console.log('notification')}
-      />
+      {rightIcon ? (
+        rightIcon
+      ) : (
+        <IconButton
+          icon='right'
+          iconLibrary='AntDesign'
+          style={{ fontSize: 18 }}
+          onPress={() => console.log('notification')}
+        />
+      )}
     </TouchableOpacity>
   );
 };

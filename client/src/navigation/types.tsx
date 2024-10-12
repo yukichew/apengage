@@ -11,6 +11,7 @@ export type RootStackNavigatorParamsList = {
   Event: undefined;
   History: undefined;
   AddEvent: undefined;
+  EventDetails: undefined;
 };
 
 export type Navigation =
