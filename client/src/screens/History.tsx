@@ -1,11 +1,17 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
+import AppContainer from '../components/containers/AppContainer';
+import { Navigation } from '../navigation/types';
 
-const History = () => {
+type Props = {
+  navigation: Navigation;
+};
+
+const History = ({ navigation }: Props) => {
   return (
-    <View>
+    <AppContainer navigation={navigation}>
       <Text>History</Text>
-    </View>
+    </AppContainer>
   );
 };
 

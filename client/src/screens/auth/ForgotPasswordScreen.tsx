@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     margin: 12,
     textAlign: 'center',
-    color: 'rgba(37, 37, 37, 0.9)',
+    color: 'rgba(0, 0, 0, 0.9)',
   },
 });
 

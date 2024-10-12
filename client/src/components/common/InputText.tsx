@@ -8,15 +8,7 @@ import {
   TextInputFocusEventData,
   View,
 } from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Entypo from 'react-native-vector-icons/Entypo';
-import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import Fontisto from 'react-native-vector-icons/Fontisto';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Icons from '../../constants/icons';
 
 type Props = {
   value?: string;
@@ -29,18 +21,6 @@ type Props = {
   rightIconLibrary?: keyof typeof Icons;
   name: string;
   secureTextEntry?: boolean;
-};
-
-const Icons = {
-  AntDesign,
-  MaterialIcons,
-  Ionicons,
-  FontAwesome5Icon,
-  MaterialCommunityIcons,
-  Entypo,
-  Feather,
-  FontAwesome,
-  Fontisto,
 };
 
 const renderIcon = (iconName: string, iconLibrary?: keyof typeof Icons) => {
@@ -96,7 +76,7 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     height: 50,
     borderRadius: 10,
-    borderColor: 'rgba(37, 37, 37, 0.5)',
+    borderColor: 'rgba(0, 0, 0, 0.5)',
     borderWidth: 1,
     paddingHorizontal: 15,
     flexDirection: 'row',
@@ -106,11 +86,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     fontFamily: 'Poppins-Regular',
+    marginLeft: 10,
   },
   icon: {
     fontSize: 22,
-    marginRight: 10,
-    color: 'rgba(37, 37, 37, 0.5)',
+    color: 'rgba(0, 0, 0, 0.5)',
   },
   errorMessage: {
     color: 'red',

@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import { Navigation } from '../../navigation/types';
-import BackButton from '../common/BackButton';
+import IconButton from '../common/IconButton';
 
 type Props = {
   children: React.ReactNode;
@@ -26,7 +26,11 @@ const AuthContainer = ({
     <KeyboardAvoidingView style={styles.container}>
       <View style={styles.contentContainer}>
         {showBackButton ? (
-          <BackButton navigation={navigation} />
+          <IconButton
+            icon='arrow-back'
+            iconLibrary='MaterialIcons'
+            onPress={() => navigation.goBack()}
+          />
         ) : (
           <View style={{ padding: 15 }}></View>
         )}

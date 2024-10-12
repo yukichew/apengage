@@ -6,12 +6,13 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
-import Event from '../screens/Event';
+import Event from '../screens/event/Event';
 import History from '../screens/History';
 import Home from '../screens/Home';
 import Profile from '../screens/Profile';
+import { RootStackNavigatorParamsList } from './types';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<RootStackNavigatorParamsList>();
 
 const TabNavigator: FC = () => {
   return (
@@ -27,6 +28,7 @@ const TabNavigator: FC = () => {
           right: 20,
           borderRadius: 15,
           height: 70,
+          backgroundColor: 'white',
           ...styles.shadow,
         },
       }}
@@ -40,20 +42,15 @@ const TabNavigator: FC = () => {
               <Octicons
                 name='home'
                 style={{
-                  color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
-                    : 'rgba(37, 37, 37, 0.3)',
+                  color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
                   fontSize: 25,
                 }}
               />
               <Text
                 style={{
-                  color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
-                    : 'rgba(37, 37, 37, 0.3)',
+                  color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
                   fontSize: 10,
                   fontFamily: 'Poppins-Regular',
-                  marginTop: 2,
                 }}
               >
                 Home
@@ -71,17 +68,13 @@ const TabNavigator: FC = () => {
               <Ionicons
                 name='newspaper-outline'
                 style={{
-                  color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
-                    : 'rgba(37, 37, 37, 0.3)',
+                  color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
                   fontSize: 25,
                 }}
               />
               <Text
                 style={{
-                  color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
-                    : 'rgba(37, 37, 37, 0.3)',
+                  color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
                   fontSize: 10,
                   fontFamily: 'Poppins-Regular',
                 }}
@@ -129,17 +122,13 @@ const TabNavigator: FC = () => {
               <MaterialIcons
                 name='history'
                 style={{
-                  color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
-                    : 'rgba(37, 37, 37, 0.3)',
+                  color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
                   fontSize: 25,
                 }}
               />
               <Text
                 style={{
-                  color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
-                    : 'rgba(37, 37, 37, 0.3)',
+                  color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
                   fontSize: 10,
                   fontFamily: 'Poppins-Regular',
                 }}
@@ -159,17 +148,13 @@ const TabNavigator: FC = () => {
               <FontAwesome6
                 name='circle-user'
                 style={{
-                  color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
-                    : 'rgba(37, 37, 37, 0.3)',
+                  color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
                   fontSize: 25,
                 }}
               />
               <Text
                 style={{
-                  color: focused
-                    ? 'rgba(37, 37, 37, 0.5)'
-                    : 'rgba(37, 37, 37, 0.3)',
+                  color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
                   fontSize: 10,
                   fontFamily: 'Poppins-Regular',
                 }}
