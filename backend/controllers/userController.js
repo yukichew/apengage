@@ -229,8 +229,7 @@ exports.editProfile = async (req, res) => {
   const { file } = req;
   const { id } = req.params;
 
-  if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid category id');
-
+  if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid user id');
   const user = await User.findById(id);
   if (!user) sendError(res, 400, 'User not found!');
 
@@ -247,13 +246,13 @@ exports.editProfile = async (req, res) => {
     const { result } = await cloudinary.uploader.destroy(public_id);
     if (result !== 'ok')
       return sendError(res, 500, 'Failed to update profile picture');
+  }
 
-    if (file) {
-      const { secure_url: url, public_id } = await cloudinary.uploader.upload(
-        file.path
-      );
-      user.profile = { url, public_id };
-    }
+  if (file) {
+    const { secure_url: url, public_id } = await cloudinary.uploader.upload(
+      file.path
+    );
+    user.profile = { url, public_id };
   }
 
   await user.save();

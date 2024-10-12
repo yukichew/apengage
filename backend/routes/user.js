@@ -28,7 +28,7 @@ router.post('/reset-password', isResetTokenValid, resetPassword);
 router.patch('/change-password', authenticate);
 router.get('/profile', authenticate);
 router.put(
-  '/edit-profile',
+  '/edit-profile/:id',
   authenticate,
   multer.single('profile'),
   editProfile
