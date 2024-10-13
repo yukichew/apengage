@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
-exports.fieldSchema = new mongoose.Schema(
+const fieldSchema = new mongoose.Schema(
   {
-    required: {
-      type: Boolean,
-      default: false,
-      required: true,
-    },
     label: {
       type: String,
       required: true,
       trim: true,
+    },
+    required: {
+      type: Boolean,
+      default: false,
+      required: true,
     },
     desc: {
       type: String,
@@ -35,10 +35,11 @@ exports.fieldSchema = new mongoose.Schema(
     },
     order: {
       type: Number,
-      required: true,
     },
   },
   {
     timestamps: true,
   }
 );
+
+module.exports = mongoose.model('Field', fieldSchema);

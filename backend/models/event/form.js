@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { fieldSchema } = require('./field');
 
 const eventSchema = new mongoose.Schema(
   {
@@ -49,9 +48,12 @@ const eventSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
-    fields: {
-      type: [fieldSchema],
-    },
+    fields: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Field',
+      },
+    ],
   },
   {
     timestamps: true,
