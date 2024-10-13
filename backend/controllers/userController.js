@@ -227,9 +227,8 @@ exports.resetPassword = async (req, res) => {
 exports.editProfile = async (req, res) => {
   const { fullname, gender, contact, course, intake, nric } = req.body;
   const { file } = req;
-  const { id } = req.params;
+  const { id } = req.user;
 
-  if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid user id');
   const user = await User.findById(id);
   if (!user) sendError(res, 400, 'User not found!');
 

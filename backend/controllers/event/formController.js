@@ -1,6 +1,7 @@
 const { defaultFields } = require('../../db/fields');
 const cloudinary = require('../../config/cloud');
 const Event = require('../../models/event/form');
+const Field = require('../../models/event/field');
 
 exports.createForm = async (req, res) => {
   const { name, desc, date, location, categories, price, organizer, fields } =
@@ -10,6 +11,14 @@ exports.createForm = async (req, res) => {
 
   const allFields = [...defaultFields, ...fields];
 
+  const fieldIds = await Promise.all(
+    allFields.map(async (field) => {
+      const newField = new Field(field);
+      await newField.save();
+      return newField._id;
+    })
+  );
+
   const newEvent = new Event({
     name,
     desc,
@@ -18,7 +27,7 @@ exports.createForm = async (req, res) => {
     categories,
     price,
     organizer,
-    fields: allFields,
+    fields: fieldIds,
   });
 
   if (file) {

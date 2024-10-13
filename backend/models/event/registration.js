@@ -1,18 +1,19 @@
 const mongoose = require('mongoose');
 
-const formResponseSchema = new mongoose.Schema({
-  form: {
+const registrationSchema = new mongoose.Schema({
+  event: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Event',
+    required: true,
+  },
+  participant: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
   response: {
     type: Object,
     required: true,
-  },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
   },
   submittedAt: {
     type: Date,
@@ -20,4 +21,4 @@ const formResponseSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('FormResponse', formResponseSchema);
+module.exports = mongoose.model('Registration', registrationSchema);

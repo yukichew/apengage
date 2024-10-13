@@ -1,4 +1,4 @@
-const { check, validationResult } = require('express-validator');
+const { check, validationResult, body } = require('express-validator');
 const { sendError } = require('../helpers/error');
 
 exports.userValidator = [
@@ -63,6 +63,40 @@ exports.eventFormValidator = [
     .not()
     .isEmpty()
     .withMessage('Event organizer is missing'),
+  body('fields').isArray().withMessage('Fields must be an array'),
+  body('fields.*.label')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Field label is missing'),
+  body('fields.*.required')
+    .isBoolean()
+    .withMessage('Field required must be a boolean'),
+  body('fields.*.desc').optional().trim(),
+  body('fields.*.type')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Field type is missing')
+    .isIn([
+      'short_ans',
+      'long_ans',
+      'mcq',
+      'checkbox',
+      'dropdown',
+      'date',
+      'time',
+      'file',
+    ])
+    .withMessage('Invalid field type'),
+  body('fields.*.options')
+    .optional()
+    .isArray()
+    .withMessage('Field options must be an array of strings'),
+  body('fields.*.order')
+    .optional()
+    .isInt()
+    .withMessage('Field order must be an integer'),
 ];
 
 exports.categoryValidator = [

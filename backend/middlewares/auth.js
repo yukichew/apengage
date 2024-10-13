@@ -33,6 +33,9 @@ exports.authenticate = async (req, res, next) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   if (!decoded) return sendError(res, 401, 'Invalid token!');
 
-  req.user = decoded;
+  const user = await User.findById(decoded.userId);
+  if (!user) return sendError(res, 404, 'User not found!');
+
+  req.user = user;
   next();
 };
