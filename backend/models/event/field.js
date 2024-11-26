@@ -19,16 +19,7 @@ const fieldSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: [
-        'short_ans',
-        'long_ans',
-        'mcq',
-        'checkbox',
-        'dropdown',
-        'date',
-        'time',
-        'file',
-      ],
+      enum: ['short_ans', 'long_ans', 'mcq', 'checkbox', 'dropdown', 'file'],
     },
     options: {
       type: [String],

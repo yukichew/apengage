@@ -9,10 +9,18 @@ exports.createForm = async (req, res) => {
 
   const { file } = req;
 
-  const allFields = [...defaultFields, ...fields];
+  // const allFields = [...defaultFields, ...fields];
+
+  // const fieldIds = await Promise.all(
+  //   allFields.map(async (field) => {
+  //     const newField = new Field(field);
+  //     await newField.save();
+  //     return newField._id;
+  //   })
+  // );
 
   const fieldIds = await Promise.all(
-    allFields.map(async (field) => {
+    fields.map(async (field) => {
       const newField = new Field(field);
       await newField.save();
       return newField._id;

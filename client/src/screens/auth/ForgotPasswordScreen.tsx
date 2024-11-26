@@ -1,17 +1,13 @@
 import { StyleSheet, Text } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
-import Button from '../../components/common/Button';
 import CustomFormik from '../../components/common/CustomFormik';
 import TextInput from '../../components/common/InputText';
+import SubmitButton from '../../components/common/SubmitButton';
 import Title from '../../components/common/Title';
 import AuthContainer from '../../components/containers/AuthContainer';
-import { Navigation } from '../../navigation/types';
+import { Props } from '../../constants/types';
 import { forgetPassword } from '../../utils/auth';
-
-type Props = {
-  navigation: Navigation;
-};
 
 const ForgotPasswordScreen = ({ navigation }: Props) => {
   const initialValues = {
@@ -61,7 +57,7 @@ const ForgotPasswordScreen = ({ navigation }: Props) => {
           leftIcon='mail-outline'
           leftIconLibrary='Ionicons'
         />
-        <Button title='SEND' />
+        <SubmitButton title='SEND' />
         <Text style={styles.text}>
           You will receive an email with a link to reset your password.
         </Text>

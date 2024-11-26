@@ -1,6 +1,6 @@
 const { sendError } = require('../../helpers/error');
 const Event = require('../../models/event/form');
-const Resgistration = require('../../models/event/registration');
+const Registration = require('../../models/event/registration');
 
 exports.joinEvent = async (req, res) => {
   const { id } = req.params;
@@ -9,8 +9,28 @@ exports.joinEvent = async (req, res) => {
   const event = await Event.findById(id).populate('fields');
   if (!event) return sendError(res, 404, 'Event not found');
 
-  const registration = new Resgistration({
-    event,
+  const eventFields = event.fields.map((field) => ({
+    id: field._id.toString(),
+    label: field.label,
+    required: field.required,
+    type: field.type,
+    options: field.options || [],
+  }));
+
+  for (const field of eventFields) {
+    const fieldResponse = response[field.id];
+
+    if (
+      field.required &&
+      (fieldResponse === undefined || fieldResponse === '')
+    ) {
+      return sendError(res, 400, `${field.label} is required.`);
+    }
+  }
+
+  // Save the valid registration
+  const registration = new Registration({
+    event: event._id,
     participant: req.user._id,
     response,
   });

@@ -1,11 +1,5 @@
-import { useFormikContext } from 'formik';
 import React from 'react';
-import {
-  GestureResponderEvent,
-  Pressable,
-  StyleSheet,
-  Text,
-} from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 type Props = {
   title: string;
@@ -13,22 +7,8 @@ type Props = {
 };
 
 const Button = ({ title, onPress }: Props) => {
-  const { handleSubmit, isSubmitting } = useFormikContext(); // prevent the unused import error
-  const handlePress = (event: GestureResponderEvent) => {
-    if (onPress) {
-      onPress();
-    } else {
-      handleSubmit();
-    }
-  };
   return (
-    <Pressable
-      onPress={isSubmitting ? null : handlePress}
-      style={[
-        styles.btnContainer,
-        { backgroundColor: isSubmitting ? 'gray' : 'black' },
-      ]}
-    >
+    <Pressable onPress={onPress} style={styles.btnContainer}>
       <Text style={styles.btnText}>{title}</Text>
     </Pressable>
   );

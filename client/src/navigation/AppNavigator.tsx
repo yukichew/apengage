@@ -4,12 +4,13 @@ import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import Verification from '../screens/auth/Verification';
+import CustomForm from '../screens/event/CustomForm';
 import TabNavigator from './TabNavigator';
 import { RootStackNavigatorParamsList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackNavigatorParamsList>();
 
-const AuthNavigator: FC = () => {
+const AppNavigator: FC = () => {
   return (
     <Stack.Navigator
       initialRouteName='Login'
@@ -19,9 +20,10 @@ const AuthNavigator: FC = () => {
       <Stack.Screen name='SignUp' component={SignUpScreen} />
       <Stack.Screen name='ForgetPassword' component={ForgotPasswordScreen} />
       <Stack.Screen name='Verification' component={Verification} />
+      <Stack.Screen name='CustomForm' component={CustomForm} />
       <Stack.Screen name='HomeScreen' component={TabNavigator} />
     </Stack.Navigator>
   );
 };
 
-export default AuthNavigator;
+export default AppNavigator;

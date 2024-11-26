@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import IconButton from '../components/common/IconButton';
 import AppContainer from '../components/containers/AppContainer';
-import ProfileItem from '../components/items/ProfileItem';
+import ProfileItem from '../components/custom/ProfileItem';
 import { Navigation } from '../navigation/types';
 
 type Props = {
