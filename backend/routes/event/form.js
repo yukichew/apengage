@@ -1,9 +1,16 @@
-const { createForm } = require('../../controllers/event/formController');
+const {
+  createForm,
+  addFields,
+} = require('../../controllers/event/formController');
 const { joinEvent } = require('../../controllers/event/registrationController');
 const { authenticate } = require('../../middlewares/auth');
 const { isLogoExist } = require('../../middlewares/image');
 const multer = require('../../middlewares/multer');
-const { eventFormValidator, validate } = require('../../middlewares/validator');
+const {
+  eventFormValidator,
+  fieldValidator,
+  validate,
+} = require('../../middlewares/validator');
 
 const router = require('express').Router();
 
@@ -15,6 +22,14 @@ router.post(
   eventFormValidator,
   validate,
   createForm
+);
+
+router.put(
+  '/:id/add-fields',
+  authenticate,
+  fieldValidator,
+  validate,
+  addFields
 );
 
 router.post('/:id/join', authenticate, validate, joinEvent);

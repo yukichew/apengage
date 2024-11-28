@@ -28,7 +28,7 @@ const TabNavigator: FC = () => {
           left: 20,
           right: 20,
           borderRadius: 15,
-          height: 70,
+          height: 62,
           backgroundColor: 'white',
           ...styles.shadow,
         },
@@ -44,7 +44,7 @@ const TabNavigator: FC = () => {
                 name='home'
                 style={{
                   color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
-                  fontSize: 25,
+                  fontSize: 23,
                 }}
               />
               <Text
@@ -70,7 +70,7 @@ const TabNavigator: FC = () => {
                 name='newspaper-outline'
                 style={{
                   color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
-                  fontSize: 25,
+                  fontSize: 23,
                 }}
               />
               <Text
@@ -93,7 +93,7 @@ const TabNavigator: FC = () => {
           tabBarIcon: () => (
             <View
               style={{
-                top: -15,
+                top: -7,
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor: 'black',
@@ -106,7 +106,7 @@ const TabNavigator: FC = () => {
               <MaterialIcons
                 name='add-box'
                 style={{
-                  fontSize: 25,
+                  fontSize: 23,
                   color: 'white',
                 }}
               />
@@ -124,7 +124,7 @@ const TabNavigator: FC = () => {
                 name='history'
                 style={{
                   color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
-                  fontSize: 25,
+                  fontSize: 23,
                 }}
               />
               <Text
@@ -150,7 +150,7 @@ const TabNavigator: FC = () => {
                 name='circle-user'
                 style={{
                   color: focused ? 'rgba(0, 0, 0, 0.6)' : 'rgba(0, 0, 0, 0.3)',
-                  fontSize: 25,
+                  fontSize: 23,
                 }}
               />
               <Text

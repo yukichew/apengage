@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import client from '../api/client';
 
 type SignUpData = {
@@ -55,6 +56,12 @@ export const signin = async (values: SigninData): Promise<ApiResponse> => {
     const response = await client.post<ApiResponse>('/user/signin', {
       ...values,
     });
+
+    const { token, user } = response.data;
+    if (token) await saveToken(token);
+    if (user) await AsyncStorage.setItem('currentUser', JSON.stringify(user));
+    console.log(user);
+
     return {
       success: true,
       user: response.data.user,
@@ -93,5 +100,40 @@ export const verifyEmail = async (
     };
   } catch (error: any) {
     return catchAxiosError(error);
+  }
+};
+
+export const logout = async (): Promise<void> => {
+  try {
+    await AsyncStorage.removeItem('token');
+  } catch (error) {
+    console.error('Failed to logout:', error);
+  }
+};
+
+export const saveToken = async (token: string): Promise<void> => {
+  try {
+    await AsyncStorage.setItem('token', token);
+  } catch (error) {
+    console.error('Failed to save token:', error);
+  }
+};
+
+export const getToken = async (): Promise<string | null> => {
+  try {
+    return await AsyncStorage.getItem('token');
+  } catch (error) {
+    console.error('Failed to retrieve token:', error);
+    return null;
+  }
+};
+
+export const getCurrentUser = async () => {
+  try {
+    const user = await AsyncStorage.getItem('currentUser');
+    return user ? JSON.parse(user) : null;
+  } catch (error) {
+    console.error('Failed to get current user:', error);
+    return null;
   }
 };

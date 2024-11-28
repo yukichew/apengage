@@ -56,13 +56,17 @@ exports.eventFormValidator = [
     .not()
     .isEmpty()
     .withMessage('Event location is missing'),
-  check('categories').not().isEmpty().withMessage('Event category is missing'),
-  check('price').trim().not().isEmpty().withMessage('Event price is missing'),
   check('organizer')
     .trim()
     .not()
     .isEmpty()
     .withMessage('Event organizer is missing'),
+  check('categories').not().isEmpty().withMessage('Event category is missing'),
+  check('price').trim().not().isEmpty().withMessage('Event price is missing'),
+  check('postedBy').trim().not().isEmpty().withMessage('Posted by is missing'),
+];
+
+exports.fieldValidator = [
   body('fields').isArray().withMessage('Fields must be an array'),
   body('fields.*.label')
     .trim()
@@ -113,7 +117,7 @@ exports.registrationValidator = [];
 exports.validate = (req, res, next) => {
   const error = validationResult(req).array();
   if (error.length) {
-    return sendError(res, 401, error[0].msg);
+    return sendError(res, 400, error[0].msg);
   }
   next();
 };

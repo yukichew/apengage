@@ -37,8 +37,6 @@ const LoginScreen = ({ navigation }: Props) => {
     formikActions: any
   ) => {
     const res = await signin(values);
-    console.log(values);
-    console.log(res);
     formikActions.setSubmitting(false);
 
     if (!res.success) {

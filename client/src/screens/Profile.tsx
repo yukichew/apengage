@@ -1,3 +1,4 @@
+import { StackActions } from '@react-navigation/native';
 import React from 'react';
 import {
   Dimensions,
@@ -7,16 +8,28 @@ import {
   Text,
   View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 import IconButton from '../components/common/IconButton';
 import AppContainer from '../components/containers/AppContainer';
 import ProfileItem from '../components/custom/ProfileItem';
 import { Navigation } from '../navigation/types';
+import { logout } from '../utils/auth';
 
 type Props = {
   navigation: Navigation;
 };
 
 const Profile = ({ navigation }: Props) => {
+  const handleLogout = async () => {
+    const res = await logout();
+    Toast.show({
+      type: 'success',
+      text1: 'Logout Successful',
+      text2: 'You have been logged out',
+    });
+    navigation.dispatch(StackActions.replace('Login'));
+  };
+
   return (
     <AppContainer navigation={navigation}>
       <ScrollView style={{ backgroundColor: 'rgba(246, 246, 246, 0.8)' }}>
@@ -86,7 +99,7 @@ const Profile = ({ navigation }: Props) => {
             <ProfileItem
               title='Logout'
               desc='Desc'
-              onPress={() => console.log('Item pressed')}
+              onPress={handleLogout}
               leftIcon={
                 <IconButton
                   icon='logout'

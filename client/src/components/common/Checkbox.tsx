@@ -35,6 +35,7 @@ const Checkbox = ({
             <Icons.MaterialCommunityIcons
               name={multiple ? 'checkbox-outline' : 'radiobox-marked'}
               size={18}
+              color={'#2A29FF'}
             />
           ) : (
             <Icons.MaterialCommunityIcons

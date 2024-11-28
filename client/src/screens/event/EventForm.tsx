@@ -1,12 +1,18 @@
-import React from 'react';
-import { ScrollView, Text } from 'react-native';
+import { StackActions } from '@react-navigation/native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 import { MultipleSelectList } from 'react-native-dropdown-select-list';
+import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
-import Button from '../../components/common/Button';
 import CustomFormik from '../../components/common/CustomFormik';
+import DateInput from '../../components/common/DateInput';
+import FilePicker from '../../components/common/FilePicker';
 import InputText from '../../components/common/InputText';
+import SubmitButton from '../../components/common/SubmitButton';
 import AppContainer from '../../components/containers/AppContainer';
 import { Navigation } from '../../navigation/types';
+import { getCategories } from '../../utils/categoryManagement';
+import { addEvent } from '../../utils/eventManagement';
 
 type Props = {
   navigation: Navigation;
@@ -18,34 +24,80 @@ const EventForm = ({ navigation }: Props) => {
     desc: '',
     location: '',
     price: '',
+    date: '',
+    organizer: '',
   };
 
   const validationSchema = yup.object({
     name: yup.string().required('Event name is required'),
     desc: yup.string().required('Event description is required'),
     location: yup.string().required('Event location is required'),
-    price: yup.number().required('Price is required'),
+    price: yup
+      .number()
+      .required('Registration fee is required. Enter 0 if free'),
+    date: yup.date().required('Event date is required'),
+    organizer: yup.string().required('Organizer is required'),
   });
 
-  const onSubmit = async (values: typeof initialValues) => {
-    console.log(values);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [file, setFile] = useState<any>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const onSubmit = async (values: typeof initialValues, formikActions: any) => {
+    const payload = { ...values, categories: selected };
+    const res = await addEvent(payload, file);
+    formikActions.setSubmitting(false);
+
+    if (!res.success) {
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to create event',
+        text2: res.error,
+        position: 'top',
+        topOffset: 60,
+      });
+      return;
+    }
+
+    Toast.show({
+      type: 'success',
+      text1: 'Successfully created event',
+    });
+
+    navigation.dispatch(StackActions.replace('CustomForm'));
+    formikActions.resetForm();
   };
 
-  const [selected, setSelected] = React.useState<string[]>([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await getCategories();
+      if (res.success) {
+        setCategories(res.categories);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Failed to fetch categories',
+          text2: res.error,
+          position: 'top',
+          topOffset: 60,
+        });
+      }
+    };
+    fetchCategories();
+  }, []);
 
-  const data = [
-    { key: '1', value: 'Mobiles' },
-    { key: '2', value: 'Appliances' },
-    { key: '3', value: 'Cameras' },
-    { key: '4', value: 'Computers' },
-    { key: '5', value: 'Vegetables' },
-    { key: '6', value: 'Diary Products' },
-    { key: '7', value: 'Drinks' },
-  ];
+  useEffect(() => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  }, [categories, selected, file]);
 
   return (
     <AppContainer navigation={navigation}>
-      <ScrollView style={{ paddingHorizontal: 20 }}>
+      <ScrollView
+        ref={scrollViewRef}
+        style={{ paddingHorizontal: 20 }}
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
         <CustomFormik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -54,54 +106,66 @@ const EventForm = ({ navigation }: Props) => {
           <Text
             style={{
               fontFamily: 'Poppins-Bold',
-              fontSize: 27,
-              textAlign: 'center',
-              marginTop: 18,
-              marginBottom: 10,
+              fontSize: 18,
+              marginTop: 6,
+              marginBottom: 4,
             }}
           >
             Create Event
           </Text>
           <InputText
-            placeholder='Event Name'
+            placeholder='Name'
             name='name'
-            leftIcon='mail-outline'
-            leftIconLibrary='Ionicons'
+            leftIcon='title'
+            leftIconLibrary='MaterialIcons'
+          />
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ flex: 1, marginRight: 7 }}>
+              <InputText
+                placeholder='Location'
+                name='location'
+                leftIcon='location-outline'
+                leftIconLibrary='Ionicons'
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <InputText
+                placeholder='Organizer'
+                name='organizer'
+                leftIcon='file-text'
+                leftIconLibrary='Feather'
+              />
+            </View>
+          </View>
+          <DateInput placeholder='Date' name='date' />
+          <InputText
+            placeholder='Registration Fee'
+            name='price'
+            keyboardType='numeric'
+            leftIcon='attach-money'
+            leftIconLibrary='MaterialIcons'
           />
           <InputText
-            placeholder='Event Description'
+            placeholder='Description'
             name='desc'
-            leftIcon='mail-outline'
-            leftIconLibrary='Ionicons'
-          />
-          <InputText
-            placeholder='Event Location'
-            name='location'
-            leftIcon='mail-outline'
-            leftIconLibrary='Ionicons'
-          />
-          <InputText
-            placeholder='Event Price'
-            name='location'
-            leftIcon='mail-outline'
-            leftIconLibrary='Ionicons'
+            multiline
+            numberOfLines={4}
+            leftIcon='file-text'
+            leftIconLibrary='Feather'
           />
           <MultipleSelectList
             setSelected={(val: string[]) => setSelected(val)}
-            data={data}
-            save='value'
-            onSelect={() => console.log(selected)}
+            data={categories}
+            save='key'
             label='Event Categories'
             fontFamily='Poppins-Regular'
             placeholder='Select categories'
-            boxStyles={{ marginTop: 10, minHeight: 50 }}
+            boxStyles={{ marginTop: 8, minHeight: 50 }}
             searchPlaceholder='Search categories'
             maxHeight={160}
           />
-          <Button
-            title='Next'
-            onPress={() => navigation.navigate('CustomForm')}
-          />
+          <FilePicker file={file} setFile={setFile} />
+          <SubmitButton title='Next' />
         </CustomFormik>
       </ScrollView>
     </AppContainer>

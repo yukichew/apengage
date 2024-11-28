@@ -43,17 +43,43 @@ const eventSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    organizer: {
+    postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
+    organizer: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     fields: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Field',
+        label: { type: String, required: true, trim: true },
+        required: { type: Boolean, default: false },
+        desc: { type: String, trim: true },
+        type: {
+          type: String,
+          required: true,
+          enum: [
+            'short_ans',
+            'long_ans',
+            'mcq',
+            'checkbox',
+            'dropdown',
+            'file',
+          ],
+        },
+        options: { type: [String] },
+        order: { type: Number },
       },
     ],
+    // fields: [
+    //   {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Field',
+    //   },
+    // ],
   },
   {
     timestamps: true,
