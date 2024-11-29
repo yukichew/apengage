@@ -1,21 +1,33 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
+import { User } from '../constants/types';
 import Event from '../screens/event/Event';
 import EventForm from '../screens/event/EventForm';
 import History from '../screens/History';
 import Home from '../screens/Home';
 import Profile from '../screens/Profile';
+import { getCurrentUser } from '../utils/auth';
 import { RootStackNavigatorParamsList } from './types';
 
 const Tab = createBottomTabNavigator<RootStackNavigatorParamsList>();
 
 const TabNavigator: FC = () => {
+  const [user, setUser] = useState<User>();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+    };
+    fetchUser();
+  }, []);
+
   return (
     <Tab.Navigator
       initialRouteName='Home'
@@ -143,6 +155,7 @@ const TabNavigator: FC = () => {
       <Tab.Screen
         name='Profile'
         component={Profile}
+        initialParams={user ? { user } : undefined}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={styles.tabScreenContainer}>

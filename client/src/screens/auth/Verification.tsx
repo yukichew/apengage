@@ -78,7 +78,9 @@ const Verification = ({ route, navigation }: Props) => {
         topOffset: 60,
       });
 
-      navigation.dispatch(StackActions.replace('Home', { profile: res.user }));
+      navigation.dispatch(
+        StackActions.replace('HomeScreen', { profile: res.user })
+      );
     }
   };
 

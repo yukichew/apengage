@@ -112,8 +112,6 @@ exports.categoryValidator = [
     .withMessage('Category description is missing'),
 ];
 
-exports.registrationValidator = [];
-
 exports.validate = (req, res, next) => {
   const error = validationResult(req).array();
   if (error.length) {

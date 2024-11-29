@@ -6,6 +6,7 @@ import LoginScreen from '../screens/auth/LoginScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import Verification from '../screens/auth/Verification';
 import CustomForm from '../screens/event/CustomForm';
+import EditProfile from '../screens/profile/EditProfile';
 import { getToken } from '../utils/auth';
 import TabNavigator from './TabNavigator';
 import { RootStackNavigatorParamsList } from './types';
@@ -45,6 +46,7 @@ const AppNavigator: FC = () => {
       <Stack.Screen name='ForgetPassword' component={ForgotPasswordScreen} />
       <Stack.Screen name='Verification' component={Verification} />
       <Stack.Screen name='CustomForm' component={CustomForm} />
+      <Stack.Screen name='EditProfile' component={EditProfile} />
     </Stack.Navigator>
   );
 };

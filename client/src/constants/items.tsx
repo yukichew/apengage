@@ -6,3 +6,8 @@ export const fieldTypes = [
   { key: 'checkbox', value: 'Checkbox' },
   { key: 'file', value: 'File Upload' },
 ];
+
+export const gender = [
+  { key: '1', value: 'Female' },
+  { key: '2', value: 'Male' },
+];

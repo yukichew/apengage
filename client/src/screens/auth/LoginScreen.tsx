@@ -55,9 +55,7 @@ const LoginScreen = ({ navigation }: Props) => {
       text1: 'Login Successful',
       text2: 'Welcome to the app!',
     });
-    navigation.dispatch(
-      StackActions.replace('HomeScreen', { profile: res.user })
-    );
+    navigation.dispatch(StackActions.replace('HomeScreen', { user: res.user }));
     formikActions.resetForm();
   };
 

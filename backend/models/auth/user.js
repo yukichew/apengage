@@ -49,10 +49,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    nric: {
-      type: String,
-      trim: true,
-    },
     verified: {
       type: Boolean,
       default: false,

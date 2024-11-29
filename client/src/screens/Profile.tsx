@@ -12,14 +12,18 @@ import Toast from 'react-native-toast-message';
 import IconButton from '../components/common/IconButton';
 import AppContainer from '../components/containers/AppContainer';
 import ProfileItem from '../components/custom/ProfileItem';
+import { User } from '../constants/types';
 import { Navigation } from '../navigation/types';
 import { logout } from '../utils/auth';
 
 type Props = {
   navigation: Navigation;
+  route: { params: { user: User } };
 };
 
-const Profile = ({ navigation }: Props) => {
+const Profile = ({ navigation, route }: Props) => {
+  const { user } = route.params;
+  const defaultProfile = require('../assets/profile.png');
   const handleLogout = async () => {
     const res = await logout();
     Toast.show({
@@ -35,7 +39,7 @@ const Profile = ({ navigation }: Props) => {
       <ScrollView style={{ backgroundColor: 'rgba(246, 246, 246, 0.8)' }}>
         <View style={styles.profileContainer}>
           <Image
-            source={{ uri: 'https://picsum.photos/100' }}
+            source={user?.profile ? { uri: user.profile } : defaultProfile}
             style={styles.image}
           />
           <View style={styles.contentContainer}>
@@ -46,7 +50,7 @@ const Profile = ({ navigation }: Props) => {
                 color: 'white',
               }}
             >
-              John Doe
+              {user?.name}
             </Text>
             <Text
               style={{
@@ -56,14 +60,14 @@ const Profile = ({ navigation }: Props) => {
                 color: 'white',
               }}
             >
-              TP0123456
+              {user?.apkey}
             </Text>
           </View>
 
           <IconButton
             icon='mode-edit'
             iconLibrary='MaterialIcons'
-            onPress={() => console.log('edit profile')}
+            onPress={() => navigation.navigate('EditProfile')}
             style={{ color: 'white', right: 10 }}
           />
         </View>

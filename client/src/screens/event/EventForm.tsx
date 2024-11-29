@@ -163,8 +163,16 @@ const EventForm = ({ navigation }: Props) => {
             boxStyles={{ marginTop: 8, minHeight: 50 }}
             searchPlaceholder='Search categories'
             maxHeight={160}
+            inputStyles={{
+              color: 'rgba(0, 0, 0, 0.3)',
+              fontSize: 16,
+            }}
           />
-          <FilePicker file={file} setFile={setFile} />
+          <FilePicker
+            file={file}
+            setFile={setFile}
+            placeholder='Upload poster'
+          />
           <SubmitButton title='Next' />
         </CustomFormik>
       </ScrollView>

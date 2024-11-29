@@ -54,6 +54,9 @@ const InputText = ({
 
   return (
     <>
+      {error && isInputTouched ? (
+        <Text style={styles.errorMessage}>{error}</Text>
+      ) : null}
       <View style={[styles.field, props.multiline && styles.multilineField]}>
         {leftIcon && renderIcon(leftIcon, leftIconLibrary)}
         <TextInput
@@ -70,9 +73,6 @@ const InputText = ({
         />
         {rightIcon && renderIcon(rightIcon, rightIconLibrary)}
       </View>
-      {error && isInputTouched ? (
-        <Text style={styles.errorMessage}>{error}</Text>
-      ) : null}
     </>
   );
 };
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   },
   errorMessage: {
     color: 'red',
-    paddingVertical: 2,
+    paddingVertical: 3,
   },
 });
 

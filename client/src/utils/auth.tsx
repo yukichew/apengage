@@ -60,7 +60,6 @@ export const signin = async (values: SigninData): Promise<ApiResponse> => {
     const { token, user } = response.data;
     if (token) await saveToken(token);
     if (user) await AsyncStorage.setItem('currentUser', JSON.stringify(user));
-    console.log(user);
 
     return {
       success: true,
@@ -131,7 +130,10 @@ export const getToken = async (): Promise<string | null> => {
 export const getCurrentUser = async () => {
   try {
     const user = await AsyncStorage.getItem('currentUser');
-    return user ? JSON.parse(user) : null;
+    if (user) {
+      const response = await client.get(`/user/profile`);
+      return response.data.user;
+    }
   } catch (error) {
     console.error('Failed to get current user:', error);
     return null;

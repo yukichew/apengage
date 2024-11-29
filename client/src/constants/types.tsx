@@ -24,3 +24,27 @@ export type Field =
 export type Props = {
   navigation: Navigation;
 };
+
+export type EventItem = {
+  id: number;
+  name: string;
+  desc: string;
+  date: Date;
+  thumbnail: string;
+  price: number;
+  location: string;
+  organizer: string;
+  categories: string[];
+};
+
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+  apkey: string;
+  profile: string;
+  gender: string;
+  course: string;
+  intake: string;
+  nric: string;
+};

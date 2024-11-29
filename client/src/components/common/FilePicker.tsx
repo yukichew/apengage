@@ -7,20 +7,21 @@ import IconButton from './IconButton';
 type Props = {
   file: any;
   setFile: (file: any) => void;
+  placeholder: string;
 };
 
-const FilePicker = ({ file, setFile }: Props) => {
-  const pickImage = async () => {
+const FilePicker = ({ file, setFile, placeholder }: Props) => {
+  const pickFile = async () => {
     const result = await DocumentPicker.pick({
-      type: [types.images],
+      type: [types.allFiles],
     });
     setFile(result[0]);
 
     if (DocumentPicker.isCancel(result)) {
       Toast.show({
         type: 'error',
-        text1: 'Failed to pick image',
-        text2: 'Image selection canceled',
+        text1: 'Failed to pick file',
+        text2: 'File selection canceled',
         position: 'top',
         topOffset: 60,
       });
@@ -29,9 +30,9 @@ const FilePicker = ({ file, setFile }: Props) => {
 
   return (
     <>
-      <TouchableOpacity onPress={pickImage} style={styles.container}>
+      <TouchableOpacity onPress={pickFile} style={styles.container}>
         <IconButton icon='upload' iconLibrary='Octicons' style={styles.icon} />
-        <Text style={styles.input}>Upload File</Text>
+        <Text style={styles.input}>{placeholder}</Text>
       </TouchableOpacity>
 
       {file && (
@@ -64,6 +65,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#fff',
   },
   input: {
     fontSize: 16,

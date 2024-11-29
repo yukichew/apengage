@@ -22,9 +22,7 @@ const DateInput = ({ placeholder, name }: Props) => {
           style={styles.icon}
         />
         <Text style={styles.input}>
-          {field.value
-            ? new Date(field.value).toLocaleDateString()
-            : placeholder}
+          {field.value ? new Date(field.value).toLocaleString() : placeholder}
         </Text>
         <DatePicker
           modal

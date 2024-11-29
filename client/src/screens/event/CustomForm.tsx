@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
   ScrollView,
@@ -27,6 +27,7 @@ const CustomForm = ({ navigation }: Props) => {
 
   const initialValues = {};
   const validationSchema = yup.object({});
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const {
     formFields,
@@ -126,6 +127,10 @@ const CustomForm = ({ navigation }: Props) => {
     </TouchableOpacity>
   );
 
+  useEffect(() => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  }, [formFields]);
+
   return (
     <AppContainer navigation={navigation} showBackButton>
       <CustomFormik
@@ -133,7 +138,11 @@ const CustomForm = ({ navigation }: Props) => {
         validationSchema={validationSchema}
         onSubmit={(values) => console.log(values)}
       >
-        <ScrollView>
+        <ScrollView
+          ref={scrollViewRef}
+          style={{ paddingHorizontal: 20 }}
+          contentContainerStyle={{ flexGrow: 1 }}
+        >
           {formFields.map((field) => renderItem({ item: field }))}
           <FieldModal
             field={
@@ -148,6 +157,16 @@ const CustomForm = ({ navigation }: Props) => {
             visible={isModalVisible}
             onClose={closeModal}
           />
+          <Text
+            style={{
+              fontFamily: 'Poppins-Bold',
+              fontSize: 18,
+              marginTop: 6,
+              marginBottom: 4,
+            }}
+          >
+            Create Registration Form
+          </Text>
           <TouchableOpacity
             style={styles.addFieldContainer}
             onPress={() => setShowDropdown(!showDropdown)}
@@ -198,7 +217,6 @@ const styles = StyleSheet.create({
       width: 2,
       height: 3,
     },
-    width: width - 30,
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
