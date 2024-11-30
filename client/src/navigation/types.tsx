@@ -6,15 +6,16 @@ export type RootStackNavigatorParamsList = {
   SignUp: undefined;
   ForgetPassword: undefined;
   Verification: { profile: any };
-  HomeScreen: undefined;
+  Tabs: undefined;
   Home: undefined;
-  Profile: { user: User };
+  Profile: undefined;
   Event: undefined;
   History: undefined;
   AddEvent: undefined;
   EventDetails: undefined;
   CustomForm: undefined;
   EditProfile: undefined;
+  ProfileStack: { user: User };
 };
 
 export type Navigation =

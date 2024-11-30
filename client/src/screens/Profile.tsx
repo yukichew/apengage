@@ -1,5 +1,5 @@
-import { StackActions } from '@react-navigation/native';
-import React from 'react';
+import { StackActions, useFocusEffect } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -14,15 +14,23 @@ import AppContainer from '../components/containers/AppContainer';
 import ProfileItem from '../components/custom/ProfileItem';
 import { User } from '../constants/types';
 import { Navigation } from '../navigation/types';
-import { logout } from '../utils/auth';
+import { getCurrentUser, logout } from '../utils/auth';
 
 type Props = {
   navigation: Navigation;
-  route: { params: { user: User } };
 };
 
-const Profile = ({ navigation, route }: Props) => {
-  const { user } = route.params;
+const Profile = ({ navigation }: Props) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  useFocusEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+    };
+    fetchUser();
+  });
+
   const defaultProfile = require('../assets/profile.png');
   const handleLogout = async () => {
     const res = await logout();

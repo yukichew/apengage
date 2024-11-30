@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, Text } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -29,8 +30,8 @@ const EditProfile = ({ navigation }: Props) => {
     contact: '',
   });
 
-  useEffect(() => {
-    const fetchUserData = async () => {
+  useFocusEffect(() => {
+    const fetchUser = async () => {
       const user = await getCurrentUser();
       if (user) {
         setInitialValues({
@@ -42,8 +43,8 @@ const EditProfile = ({ navigation }: Props) => {
         setSelected(user.gender);
       }
     };
-    fetchUserData();
-  }, []);
+    fetchUser();
+  });
 
   const validationSchema = yup.object({
     name: yup.string().required('Name is required'),
@@ -56,10 +57,7 @@ const EditProfile = ({ navigation }: Props) => {
         'Contact must be a valid phone number with country code (e.g., +60123456789)'
       )
       .required('Contact is required'),
-    gender: yup.string().required('Gender is required'),
   });
-
-  console.log(file);
 
   const onSubmit = async (values: typeof initialValues, formikActions: any) => {
     const payload = { ...values, gender: selected || '' };
@@ -81,7 +79,6 @@ const EditProfile = ({ navigation }: Props) => {
       type: 'success',
       text1: 'Successfully edited profile',
     });
-
     navigation.goBack();
     formikActions.resetForm();
   };

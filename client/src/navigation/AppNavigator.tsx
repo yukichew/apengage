@@ -37,10 +37,10 @@ const AppNavigator: FC = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName={isAuthenticated ? 'HomeScreen' : 'Login'}
+      initialRouteName={isAuthenticated ? 'Tabs' : 'Login'}
       screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen name='HomeScreen' component={TabNavigator} />
+      <Stack.Screen name='Tabs' component={TabNavigator} />
       <Stack.Screen name='Login' component={LoginScreen} />
       <Stack.Screen name='SignUp' component={SignUpScreen} />
       <Stack.Screen name='ForgetPassword' component={ForgotPasswordScreen} />

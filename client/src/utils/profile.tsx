@@ -14,6 +14,7 @@ type ApiResponse = {
   error?: string;
   data?: any;
   events?: any;
+  user?: any;
 };
 
 const catchAxiosError = (error: any): ApiResponse => {
@@ -34,8 +35,6 @@ export const editProfile = async (
     formData.append('intake', values.intake);
     formData.append('contact', values.contact);
     formData.append('gender', values.gender);
-
-    console.log('Submitting form data:', formData);
 
     if (file) {
       formData.append('profile', {
