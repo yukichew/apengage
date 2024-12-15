@@ -6,15 +6,17 @@ type Props = {
   value?: string;
   onChangeText?: (text: string) => void;
   secureTextEntry?: boolean;
+  onSubmitEditing: () => void;
+  placeholder: string;
 };
 
-const SearchBar = ({ value, ...props }: Props) => {
+const SearchBar = ({ value, placeholder, ...props }: Props) => {
   return (
     <View style={styles.field}>
       <IconButton icon='search' iconLibrary='Feather' />
       <TextInput
         value={value}
-        placeholder='Search'
+        placeholder={placeholder}
         style={styles.input}
         {...props}
       />

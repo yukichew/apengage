@@ -171,6 +171,7 @@ const EventForm = ({ navigation }: Props) => {
           <FilePicker
             file={file}
             setFile={setFile}
+            type='images'
             placeholder='Upload poster'
           />
           <SubmitButton title='Next' />

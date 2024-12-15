@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-import DocumentPicker, { types } from 'react-native-document-picker';
+import DocumentPicker from 'react-native-document-picker';
 import Toast from 'react-native-toast-message';
 import IconButton from './IconButton';
 
@@ -8,12 +8,13 @@ type Props = {
   file: any;
   setFile: (file: any) => void;
   placeholder: string;
+  type: keyof typeof DocumentPicker.types;
 };
 
-const FilePicker = ({ file, setFile, placeholder }: Props) => {
+const FilePicker = ({ file, setFile, placeholder, type }: Props) => {
   const pickFile = async () => {
     const result = await DocumentPicker.pick({
-      type: [types.allFiles],
+      type: [DocumentPicker.types[type]],
     });
     setFile(result[0]);
 

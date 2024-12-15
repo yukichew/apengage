@@ -140,3 +140,30 @@ export const getEvents = async (): Promise<ApiResponse> => {
     return catchAxiosError(error);
   }
 };
+
+export const searchEvents = async (query: string): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<ApiResponse>(
+      '/event/search?name=' + query
+    );
+
+    const events = response.data.events.map((event: EventItem) => ({
+      id: event.id,
+      name: event.name,
+      desc: event.desc,
+      date: new Date(event.date).toLocaleDateString(),
+      location: event.location,
+      categories: event.categories,
+      price: event.price,
+      organizer: event.organizer,
+      thumbnail: event.thumbnail,
+    }));
+
+    return {
+      success: true,
+      data: events,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};

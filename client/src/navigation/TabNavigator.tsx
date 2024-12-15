@@ -10,7 +10,7 @@ import Event from '../screens/event/Event';
 import EventForm from '../screens/event/EventForm';
 import History from '../screens/History';
 import Home from '../screens/Home';
-import Profile from '../screens/Profile';
+import Profile from '../screens/profile/Profile';
 import { RootStackNavigatorParamsList } from './types';
 
 const Tab = createBottomTabNavigator<RootStackNavigatorParamsList>();

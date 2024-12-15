@@ -134,6 +134,7 @@ const EditProfile = ({ navigation }: Props) => {
           <FilePicker
             file={file}
             setFile={setFile}
+            type='images'
             placeholder='Upload profile picture'
           />
           <SubmitButton title='SAVE' />

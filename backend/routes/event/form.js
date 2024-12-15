@@ -1,7 +1,10 @@
 const {
+  getEvents,
+  searchEvents,
+} = require('../../controllers/event/eventController');
+const {
   createForm,
   addFields,
-  getEvents,
 } = require('../../controllers/event/formController');
 const { joinEvent } = require('../../controllers/event/registrationController');
 const { authenticate } = require('../../middlewares/auth');
@@ -36,5 +39,6 @@ router.put(
 router.post('/:id/join', authenticate, validate, joinEvent);
 
 router.get('/events', authenticate, getEvents);
+router.get('/search', authenticate, searchEvents);
 
 module.exports = router;
