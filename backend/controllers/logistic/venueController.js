@@ -1,6 +1,7 @@
 const { isValidObjectId } = require('mongoose');
 const { sendError } = require('../../helpers/error');
 const Venue = require('../../models/logistic/venue');
+const VenueBooking = require('../../models/logistic/venueBooking');
 
 exports.createVenue = async (req, res) => {
   const { name, type, opacity } = req.body;
@@ -121,5 +122,42 @@ exports.searchVenue = async (req, res) => {
         isActve: venue.isActive,
       };
     }),
+  });
+};
+
+exports.bookVenue = async (req, res) => {
+  const { venueId, startTime, endTime, purpose } = req.body;
+  if (!isValidObjectId(venueId)) return sendError(res, 401, 'Invalid Venue id');
+
+  const venue = await Venue.findById(venueId);
+  if (!venue) return sendError(res, 404, 'Venue not found');
+
+  const isAvailable = await Venue.isAvailable(venueId, startTime, endTime);
+  if (!isAvailable)
+    return sendError(
+      res,
+      400,
+      'Venue is not available for the selected time slot'
+    );
+
+  const newBooking = new VenueBooking({
+    venue: venueId,
+    startTime,
+    endTime,
+    purpose,
+    createdBy: req.user.id,
+  });
+
+  await newBooking.save();
+
+  res.json({
+    booking: {
+      id: newBooking._id,
+      venue: newBooking.venue,
+      startTime: newBooking.startTime,
+      endTime: newBooking.endTime,
+      purpose: newBooking.purpose,
+      createdBy: newBooking.createdBy,
+    },
   });
 };

@@ -3,20 +3,36 @@ const cloudinary = require('../../config/cloud');
 const Event = require('../../models/event/form');
 
 exports.createForm = async (req, res) => {
-  const { name, desc, date, location, categories, price, organizer, postedBy } =
-    req.body;
+  const {
+    name,
+    desc,
+    type,
+    mode,
+    startTime,
+    endTime,
+    price,
+    venue,
+    location,
+    categories,
+    organizer,
+    postedBy,
+  } = req.body;
 
   const { file } = req;
   const newEvent = new Event({
     name,
     desc,
-    date,
+    type,
+    mode,
+    venue,
+    startTime,
+    endTime,
     location,
     categories,
     price,
     postedBy,
     organizer,
-    fields: defaultFields,
+    // fields: defaultFields,
   });
 
   if (file) {

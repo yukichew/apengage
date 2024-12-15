@@ -1,14 +1,18 @@
 const Event = require('../../models/event/form');
 
 exports.getEvents = async (req, res) => {
-  const { pageNo, limit = 9 } = req.query;
+  const { pageNo = 0, limit = 9, mode, categories } = req.query;
 
-  const events = await Event.find({})
+  const query = { isActive: true };
+  if (mode) query.mode = mode;
+  if (categories) query.categories = categories;
+
+  const events = await Event.find(query)
     .sort({ createdAt: -1 })
-    .skip(parseInt(pageNo) * limit)
-    .limit(limit);
+    .skip(parseInt(pageNo) * parseInt(limit))
+    .limit(parseInt(limit));
 
-  const count = await Event.countDocuments();
+  const count = await Event.countDocuments(query);
 
   res.json({
     events: events.map((event) => {
@@ -16,7 +20,10 @@ exports.getEvents = async (req, res) => {
         id: event._id,
         name: event.name,
         desc: event.desc,
-        date: event.date,
+        mode: event.mode,
+        venue: event.venue,
+        startTime: event.startTime,
+        endTime: event.endTime,
         location: event.location,
         categories: event.categories,
         price: event.price,
@@ -42,7 +49,10 @@ exports.searchEvents = async (req, res) => {
         id: event._id,
         name: event.name,
         desc: event.desc,
-        date: event.date,
+        mode: event.mode,
+        venue: event.venue,
+        startTime: event.startTime,
+        endTime: event.endTime,
         location: event.location,
         categories: event.categories,
         price: event.price,
@@ -72,5 +82,40 @@ exports.getLatestEvents = async (req, res) => {
         thumbnail: event.thumbnail,
       };
     }),
+  });
+};
+
+// Admin only
+exports.getAllEvents = async (req, res) => {
+  const { pageNo = 0, limit = 9, ...filters } = req.query;
+
+  const query = { ...filters };
+
+  const events = await Event.find(query)
+    .sort({ createdAt: -1 })
+    .skip(parseInt(pageNo) * parseInt(limit))
+    .limit(parseInt(limit));
+
+  const count = await Event.countDocuments(query);
+
+  res.json({
+    events: events.map((event) => {
+      return {
+        id: event._id,
+        name: event.name,
+        desc: event.desc,
+        mode: event.mode,
+        venue: event.venue,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        location: event.location,
+        categories: event.categories,
+        price: event.price,
+        postedBy: event.postedBy,
+        organizer: event.organizer,
+        thumbnail: event.thumbnail,
+      };
+    }),
+    count,
   });
 };

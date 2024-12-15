@@ -33,10 +33,13 @@ const eventSchema = new mongoose.Schema(
     categories: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: 'Category',
-      required: true,
     },
     location: {
-      type: [mongoose.Schema.Types.ObjectId],
+      type: String,
+      trim: true,
+    },
+    venue: {
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'VenueBooking',
     },
     price: {

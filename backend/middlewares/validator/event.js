@@ -1,48 +1,4 @@
-const { check, validationResult, body } = require('express-validator');
-const { sendError } = require('../helpers/error');
-
-exports.userValidator = [
-  check('apkey')
-    .if(body('role').equals('student'))
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage('APKey is missing')
-    .matches(/^tp\d{6}$/i)
-    .withMessage('APKey must be in the format TPXXXXXX'),
-  check('fullname')
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage('Name is missing')
-    .isLength({ min: 3, max: 20 })
-    .withMessage('Name must be between 3 and 20 characters'),
-  check('email')
-    .normalizeEmail()
-    .isEmail()
-    .withMessage('Email is invalid')
-    .custom((value, { req }) => {
-      const emailRegex = /^([a-zA-Z0-9._%+-]+)@mail\.apu\.edu\.my$/;
-      if (!emailRegex.test(value)) {
-        throw new Error('Should only be an APU email address');
-      }
-      const apkey = req.body.apkey;
-      const apkeyInEmail = value.split('@')[0];
-      if (apkey.toLowerCase() !== apkeyInEmail.toLowerCase()) {
-        throw new Error('APKey must match the email prefix');
-      }
-      return true;
-    }),
-  check('password')
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage('Password is missing')
-    .matches(/^(?=.*[A-Z])(?=.*[\W_])(?=.*\d)[a-zA-Z\d\W_]{8,}$/)
-    .withMessage(
-      'Password must be at least 8 characters long, contain at least 1 uppercase letter, and 1 special character'
-    ),
-];
+const { check, body } = require('express-validator');
 
 exports.eventFormValidator = [
   check('name').trim().not().isEmpty().withMessage('Event name is missing'),
@@ -69,15 +25,32 @@ exports.eventFormValidator = [
     .isIn(['online', 'oncampus', 'offcampus'])
     .withMessage('Event mode must be online, oncampus, or offcampus'),
   check('location')
+    .if(
+      body('mode').custom(
+        (value) => value === 'offcampus' || value === 'online'
+      )
+    )
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage((value, { req }) => {
+      if (req.body.mode === 'online') {
+        return 'Event platform is required for online events';
+      }
+      return 'Event location is required for off-campus events';
+    }),
+  check('venue')
     .if(body('mode').equals('oncampus'))
     .if(body('type').not().equals('public'))
     .trim()
     .not()
     .isEmpty()
-    .withMessage(
-      'Venue booking is required for physical events outside campus'
-    ),
-  check('categories').not().isEmpty().withMessage('Event category is missing'),
+    .withMessage('Venue booking is required for physical on-campus events'),
+  check('categories')
+    .if(body('type').equals('public'))
+    .not()
+    .isEmpty()
+    .withMessage('Event category is missing'),
   check('price')
     .if(body('type').equals('public'))
     .trim()
@@ -147,21 +120,3 @@ exports.categoryValidator = [
     .isEmpty()
     .withMessage('Category description is missing'),
 ];
-
-exports.venueValidator = [
-  check('name').trim().not().isEmpty().withMessage('Venue name is missing'),
-  check('type').trim().not().isEmpty().withMessage('Venue type is missing'),
-  check('opacity')
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage('Venue opacity is missing'),
-];
-
-exports.validate = (req, res, next) => {
-  const error = validationResult(req).array();
-  if (error.length) {
-    return sendError(res, 400, error[0].msg);
-  }
-  next();
-};

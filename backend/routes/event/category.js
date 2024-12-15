@@ -7,7 +7,8 @@ const {
   searchCategory,
 } = require('../../controllers/event/categoryController');
 const { authenticate, isAdmin } = require('../../middlewares/auth');
-const { categoryValidator, validate } = require('../../middlewares/validator');
+const { validate } = require('../../middlewares/validator');
+const { categoryValidator } = require('../../middlewares/validator/event');
 
 const router = require('express').Router();
 
