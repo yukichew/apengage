@@ -7,28 +7,40 @@ const eventSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    type: {
+      type: String,
+      required: true,
+      enum: ['public', 'private'],
+    },
     desc: {
       type: String,
       required: true,
       trim: true,
     },
-    date: {
+    startTime: {
       type: Date,
       required: true,
     },
-    location: {
+    endTime: {
+      type: Date,
+      required: true,
+    },
+    mode: {
       type: String,
       required: true,
-      trim: true,
+      enum: ['online', 'oncampus', 'offcampus'],
     },
     categories: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: 'Category',
       required: true,
     },
+    location: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'VenueBooking',
+    },
     price: {
       type: Number,
-      required: true,
     },
     thumbnail: {
       type: Object,
@@ -49,7 +61,7 @@ const eventSchema = new mongoose.Schema(
       required: true,
     },
     organizer: {
-      type: String,
+      type: String, // e.g., 'APU E-Sports Club'
       required: true,
       trim: true,
     },
@@ -74,12 +86,6 @@ const eventSchema = new mongoose.Schema(
         order: { type: Number },
       },
     ],
-    // fields: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Field',
-    //   },
-    // ],
   },
   {
     timestamps: true,

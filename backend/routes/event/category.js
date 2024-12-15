@@ -6,7 +6,7 @@ const {
   getCategory,
   searchCategory,
 } = require('../../controllers/event/categoryController');
-const { authenticate } = require('../../middlewares/auth');
+const { authenticate, isAdmin } = require('../../middlewares/auth');
 const { categoryValidator, validate } = require('../../middlewares/validator');
 
 const router = require('express').Router();
@@ -14,12 +14,20 @@ const router = require('express').Router();
 router.post(
   '/create',
   authenticate,
+  isAdmin,
   categoryValidator,
   validate,
   createCategory
 );
-router.put('/:id', authenticate, categoryValidator, validate, updateCategory);
-router.delete('/:id', authenticate, deleteCategory);
+router.put(
+  '/:id',
+  authenticate,
+  isAdmin,
+  categoryValidator,
+  validate,
+  updateCategory
+);
+router.delete('/:id', authenticate, isAdmin, deleteCategory);
 router.get('/categories', authenticate, getCategories);
 router.get('/search', authenticate, searchCategory);
 router.get('/:id', authenticate, getCategory);

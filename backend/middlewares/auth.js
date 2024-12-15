@@ -39,3 +39,10 @@ exports.authenticate = async (req, res, next) => {
   req.user = user;
   next();
 };
+
+exports.isAdmin = async (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    return sendError(res, 403, 'Access denied. Admins only.');
+  }
+  next();
+};

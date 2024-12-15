@@ -10,6 +10,7 @@ const { sendError } = require('./helpers/error');
 const userRouter = require('./routes/user');
 const eventRouter = require('./routes/event/form');
 const categoryRouter = require('./routes/event/category');
+const venueRouter = require('./routes/logistic/venue');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(morgan('dev'));
 app.use('/api/user', userRouter);
 app.use('/api/event', eventRouter);
 app.use('/api/category', categoryRouter);
+app.use('/api/venue', venueRouter);
 
 app.use((err, req, res, next) => {
   sendError(res, 500, err.message);

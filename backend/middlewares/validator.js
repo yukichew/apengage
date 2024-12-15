@@ -3,6 +3,7 @@ const { sendError } = require('../helpers/error');
 
 exports.userValidator = [
   check('apkey')
+    .if(body('role').equals('student'))
     .trim()
     .not()
     .isEmpty()
@@ -50,20 +51,55 @@ exports.eventFormValidator = [
     .not()
     .isEmpty()
     .withMessage('Event description is missing'),
-  check('date').trim().not().isEmpty().withMessage('Event date is missing'),
-  check('location')
+  check('startTime')
     .trim()
     .not()
     .isEmpty()
-    .withMessage('Event location is missing'),
+    .withMessage('Event start time is missing'),
+  check('endTime')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Event end time is missing'),
+  check('mode')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Event mode is missing')
+    .isIn(['online', 'oncampus', 'offcampus'])
+    .withMessage('Event mode must be online, oncampus, or offcampus'),
+  check('location')
+    .if(body('mode').equals('oncampus'))
+    .if(body('type').not().equals('public'))
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage(
+      'Venue booking is required for physical events outside campus'
+    ),
+  check('categories').not().isEmpty().withMessage('Event category is missing'),
+  check('price')
+    .if(body('type').equals('public'))
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Event price is required for public events'),
+  check('thumbnail')
+    .if(body('type').equals('public'))
+    .not()
+    .isEmpty()
+    .withMessage('Event thumbnail is required for public events'),
+  check('fields')
+    .if(body('type').equals('public'))
+    .not()
+    .isEmpty()
+    .withMessage('Custom fields are required for public events'),
+  check('postedBy').trim().not().isEmpty().withMessage('Posted by is missing'),
   check('organizer')
     .trim()
     .not()
     .isEmpty()
     .withMessage('Event organizer is missing'),
-  check('categories').not().isEmpty().withMessage('Event category is missing'),
-  check('price').trim().not().isEmpty().withMessage('Event price is missing'),
-  check('postedBy').trim().not().isEmpty().withMessage('Posted by is missing'),
 ];
 
 exports.fieldValidator = [
@@ -110,6 +146,16 @@ exports.categoryValidator = [
     .not()
     .isEmpty()
     .withMessage('Category description is missing'),
+];
+
+exports.venueValidator = [
+  check('name').trim().not().isEmpty().withMessage('Venue name is missing'),
+  check('type').trim().not().isEmpty().withMessage('Venue type is missing'),
+  check('opacity')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Venue opacity is missing'),
 ];
 
 exports.validate = (req, res, next) => {
