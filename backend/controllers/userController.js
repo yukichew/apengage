@@ -15,19 +15,7 @@ const cloudinary = require('../config/cloud');
 const jwt = require('jsonwebtoken');
 
 exports.createUser = async (req, res) => {
-  const {
-    apkey,
-    fullname,
-    email,
-    password,
-    gender,
-    contact,
-    course,
-    intake,
-    nric,
-  } = req.body;
-  const { file } = req;
-
+  const { apkey, fullname, email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) sendError(res, 400, 'User already exists');
 
@@ -36,19 +24,7 @@ exports.createUser = async (req, res) => {
     fullname,
     email,
     password,
-    gender,
-    contact,
-    course,
-    intake,
-    nric,
   });
-
-  if (file) {
-    const { secure_url: url, public_id } = await cloudinary.uploader.upload(
-      file.path
-    );
-    newUser.profile = { url, public_id };
-  }
 
   const OTP = generateTOTP();
   const verificationToken = new VerificationToken({
@@ -76,38 +52,43 @@ exports.createUser = async (req, res) => {
       apkey: newUser.apkey,
       name: newUser.fullname,
       email: newUser.email,
-      profile: newUser.profile?.url,
-      gender: newUser.gender,
-      course: newUser.course,
-      intake: newUser.intake,
-      nric: newUser.nric,
     },
   });
 };
 
 exports.signin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email.trim() || !password.trim())
-      return sendError(res, 401, 'Email and password are required');
+  const { email, password } = req.body;
+  if (!email.trim() || !password.trim())
+    return sendError(res, 401, 'Email and password are required');
 
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) return sendError(res, 401, 'User not found!');
+  const user = await User.findOne({ email }).select('+password');
+  if (!user) return sendError(res, 401, 'User not found!');
 
-    const isPasswordMatched = await user.comparePassword(password);
-    if (!isPasswordMatched) return sendError(res, 401, 'Invalid credentials!');
+  const isPasswordMatched = await user.comparePassword(password);
+  if (!isPasswordMatched) return sendError(res, 401, 'Invalid credentials!');
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+  const token = jwt.sign(
+    { userId: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    {
       expiresIn: '1d',
-    });
+    }
+  );
 
-    res.json({
-      user: { id: user._id, name: user.fullname, email: user.email },
-      token,
-    });
-  } catch (error) {
-    console.log(error);
-  }
+  res.json({
+    user: {
+      id: user._id,
+      name: user.fullname,
+      email: user.email,
+      profile: user.profile?.url,
+      gender: user.gender,
+      course: user.course,
+      intake: user.intake,
+      apkey: user.apkey,
+      role: user.role,
+    },
+    token,
+  });
 };
 
 exports.verifyEmail = async (req, res) => {
@@ -225,11 +206,9 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.editProfile = async (req, res) => {
-  const { fullname, gender, contact, course, intake, nric } = req.body;
+  const { fullname, gender, contact, course, intake } = req.body;
   const { file } = req;
-  const { id } = req.params;
-
-  if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid category id');
+  const { id } = req.user;
 
   const user = await User.findById(id);
   if (!user) sendError(res, 400, 'User not found!');
@@ -239,7 +218,6 @@ exports.editProfile = async (req, res) => {
   user.contact = contact;
   user.course = course;
   user.intake = intake;
-  user.nric = nric;
 
   const public_id = user.profile?.public_id;
 
@@ -247,13 +225,13 @@ exports.editProfile = async (req, res) => {
     const { result } = await cloudinary.uploader.destroy(public_id);
     if (result !== 'ok')
       return sendError(res, 500, 'Failed to update profile picture');
+  }
 
-    if (file) {
-      const { secure_url: url, public_id } = await cloudinary.uploader.upload(
-        file.path
-      );
-      user.profile = { url, public_id };
-    }
+  if (file) {
+    const { secure_url: url, public_id } = await cloudinary.uploader.upload(
+      file.path
+    );
+    user.profile = { url, public_id };
   }
 
   await user.save();
@@ -266,7 +244,27 @@ exports.editProfile = async (req, res) => {
       gender: user.gender,
       course: user.course,
       intake: user.intake,
-      nric: user.nric,
+      contact: user.contact,
+    },
+  });
+};
+
+exports.getProfile = async (req, res) => {
+  const { id } = req.user;
+  const user = await User.findById(id);
+  if (!user) sendError(res, 400, 'User not found!');
+
+  res.json({
+    user: {
+      id: user._id,
+      name: user.fullname,
+      email: user.email,
+      contact: user.contact,
+      profile: user.profile?.url,
+      gender: user.gender,
+      course: user.course,
+      intake: user.intake,
+      apkey: user.apkey,
     },
   });
 };

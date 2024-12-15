@@ -2,18 +2,14 @@ import { StackActions } from '@react-navigation/native';
 import { StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
-import Button from '../../components/common/Button';
 import CustomFormik from '../../components/common/CustomFormik';
 import TextInput from '../../components/common/InputText';
+import SubmitButton from '../../components/common/SubmitButton';
 import TextLink from '../../components/common/TextLink';
 import Title from '../../components/common/Title';
 import AuthContainer from '../../components/containers/AuthContainer';
-import { Navigation } from '../../navigation/types';
+import { Props } from '../../constants/types';
 import { signin } from '../../utils/auth';
-
-type Props = {
-  navigation: Navigation;
-};
 
 const LoginScreen = ({ navigation }: Props) => {
   const initialValues = {
@@ -41,8 +37,6 @@ const LoginScreen = ({ navigation }: Props) => {
     formikActions: any
   ) => {
     const res = await signin(values);
-    console.log(values);
-    console.log(res);
     formikActions.setSubmitting(false);
 
     if (!res.success) {
@@ -61,9 +55,7 @@ const LoginScreen = ({ navigation }: Props) => {
       text1: 'Login Successful',
       text2: 'Welcome to the app!',
     });
-    navigation.dispatch(
-      StackActions.replace('HomeScreen', { profile: res.user })
-    );
+    navigation.dispatch(StackActions.replace('HomeScreen', { user: res.user }));
     formikActions.resetForm();
   };
 
@@ -109,7 +101,7 @@ const LoginScreen = ({ navigation }: Props) => {
             onPress={() => navigation.navigate('ForgetPassword')}
           />
         </View>
-        <Button title='LOGIN' />
+        <SubmitButton title='LOGIN' />
       </CustomFormik>
     </AuthContainer>
   );

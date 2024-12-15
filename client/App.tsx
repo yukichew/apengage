@@ -1,8 +1,8 @@
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import EventDetails from './src/screens/event/EventDetails';
-// import Toast from 'react-native-toast-message';
-// import TabNavigator from './src/navigation/TabNavigator';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
+import AppNavigator from './src/navigation/AppNavigator';
 
 const theme = {
   ...DefaultTheme,
@@ -12,9 +12,10 @@ const theme = {
 const App = () => {
   return (
     <NavigationContainer theme={theme}>
-      <EventDetails />
-      {/* <TabNavigator />
-      <Toast /> */}
+      <GestureHandlerRootView>
+        <AppNavigator />
+        <Toast />
+      </GestureHandlerRootView>
     </NavigationContainer>
   );
 };

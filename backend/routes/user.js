@@ -6,10 +6,12 @@ const {
   forgetPassword,
   resetPassword,
   editProfile,
+  getProfile,
 } = require('../controllers/userController');
 const multer = require('../middlewares/multer');
 const { isResetTokenValid, authenticate } = require('../middlewares/auth');
-const { userValidator, validate } = require('../middlewares/validator');
+const { validate } = require('../middlewares/validator');
+const { userValidator } = require('../middlewares/validator/user');
 
 // Auth Routes
 router.post(
@@ -26,7 +28,6 @@ router.post('/reset-password', isResetTokenValid, resetPassword);
 
 // Profile Routes
 router.patch('/change-password', authenticate);
-router.get('/profile', authenticate);
 router.put(
   '/edit-profile',
   authenticate,
@@ -34,5 +35,6 @@ router.put(
   editProfile
 );
 router.delete('/delete-account');
+router.get('/profile', authenticate, getProfile);
 
 module.exports = router;

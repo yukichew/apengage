@@ -1,8 +1,8 @@
-const { check, validationResult } = require('express-validator');
-const { sendError } = require('../helpers/error');
+const { check, body } = require('express-validator');
 
 exports.userValidator = [
   check('apkey')
+    .if(body('role').equals('student'))
     .trim()
     .not()
     .isEmpty()
@@ -42,42 +42,3 @@ exports.userValidator = [
       'Password must be at least 8 characters long, contain at least 1 uppercase letter, and 1 special character'
     ),
 ];
-
-exports.eventFormValidator = [
-  check('name').trim().not().isEmpty().withMessage('Event name is missing'),
-  check('desc')
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage('Event description is missing'),
-  check('date').trim().not().isEmpty().withMessage('Event date is missing'),
-  check('location')
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage('Event location is missing'),
-  check('categories').not().isEmpty().withMessage('Event category is missing'),
-  check('price').trim().not().isEmpty().withMessage('Event price is missing'),
-  check('organizer')
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage('Event organizer is missing'),
-];
-
-exports.categoryValidator = [
-  check('name').trim().not().isEmpty().withMessage('Category name is missing'),
-  check('desc')
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage('Category description is missing'),
-];
-
-exports.validate = (req, res, next) => {
-  const error = validationResult(req).array();
-  if (error.length) {
-    return sendError(res, 401, error[0].msg);
-  }
-  next();
-};

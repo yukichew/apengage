@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { fieldSchema } = require('./field');
 
 const eventSchema = new mongoose.Schema(
   {
@@ -8,28 +7,43 @@ const eventSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    type: {
+      type: String,
+      required: true,
+      enum: ['public', 'private'],
+    },
     desc: {
       type: String,
       required: true,
       trim: true,
     },
-    date: {
+    startTime: {
       type: Date,
       required: true,
     },
-    location: {
+    endTime: {
+      type: Date,
+      required: true,
+    },
+    mode: {
       type: String,
       required: true,
-      trim: true,
+      enum: ['online', 'oncampus', 'offcampus'],
     },
     categories: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: 'Category',
-      required: true,
+    },
+    location: {
+      type: String,
+      trim: true,
+    },
+    venue: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'VenueBooking',
     },
     price: {
       type: Number,
-      required: true,
     },
     thumbnail: {
       type: Object,
@@ -44,14 +58,37 @@ const eventSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    organizer: {
+    postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    fields: {
-      type: [fieldSchema],
+    organizer: {
+      type: String, // e.g., 'APU E-Sports Club'
+      required: true,
+      trim: true,
     },
+    fields: [
+      {
+        label: { type: String, required: true, trim: true },
+        required: { type: Boolean, default: false },
+        desc: { type: String, trim: true },
+        type: {
+          type: String,
+          required: true,
+          enum: [
+            'short_ans',
+            'long_ans',
+            'mcq',
+            'checkbox',
+            'dropdown',
+            'file',
+          ],
+        },
+        options: { type: [String] },
+        order: { type: Number },
+      },
+    ],
   },
   {
     timestamps: true,

@@ -21,6 +21,9 @@ type Props = {
   rightIconLibrary?: keyof typeof Icons;
   name: string;
   secureTextEntry?: boolean;
+  multiline?: boolean;
+  numberOfLines?: number;
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
 };
 
 const renderIcon = (iconName: string, iconLibrary?: keyof typeof Icons) => {
@@ -54,14 +57,18 @@ const InputText = ({
       {error && isInputTouched ? (
         <Text style={styles.errorMessage}>{error}</Text>
       ) : null}
-      <View style={styles.field}>
+      <View style={[styles.field, props.multiline && styles.multilineField]}>
         {leftIcon && renderIcon(leftIcon, leftIconLibrary)}
         <TextInput
           value={value}
           placeholder={placeholder}
           onChangeText={handleChange(name)}
           onBlur={handleBlurWrapper}
-          style={styles.input}
+          style={[styles.input, leftIcon ? { marginLeft: 10 } : null]}
+          multiline={props.multiline}
+          numberOfLines={props.multiline ? props.numberOfLines : 1}
+          autoCapitalize='none'
+          keyboardType={props.keyboardType || 'default'}
           {...props}
         />
         {rightIcon && renderIcon(rightIcon, rightIconLibrary)}
@@ -73,7 +80,7 @@ const InputText = ({
 const styles = StyleSheet.create({
   field: {
     width: '100%',
-    marginVertical: 12,
+    marginVertical: 7,
     height: 50,
     borderRadius: 10,
     borderColor: 'rgba(0, 0, 0, 0.5)',
@@ -86,7 +93,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     fontFamily: 'Poppins-Regular',
-    marginLeft: 10,
+  },
+  multilineField: {
+    minHeight: 70,
+    height: 'auto',
+    paddingVertical: 5,
   },
   icon: {
     fontSize: 22,

@@ -29,6 +29,11 @@ const checkForLogo = async (imagePath) => {
 };
 
 exports.isLogoExist = async (req, res, next) => {
+  const { type } = req.body;
+  if (type === 'private') {
+    return next();
+  }
+
   const hasLogo = await checkForLogo(req.file.path);
   if (!hasLogo) return sendError(res, 401, 'Poster must include the APU logo!');
   next();

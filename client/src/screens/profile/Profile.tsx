@@ -1,4 +1,5 @@
-import React from 'react';
+import { StackActions, useFocusEffect } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -7,22 +8,46 @@ import {
   Text,
   View,
 } from 'react-native';
-import IconButton from '../components/common/IconButton';
-import AppContainer from '../components/containers/AppContainer';
-import ProfileItem from '../components/items/ProfileItem';
-import { Navigation } from '../navigation/types';
+import Toast from 'react-native-toast-message';
+import IconButton from '../../components/common/IconButton';
+import AppContainer from '../../components/containers/AppContainer';
+import ProfileItem from '../../components/custom/ProfileItem';
+import { User } from '../../constants/types';
+import { Navigation } from '../../navigation/types';
+import { getCurrentUser, logout } from '../../utils/auth';
 
 type Props = {
   navigation: Navigation;
 };
 
 const Profile = ({ navigation }: Props) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  useFocusEffect(() => {
+    const fetchUser = async () => {
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+    };
+    fetchUser();
+  });
+
+  const defaultProfile = require('../../assets/profile.png');
+  const handleLogout = async () => {
+    const res = await logout();
+    Toast.show({
+      type: 'success',
+      text1: 'Logout Successful',
+      text2: 'You have been logged out',
+    });
+    navigation.dispatch(StackActions.replace('Login'));
+  };
+
   return (
     <AppContainer navigation={navigation}>
       <ScrollView style={{ backgroundColor: 'rgba(246, 246, 246, 0.8)' }}>
         <View style={styles.profileContainer}>
           <Image
-            source={{ uri: 'https://picsum.photos/100' }}
+            source={user?.profile ? { uri: user.profile } : defaultProfile}
             style={styles.image}
           />
           <View style={styles.contentContainer}>
@@ -33,7 +58,7 @@ const Profile = ({ navigation }: Props) => {
                 color: 'white',
               }}
             >
-              John Doe
+              {user?.name}
             </Text>
             <Text
               style={{
@@ -43,14 +68,14 @@ const Profile = ({ navigation }: Props) => {
                 color: 'white',
               }}
             >
-              TP0123456
+              {user?.apkey}
             </Text>
           </View>
 
           <IconButton
             icon='mode-edit'
             iconLibrary='MaterialIcons'
-            onPress={() => console.log('edit profile')}
+            onPress={() => navigation.navigate('EditProfile')}
             style={{ color: 'white', right: 10 }}
           />
         </View>
@@ -86,7 +111,7 @@ const Profile = ({ navigation }: Props) => {
             <ProfileItem
               title='Logout'
               desc='Desc'
-              onPress={() => console.log('Item pressed')}
+              onPress={handleLogout}
               leftIcon={
                 <IconButton
                   icon='logout'

@@ -2,18 +2,14 @@ import { StackActions } from '@react-navigation/native';
 import { StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
-import Button from '../../components/common/Button';
 import CustomFormik from '../../components/common/CustomFormik';
 import TextInput from '../../components/common/InputText';
+import SubmitButton from '../../components/common/SubmitButton';
 import TextLink from '../../components/common/TextLink';
 import Title from '../../components/common/Title';
 import AuthContainer from '../../components/containers/AuthContainer';
-import { Navigation } from '../../navigation/types';
+import { Props } from '../../constants/types';
 import { signup } from '../../utils/auth';
-
-type Props = {
-  navigation: Navigation;
-};
 
 const SignUpScreen = ({ navigation }: Props) => {
   const initialValues = {
@@ -123,7 +119,7 @@ const SignUpScreen = ({ navigation }: Props) => {
           rightIconLibrary='Entypo'
           secureTextEntry
         /> */}
-        <Button title='SIGN UP' />
+        <SubmitButton title='SIGN UP' />
       </CustomFormik>
     </AuthContainer>
   );

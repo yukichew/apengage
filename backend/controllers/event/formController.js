@@ -3,22 +3,36 @@ const cloudinary = require('../../config/cloud');
 const Event = require('../../models/event/form');
 
 exports.createForm = async (req, res) => {
-  const { name, desc, date, location, categories, price, organizer, fields } =
-    req.body;
+  const {
+    name,
+    desc,
+    type,
+    mode,
+    startTime,
+    endTime,
+    price,
+    venue,
+    location,
+    categories,
+    organizer,
+    postedBy,
+  } = req.body;
 
   const { file } = req;
-
-  const allFields = [...defaultFields, ...fields];
-
   const newEvent = new Event({
     name,
     desc,
-    date,
+    type,
+    mode,
+    venue,
+    startTime,
+    endTime,
     location,
     categories,
     price,
+    postedBy,
     organizer,
-    fields: allFields,
+    // fields: defaultFields,
   });
 
   if (file) {
@@ -31,4 +45,26 @@ exports.createForm = async (req, res) => {
   await newEvent.save();
 
   res.json({ event: newEvent });
+};
+
+exports.addFields = async (req, res) => {
+  const { id } = req.params;
+  const { fields } = req.body;
+
+  const event = await Event.findById(id);
+  if (!event) sendError(res, 400, 'Event not found!');
+
+  const fieldIds = await Promise.all(
+    fields.map(async (field) => {
+      const newField = new Field(field);
+      await newField.save();
+      return newField._id;
+    })
+  );
+
+  event.fields.push(...fieldIds);
+
+  await event.save();
+
+  res.json({ fields });
 };

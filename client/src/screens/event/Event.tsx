@@ -1,73 +1,51 @@
-import React from 'react';
-import { FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { FlatList, RefreshControl } from 'react-native';
 import SearchBar from '../../components/common/SearchBar';
 import AppContainer from '../../components/containers/AppContainer';
-import FlatListItem from '../../components/items/EventItem';
+import FlatListItem from '../../components/custom/EventItem';
+import { EventItem } from '../../constants/types';
+import { useEvents } from '../../helpers/EventHelper';
 import { Navigation } from '../../navigation/types';
+import { searchEvents } from '../../utils/eventManagement';
 
 type Props = {
   navigation: Navigation;
 };
 
-type EventItem = {
-  id: number;
-  title: string;
-  date: Date;
-  poster: string;
-  description: string;
-  price: number;
-  location: string;
-};
-
-const data: EventItem[] = [
-  {
-    id: 1,
-    title: 'Dolores nonumy',
-    date: new Date(),
-    poster: 'https://picsum.photos/270/250',
-    description: 'Description 1',
-    price: 10,
-    location: 'Location 1',
-  },
-  {
-    id: 2,
-    title: 'Dolores nonumy amet duo',
-    date: new Date(),
-    poster: 'https://picsum.photos/270/250',
-    description: 'Description 2',
-    price: 20,
-    location: 'Location 2',
-  },
-  {
-    id: 3,
-    title: 'Dolores nonumy amet',
-    date: new Date(),
-    poster: 'https://picsum.photos/270/250',
-    description: 'Description 3',
-    price: 0,
-    location: 'Location 3',
-  },
-];
-
 const renderItem = ({ item }: { item: EventItem }) => (
-  <FlatListItem
-    item={{
-      ...item,
-      date: item.date.toLocaleDateString(),
-    }}
-    onPress={() => console.log('Item pressed')}
-  />
+  <FlatListItem item={item} onPress={() => console.log('Item pressed')} />
 );
 
 const Event = ({ navigation }: Props) => {
+  const { events, loading, refreshEvents } = useEvents();
+  const [query, setQuery] = useState<string>('');
+  const [results, setResults] = useState<EventItem[]>([]);
+
+  const handleOnChange = (text: string) => {
+    setQuery(text);
+  };
+  const handleOnSubmit = async () => {
+    const { events, error } = await searchEvents(query);
+    if (error) return console.log(error);
+
+    setResults(events);
+  };
+
   return (
     <AppContainer navigation={navigation}>
-      <SearchBar />
+      <SearchBar
+        placeholder='Search Events'
+        onChangeText={handleOnChange}
+        onSubmitEditing={handleOnSubmit}
+      />
       <FlatList
-        data={data}
+        data={events}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         style={{ flex: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={refreshEvents} />
+        }
       />
     </AppContainer>
   );

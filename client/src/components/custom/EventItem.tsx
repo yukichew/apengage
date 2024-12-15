@@ -17,10 +17,10 @@ type Props = {
 const FlatListItem = ({ item, onPress }: Props) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Image source={{ uri: item.poster }} style={styles.image} />
+      <Image source={{ uri: item.thumbnail.url }} style={styles.image} />
       <View style={styles.contentContainer}>
         <Text style={styles.date}>{item.date}</Text>
-        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.title}>{item.name}</Text>
 
         <View style={styles.row}>
           <View style={styles.locationContainer}>

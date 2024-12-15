@@ -5,7 +5,6 @@ const userSchema = new mongoose.Schema(
   {
     apkey: {
       type: String,
-      required: true,
       trim: true,
     },
     fullname: {
@@ -49,14 +48,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    nric: {
-      type: String,
-      trim: true,
-    },
     verified: {
       type: Boolean,
       default: false,
       required: true,
+    },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
     },
   },
   {
@@ -64,6 +64,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+// hash password before saving
 userSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
     const hash = await bcrypt.hash(this.password, 8);
@@ -72,6 +73,7 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// compare hashed password
 userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
