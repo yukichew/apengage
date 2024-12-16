@@ -6,9 +6,9 @@ import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { login } from '../api/auth';
 import logo from '../assets/logo.svg';
-import CustomButton from '../components/CustomButton';
-import CustomFormik from '../components/CustomFormik';
-import CustomInput from '../components/CustomInput';
+import CustomButton from '../components/common/CustomButton';
+import CustomFormik from '../components/common/CustomFormik';
+import TextInput from '../components/common/TextInput';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -65,7 +65,7 @@ const Login = () => {
               validationSchema={schema}
               onSubmit={handleSubmit}
             >
-              <CustomInput
+              <TextInput
                 id={'email'}
                 name={'email'}
                 placeholder={'Email'}
@@ -73,7 +73,7 @@ const Login = () => {
                 required
                 icon={TfiEmail}
               />
-              <CustomInput
+              <TextInput
                 id={'password'}
                 name={'password'}
                 placeholder={'********'}

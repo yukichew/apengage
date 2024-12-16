@@ -3,11 +3,11 @@ const { check } = require('express-validator');
 exports.venueValidator = [
   check('name').trim().not().isEmpty().withMessage('Venue name is missing'),
   check('type').trim().not().isEmpty().withMessage('Venue type is missing'),
-  check('opacity')
+  check('capacity')
     .trim()
     .not()
     .isEmpty()
-    .withMessage('Venue opacity is missing'),
+    .withMessage('Venue capacity is missing'),
 ];
 
 exports.venueBookingValidator = [

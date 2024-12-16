@@ -1,7 +1,8 @@
 import { useFormikContext } from 'formik';
-import React from 'react';
+import React, { useState } from 'react';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
-const CustomInput = ({
+const TextInput = ({
   placeholder,
   required,
   id,
@@ -14,14 +15,22 @@ const CustomInput = ({
 }) => {
   const { handleChange, values, errors, touched, handleBlur } =
     useFormikContext();
+  const [showPassword, setShowPassword] = useState(false);
   const handleBlurWrapper = handleBlur(name);
   const value = values[name];
   const error = errors[name];
   const isInputTouched = touched[name];
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className='w-full'>
-      <label for={id} className='block mb-2 text-sm font-medium text-gray-900'>
+      <label
+        htmlFor={id}
+        className='block mb-2 text-sm font-medium text-gray-900'
+      >
         {label}
       </label>
       <div className='relative flex items-center'>
@@ -51,7 +60,7 @@ const CustomInput = ({
           <input
             placeholder={placeholder}
             required={required}
-            type={type}
+            type={showPassword && type === 'password' ? 'text' : type}
             className={`w-full h-12 px-4 ${
               Icon ? 'pl-12' : ''
             } rounded-lg ring-1 ring-gray-300 focus:ring-primary-800 focus:border-primary-800 font-poppins text-sm ${
@@ -65,6 +74,15 @@ const CustomInput = ({
             onChange={handleChange(name)}
           />
         )}
+        {type === 'password' && (
+          <button
+            type='button'
+            onClick={togglePasswordVisibility}
+            className='absolute right-3 text-gray-400'
+          >
+            {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+          </button>
+        )}
       </div>
       {error && isInputTouched && (
         <span className='block mt-1 text-sm text-red-600 pl-1'>{error}</span>
@@ -73,4 +91,4 @@ const CustomInput = ({
   );
 };
 
-export default CustomInput;
+export default TextInput;

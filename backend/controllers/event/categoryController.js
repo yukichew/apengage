@@ -73,6 +73,7 @@ exports.getCategories = async (req, res) => {
         id: category._id,
         name: category.name,
         desc: category.desc,
+        status: category.isActive ? 'Active' : 'Inactive',
       };
     }),
     count,

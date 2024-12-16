@@ -8,11 +8,11 @@ const venueSchema = new mongoose.Schema(
       trim: true,
     },
     type: {
-      type: String, // 'Auditorium', 'Classroom'
+      type: String,
       required: true,
-      trim: true,
+      enum: ['Auditorium', 'Room', 'Other'],
     },
-    opacity: {
+    capacity: {
       type: Number,
       required: true,
     },
