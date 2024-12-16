@@ -49,3 +49,27 @@ export const getVenue = async (id) => {
     return catchError(error);
   }
 };
+
+export const deleteVenue = async (id) => {
+  try {
+    const { data } = await client.delete('/venue/' + id);
+    return {
+      success: true,
+      message: data.message,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};
+
+export const searchVenue = async (query) => {
+  try {
+    const { data } = await client('/venue/search?name=' + query);
+    return {
+      success: true,
+      venues: data.venues,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};

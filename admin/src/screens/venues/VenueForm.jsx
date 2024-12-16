@@ -63,7 +63,10 @@ const VenueForm = () => {
 
   return (
     <Container>
-      <Breadcrumb pageName='Add Venue' backButton />
+      <Breadcrumb
+        pageName={isEditMode ? 'Edit Venue' : 'Add Venue'}
+        backButton
+      />
 
       <div className='bg-white rounded-lg shadow-lg'>
         <div className='p-10 space-y-4 md:space-y-5 sm:p-8'>

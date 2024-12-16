@@ -106,11 +106,17 @@ exports.getVenue = async (req, res) => {
 };
 
 exports.searchVenue = async (req, res) => {
-  const { query } = req.query;
+  const { name, type } = req.query;
 
-  const result = await Venue.find({
-    name: { $regex: query.name, $options: 'i' },
-  });
+  const query = {
+    name: { $regex: name, $options: 'i' },
+  };
+
+  if (type) {
+    query.type = type;
+  }
+
+  const result = await Venue.find(query);
 
   res.json({
     venues: result.map((venue) => {
@@ -119,7 +125,9 @@ exports.searchVenue = async (req, res) => {
         name: venue.name,
         type: venue.type,
         capacity: venue.capacity,
-        isActve: venue.isActive,
+        status: venue.isActive ? 'Active' : 'Inactive',
+        createdAt: venue.createdAt,
+        updatedAt: venue.updatedAt,
       };
     }),
   });

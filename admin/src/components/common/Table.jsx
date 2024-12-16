@@ -11,33 +11,11 @@ const Table = ({
   totalRows,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectAll, setSelectAll] = useState(false);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const rowsPerPage = 10;
+  const rowsPerPage = 8;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-  };
-
-  const handleSelectAll = () => {
-    setSelectAll(!selectAll);
-    if (!selectAll) {
-      setSelectedRows(
-        currentRows.map((_, index) => (currentPage - 1) * rowsPerPage + index)
-      );
-    } else {
-      setSelectedRows([]);
-    }
-  };
-
-  const handleRowSelect = (index) => {
-    const absoluteIndex = (currentPage - 1) * rowsPerPage + index;
-    if (selectedRows.includes(absoluteIndex)) {
-      setSelectedRows(selectedRows.filter((i) => i !== absoluteIndex));
-    } else {
-      setSelectedRows([...selectedRows, absoluteIndex]);
-    }
   };
 
   const renderPagination = () => {
@@ -134,16 +112,6 @@ const Table = ({
       <table className='min-w-full table-auto rounded-lg border-y border-gray-200'>
         <thead className=''>
           <tr>
-            {/* checkbox column */}
-            <th className='px-4 py-2 border-y text-center w-16'>
-              <input
-                type='checkbox'
-                checked={selectAll}
-                onChange={handleSelectAll}
-                className='mx-auto'
-              />
-            </th>
-
             {/* index column */}
             <th className='px-4 py-2 text-center text-base border-y font-semibold w-16'>
               No.
@@ -174,43 +142,31 @@ const Table = ({
         <tbody>
           {currentRows.map((row, index) => (
             <tr key={index} className='hover:bg-gray-50'>
-              {/* checkbox column */}
-              <td className='px-4 py-2 border-y text-center'>
-                <input
-                  type='checkbox'
-                  checked={selectedRows.includes(
-                    (currentPage - 1) * rowsPerPage + index
-                  )}
-                  onChange={() => handleRowSelect(index)}
-                  className='mx-auto'
-                />
-              </td>
-
               {/* index column */}
-              <td className='px-4 py-2 text-md text-center text-gray-600 border-y'>
+              <td className='px-4 py-2 text-sm text-center text-gray-600 border-y'>
                 {(currentPage - 1) * rowsPerPage + index + 1}
               </td>
               {columnKeys.map((key, colIndex) => (
                 <td
                   key={colIndex}
-                  className='px-4 py-2 text-md text-left text-gray-600 border-y'
+                  className='px-4 py-2 text-sm text-left text-gray-600 border-y'
                 >
                   {row[key]}
                 </td>
               ))}
 
               {/* createdAt column */}
-              <td className='px-4 py-2 text-md text-center border-y'>
+              <td className='px-4 py-2 text-sm text-center border-y'>
                 {formatDateTime(row.createdAt)}
               </td>
 
               {/* updatedAt column */}
-              <td className='px-4 py-2 text-md text-center border-y'>
+              <td className='px-4 py-2 text-sm text-center border-y'>
                 {formatDateTime(row.updatedAt)}
               </td>
 
               {/* status column */}
-              <td className='px-4 py-2 text-md text-center border-y'>
+              <td className='px-4 py-2 text-sm text-center border-y'>
                 <span
                   className={`${getStatusClass(
                     row.status
@@ -221,7 +177,7 @@ const Table = ({
               </td>
 
               {/* action column */}
-              <td className='px-4 py-2 text-center text-md text-gray-400 border-y font-poppins'>
+              <td className='px-4 py-2 text-center text-sm text-gray-400 border-y font-poppins'>
                 <div className='flex items-center justify-center space-x-3'>
                   {actions.includes('view') && (
                     <FiEye

@@ -35,7 +35,7 @@ const CustomButton = ({
       <button
         type={type}
         onClick={handleClick}
-        className={`w-full h-12 transition duration-200 rounded-lg shadow-md font-semibold ${
+        className={`w-full h-12 transition duration-200 rounded-lg shadow-md ${
           disabled
             ? 'bg-gray-300 cursor-not-allowed'
             : 'bg-primary-800 hover:bg-primary-950'
