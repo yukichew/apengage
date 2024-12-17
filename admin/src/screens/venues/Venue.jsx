@@ -86,18 +86,20 @@ const Venue = () => {
           value={searchQuery}
           onChange={handleSearchChange}
           placeholder='Search venue'
-          className='w-2/6'
+          className='w-1/3'
         />
 
         <CustomButton
           title='Add Venue'
           onClick={() => navigate('/logistics/venue/add')}
-          className='w-32'
+          className='w-1/6'
         />
       </div>
 
       {loading ? (
         <Loader />
+      ) : count === 0 ? (
+        <div className='text-center'>No venue found</div>
       ) : (
         <Table
           data={venues}

@@ -74,6 +74,8 @@ exports.getCategories = async (req, res) => {
         name: category.name,
         desc: category.desc,
         status: category.isActive ? 'Active' : 'Inactive',
+        createdAt: category.createdAt,
+        updatedAt: category.updatedAt,
       };
     }),
     count,
@@ -93,6 +95,7 @@ exports.getCategory = async (req, res) => {
       id: category._id,
       name: category.name,
       desc: category.desc,
+      status: category.isActive ? 'Active' : 'Inactive',
     },
   });
 };
@@ -110,6 +113,9 @@ exports.searchCategory = async (req, res) => {
         id: category._id,
         name: category.name,
         desc: category.desc,
+        status: category.isActive ? 'Active' : 'Inactive',
+        createdAt: category.createdAt,
+        updatedAt: category.updatedAt,
       };
     }),
   });

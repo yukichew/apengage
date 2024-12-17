@@ -6,6 +6,7 @@ import { addVenue, getVenue, updateVenue } from '../../api/venue';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import CustomButton from '../../components/common/CustomButton';
 import CustomFormik from '../../components/common/CustomFormik';
+import Loader from '../../components/common/Loader';
 import SelectList from '../../components/common/SelectList';
 import TextInput from '../../components/common/TextInput';
 import Container from '../../components/Container';
@@ -59,7 +60,7 @@ const VenueForm = () => {
     formikActions.resetForm();
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader />;
 
   return (
     <Container>

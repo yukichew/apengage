@@ -2,6 +2,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import PageTitle from './components/common/PageTitle';
 import Category from './screens/categories/Category';
+import CategoryForm from './screens/categories/CategoryForm';
 import Dashboard from './screens/Dashboard';
 import Venue from './screens/venues/Venue';
 import VenueForm from './screens/venues/VenueForm';
@@ -16,7 +17,17 @@ const routesConfig = [
   {
     path: '/event/categories',
     component: Category,
-    title: 'Manage Event Categories',
+    title: 'Event Categories Management',
+  },
+  {
+    path: '/event/categories/add',
+    component: CategoryForm,
+    title: 'Add Event Category',
+  },
+  {
+    path: '/event/categories/edit/:id',
+    component: CategoryForm,
+    title: 'Edit Event Category',
   },
   {
     path: '/logistics/venue',

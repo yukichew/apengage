@@ -100,7 +100,7 @@ exports.getVenue = async (req, res) => {
       name: venue.name,
       type: venue.type,
       capacity: venue.capacity,
-      isActve: venue.isActive,
+      status: venue.isActive ? 'Active' : 'Inactive',
     },
   });
 };
