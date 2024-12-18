@@ -12,8 +12,6 @@ const multer = require('../middlewares/multer');
 const { isResetTokenValid, authenticate } = require('../middlewares/auth');
 const { validate } = require('../middlewares/validator');
 const { userValidator } = require('../middlewares/validator/user');
-const { validate } = require('../middlewares/validator');
-const { userValidator } = require('../middlewares/validator/user');
 
 // Auth Routes
 router.post(
