@@ -1,16 +1,16 @@
 const { isValidObjectId } = require('mongoose');
-const { sendError } = require('../helpers/error');
+const { sendError } = require('../../helpers/error');
 const {
   generateTOTP,
   mailTransport,
   generateEmailTemplate,
   plainEmailTemplate,
   generateResetPasswordEmailTemplate,
-} = require('../helpers/mail');
-const User = require('../models/auth/user');
-const VerificationToken = require('../models/auth/token');
-const ResetToken = require('../models/auth/token');
-const cloudinary = require('../config/cloud');
+} = require('../../helpers/mail');
+const User = require('../../models/auth/user');
+const VerificationToken = require('../../models/auth/token');
+const ResetToken = require('../../models/auth/token');
+const cloudinary = require('../../config/cloud');
 
 const jwt = require('jsonwebtoken');
 

@@ -1,15 +1,21 @@
 const { isValidObjectId } = require('mongoose');
 const { sendError } = require('../../helpers/error');
 const Venue = require('../../models/logistic/venue');
-const VenueBooking = require('../../models/logistic/venueBooking');
+const VenueBooking = require('../../models/logistic/venue/venueBooking');
 
+// venue
 exports.createVenue = async (req, res) => {
-  const { name, type, opacity } = req.body;
+  const { name, type, capacity } = req.body;
+
+  const venue = await Venue.findOne({ name });
+  if (venue) {
+    return res.status(400).json({ error: 'Venue name already exists' });
+  }
 
   const newVenue = new Venue({
     name,
     type,
-    opacity,
+    capacity,
   });
 
   await newVenue.save();
@@ -19,13 +25,13 @@ exports.createVenue = async (req, res) => {
       id: newVenue._id,
       name: newVenue.name,
       type: newVenue.type,
-      opacity: newVenue.opacity,
+      capacity: newVenue.capacity,
     },
   });
 };
 
 exports.updateVenue = async (req, res) => {
-  const { name, type, opacity } = req.body;
+  const { name, type, capacity } = req.body;
   const { id } = req.params;
 
   if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid venue id');
@@ -35,7 +41,7 @@ exports.updateVenue = async (req, res) => {
 
   venue.name = name;
   venue.type = type;
-  venue.opacity = opacity;
+  venue.capacity = capacity;
 
   await venue.save();
 
@@ -44,7 +50,7 @@ exports.updateVenue = async (req, res) => {
       id: venue._id,
       name: venue.name,
       type: venue.type,
-      opacity: venue.opacity,
+      capacity: venue.capacity,
     },
   });
 };
@@ -63,23 +69,18 @@ exports.deleteVenue = async (req, res) => {
 };
 
 exports.getVenues = async (req, res) => {
-  const { pageNo, limit = 9 } = req.query;
-
-  const venues = await Venue.find({})
-    .sort({ createdAt: -1 })
-    .skip(parseInt(pageNo) * limit)
-    .limit(limit);
-
+  const venues = await Venue.find({}).sort({ createdAt: -1 });
   const count = await Venue.countDocuments();
-
   res.json({
     venues: venues.map((venue) => {
       return {
         id: venue._id,
         name: venue.name,
         type: venue.type,
-        opacity: venue.opacity,
-        isActve: venue.isActive,
+        capacity: venue.capacity,
+        status: venue.isActive ? 'Active' : 'Inactive',
+        createdAt: venue.createdAt,
+        updatedAt: venue.updatedAt,
       };
     }),
     count,
@@ -99,18 +100,24 @@ exports.getVenue = async (req, res) => {
       id: venue._id,
       name: venue.name,
       type: venue.type,
-      opacity: venue.opacity,
-      isActve: venue.isActive,
+      capacity: venue.capacity,
+      status: venue.isActive ? 'Active' : 'Inactive',
     },
   });
 };
 
 exports.searchVenue = async (req, res) => {
-  const { query } = req.query;
+  const { name, type } = req.query;
 
-  const result = await Venue.find({
-    name: { $regex: query.name, $options: 'i' },
-  });
+  const query = {
+    name: { $regex: name, $options: 'i' },
+  };
+
+  if (type) {
+    query.type = type;
+  }
+
+  const result = await Venue.find(query);
 
   res.json({
     venues: result.map((venue) => {
@@ -118,13 +125,16 @@ exports.searchVenue = async (req, res) => {
         id: venue._id,
         name: venue.name,
         type: venue.type,
-        opacity: venue.opacity,
-        isActve: venue.isActive,
+        capacity: venue.capacity,
+        status: venue.isActive ? 'Active' : 'Inactive',
+        createdAt: venue.createdAt,
+        updatedAt: venue.updatedAt,
       };
     }),
   });
 };
 
+// venue bookings
 exports.bookVenue = async (req, res) => {
   const { venueId, startTime, endTime, purpose } = req.body;
   if (!isValidObjectId(venueId)) return sendError(res, 401, 'Invalid Venue id');
@@ -140,12 +150,18 @@ exports.bookVenue = async (req, res) => {
       'Venue is not available for the selected time slot'
     );
 
+  const currentTime = new Date();
+  const bookingStartTime = new Date(startTime);
+  const timeDifference = bookingStartTime - currentTime;
+  const hoursDifference = timeDifference / (1000 * 60 * 60);
+
   const newBooking = new VenueBooking({
     venue: venueId,
     startTime,
     endTime,
     purpose,
     createdBy: req.user.id,
+    status: hoursDifference > 48 ? 'Approved' : 'Pending',
   });
 
   await newBooking.save();
@@ -160,4 +176,53 @@ exports.bookVenue = async (req, res) => {
       createdBy: newBooking.createdBy,
     },
   });
+};
+
+exports.getVenueBookings = async (req, res) => {
+  const bookings = await VenueBooking.find({})
+    .sort({ createdAt: -1 })
+    .populate('venue', 'name')
+    .populate('createdBy', 'apkey');
+
+  const count = await VenueBooking.countDocuments();
+  res.json({
+    bookings: bookings.map((booking) => {
+      return {
+        id: booking._id,
+        venue: booking.venue.name,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        purpose: booking.purpose,
+        createdBy: booking.createdBy.apkey.toUpperCase(),
+        createdAt: booking.createdAt,
+        status: booking.status,
+      };
+    }),
+    count,
+  });
+};
+
+exports.udpateVenueBookingStatus = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body;
+
+  if (!isValidObjectId(id))
+    return sendError(res, 401, 'Invalid venue booking id');
+
+  const booking = await VenueBooking.findById(id);
+  if (!booking) return sendError(res, 404, 'Booking not found');
+
+  if (action === 'approve') {
+    booking.status = 'Approved';
+    await booking.save();
+    return res.json({ message: 'Booking approved' });
+  }
+
+  if (action === 'reject') {
+    booking.status = 'Rejected';
+    await booking.save();
+    return res.json({ message: 'Booking rejected' });
+  }
+
+  res.status(400).json({ message: 'Invalid action' });
 };

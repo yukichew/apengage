@@ -7,9 +7,11 @@ const {
   resetPassword,
   editProfile,
   getProfile,
-} = require('../controllers/userController');
+} = require('../controllers/user/userController');
 const multer = require('../middlewares/multer');
 const { isResetTokenValid, authenticate } = require('../middlewares/auth');
+const { validate } = require('../middlewares/validator');
+const { userValidator } = require('../middlewares/validator/user');
 const { validate } = require('../middlewares/validator');
 const { userValidator } = require('../middlewares/validator/user');
 
@@ -35,6 +37,7 @@ router.put(
   editProfile
 );
 router.delete('/delete-account');
+router.get('/profile', authenticate, getProfile);
 router.get('/profile', authenticate, getProfile);
 
 module.exports = router;
