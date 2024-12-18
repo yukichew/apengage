@@ -1,6 +1,8 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
 import PageTitle from './components/common/PageTitle';
+import FacilityBooking from './screens/bookings/FacilityBooking';
+import TransportBooking from './screens/bookings/TranportBooking';
 import VenueBooking from './screens/bookings/VenueBooking';
 import Category from './screens/categories/Category';
 import CategoryForm from './screens/categories/CategoryForm';
@@ -93,6 +95,11 @@ const routesConfig = [
     title: 'Edit Facility',
   },
   {
+    path: '/booking/facilities',
+    component: FacilityBooking,
+    title: 'Facility Booking Management',
+  },
+  {
     path: '/logistics/transport',
     component: Transport,
     title: 'Transportation Management',
@@ -106,6 +113,11 @@ const routesConfig = [
     path: '/logistics/transport/edit/:id',
     component: TransportForm,
     title: 'Edit Transport',
+  },
+  {
+    path: '/booking/transport',
+    component: TransportBooking,
+    title: 'Transportation Booking Management',
   },
 ];
 

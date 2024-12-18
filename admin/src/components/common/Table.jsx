@@ -117,7 +117,7 @@ const Table = ({
         <thead className=''>
           <tr>
             {/* index column */}
-            <th className='px-4 py-2 text-center text-base border-y font-semibold w-16'>
+            <th className='px-4 py-2 text-center text-base border-y font-semibold w-12'>
               No.
             </th>
             {columns.map((col, index) => (

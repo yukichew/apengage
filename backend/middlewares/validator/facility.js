@@ -16,16 +16,15 @@ exports.facilityBookingValidator = [
     .not()
     .isEmpty()
     .withMessage('Facility id is missing'),
-  check('date').trim().not().isEmpty().withMessage('Date is missing'),
   check('startTime')
     .trim()
     .not()
     .isEmpty()
     .withMessage('Start time is missing'),
   check('endTime').trim().not().isEmpty().withMessage('End time is missing'),
-  check('venueBooking')
+  check('venueBookingId')
     .trim()
     .not()
     .isEmpty()
-    .withMessage('Venue booking is missing'),
+    .withMessage('Venue booking id is missing'),
 ];

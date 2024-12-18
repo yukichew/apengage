@@ -12,7 +12,6 @@ exports.venueValidator = [
 
 exports.venueBookingValidator = [
   check('venueId').trim().not().isEmpty().withMessage('Venue id is missing'),
-  check('date').trim().not().isEmpty().withMessage('Date is missing'),
   check('startTime')
     .trim()
     .not()

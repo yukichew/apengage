@@ -57,6 +57,14 @@ export const sidebarLinks = [
         to: '/booking/venue',
         label: 'Venue',
       },
+      {
+        to: '/booking/facilities',
+        label: 'Facilities',
+      },
+      {
+        to: '/booking/transport',
+        label: 'Transport',
+      },
     ],
     isActive: (pathname) => pathname.includes('booking'),
   },
@@ -70,8 +78,8 @@ export const sidebarLinks = [
         label: 'Categories',
       },
       {
-        to: '/event/proposals',
-        label: 'Proposal',
+        to: '/event/events',
+        label: 'Event',
       },
     ],
     isActive: (pathname) => pathname.includes('event'),

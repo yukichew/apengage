@@ -33,3 +33,12 @@ export const getUserRole = async () => {
     return catchError(error);
   }
 };
+
+export const logout = async () => {
+  try {
+    await sessionStorage.removeItem('token');
+    return { success: true };
+  } catch (error) {
+    return catchError(error);
+  }
+};

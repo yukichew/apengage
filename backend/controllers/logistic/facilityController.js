@@ -1,7 +1,8 @@
 const { isValidObjectId } = require('mongoose');
 const { sendError } = require('../../helpers/error');
 const Facility = require('../../models/logistic/facility');
-const FacilityBooking = require('../../models/logistic/facilityBooking');
+const FacilityBooking = require('../../models/logistic/facility/facilityBooking');
+const VenueBooking = require('../../models/logistic/venue/venueBooking');
 
 // facility
 exports.createFacility = async (req, res) => {
@@ -148,12 +149,12 @@ exports.bookFacility = async (req, res) => {
   );
   if (!venueBooking) return sendError(res, 404, 'Venue booking not found');
 
-  if (venueBooking.venue.type !== 'Other')
-    return sendError(
-      res,
-      400,
-      'Auditorium and room are not required to book facility.'
-    );
+  // if (venueBooking.venue.type !== 'Other')
+  //   return sendError(
+  //     res,
+  //     400,
+  //     'Auditorium and room are not required to book facility.'
+  //   );
 
   const isAvailable = await Facility.isAvailable(facility, startTime, endTime);
   if (!isAvailable)
@@ -163,12 +164,18 @@ exports.bookFacility = async (req, res) => {
       'Facility is not available for the selected time slot'
     );
 
+  const currentTime = new Date();
+  const bookingStartTime = new Date(startTime);
+  const timeDifference = bookingStartTime - currentTime;
+  const hoursDifference = timeDifference / (1000 * 60 * 60);
+
   const newBooking = new FacilityBooking({
     facility: facilityId,
     startTime,
     endTime,
     venueBooking,
     createdBy: req.user.id,
+    status: hoursDifference > 48 ? 'Approved' : 'Pending',
   });
 
   await newBooking.save();
@@ -189,7 +196,14 @@ exports.getFacilityBookings = async (req, res) => {
   const bookings = await FacilityBooking.find({})
     .sort({ createdAt: -1 })
     .populate('facility', 'name')
-    .populate('createdBy', 'apkey');
+    .populate('createdBy', 'apkey')
+    .populate({
+      path: 'venueBooking',
+      populate: {
+        path: 'venue',
+        select: 'name',
+      },
+    });
 
   const count = await FacilityBooking.countDocuments();
 
@@ -200,7 +214,7 @@ exports.getFacilityBookings = async (req, res) => {
         facility: booking.facility.name,
         startTime: booking.startTime,
         endTime: booking.endTime,
-        venueBooking: booking.venueBooking,
+        venueBooking: booking.venueBooking.venue.name,
         createdBy: booking.createdBy.apkey.toUpperCase(),
         createdAt: booking.createdAt,
         status: booking.status,

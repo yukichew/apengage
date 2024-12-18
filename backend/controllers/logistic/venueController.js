@@ -1,7 +1,7 @@
 const { isValidObjectId } = require('mongoose');
 const { sendError } = require('../../helpers/error');
 const Venue = require('../../models/logistic/venue');
-const VenueBooking = require('../../models/logistic/venueBooking');
+const VenueBooking = require('../../models/logistic/venue/venueBooking');
 
 // venue
 exports.createVenue = async (req, res) => {
@@ -150,12 +150,18 @@ exports.bookVenue = async (req, res) => {
       'Venue is not available for the selected time slot'
     );
 
+  const currentTime = new Date();
+  const bookingStartTime = new Date(startTime);
+  const timeDifference = bookingStartTime - currentTime;
+  const hoursDifference = timeDifference / (1000 * 60 * 60);
+
   const newBooking = new VenueBooking({
     venue: venueId,
     startTime,
     endTime,
     purpose,
     createdBy: req.user.id,
+    status: hoursDifference > 48 ? 'Approved' : 'Pending',
   });
 
   await newBooking.save();

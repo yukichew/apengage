@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
-  getVenueBookings,
-  searchVenueBookings,
+  getFacilityBookings,
+  searchFacilityBookings,
   updateBookingStatus,
-} from '../../api/venue';
+} from '../../api/facility';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Loader from '../../components/common/Loader';
@@ -13,7 +13,7 @@ import Table from '../../components/common/Table';
 import Container from '../../components/Container';
 import { formatDateTime } from '../../utils/formatDate';
 
-const VenueBooking = () => {
+const FacilityBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
@@ -22,8 +22,14 @@ const VenueBooking = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [actionType, setActionType] = useState('');
 
-  const columns = ['By', 'Venue', 'Start Time', 'End Time', 'Purpose'];
-  const columnKeys = ['createdBy', 'venue', 'startTime', 'endTime', 'purpose'];
+  const columns = ['By', 'Facility', 'Venue', 'Start Time', 'End Time'];
+  const columnKeys = [
+    'createdBy',
+    'facility',
+    'venueBooking',
+    'startTime',
+    'endTime',
+  ];
 
   const handleAction = (action, row) => {
     switch (action) {
@@ -74,9 +80,9 @@ const VenueBooking = () => {
     if (query) params.append('fullname', query);
 
     if (query) {
-      res = await searchVenueBookings(params);
+      res = await searchFacilityBookings(params);
     } else {
-      res = await getVenueBookings();
+      res = await getFacilityBookings();
     }
 
     if (!res.success) {
@@ -106,14 +112,14 @@ const VenueBooking = () => {
 
   return (
     <Container>
-      <Breadcrumb pageName='Venue Booking Management' />
+      <Breadcrumb pageName='Facility Booking Management' />
 
       {/* header */}
       <div className='flex justify-between items-center mb-3'>
         <Searchbar
           value={searchQuery}
           onChange={handleSearchChange}
-          placeholder='Search venue booking'
+          placeholder='Search facility booking'
           className='w-64'
         />
       </div>
@@ -138,7 +144,7 @@ const VenueBooking = () => {
           title={`Confirm ${
             actionType.charAt(0).toUpperCase() + actionType.slice(1)
           }`}
-          message={`Are you sure you want to ${actionType} venue booking "${selectedBooking.id}"?`}
+          message={`Are you sure you want to ${actionType} facility booking "${selectedBooking.id}"?`}
           onConfirm={handleChangeStatus}
           onCancel={() => setShowDialog(false)}
         />
@@ -147,4 +153,4 @@ const VenueBooking = () => {
   );
 };
 
-export default VenueBooking;
+export default FacilityBooking;

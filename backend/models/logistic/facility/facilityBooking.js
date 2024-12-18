@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
-const venueBookingSchema = new mongoose.Schema(
+const facilityBookingSchema = new mongoose.Schema(
   {
-    venue: {
+    facility: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Venue',
+      ref: 'Facility',
       required: true,
     },
     startTime: {
@@ -15,8 +15,9 @@ const venueBookingSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    purpose: {
-      type: String,
+    venueBooking: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'VenueBooking',
       required: true,
     },
     createdBy: {
@@ -27,7 +28,7 @@ const venueBookingSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ['Pending', 'Approved', 'Rejected'],
-      default: 'Pending',
+      default: 'Approved',
     },
   },
   {
@@ -35,4 +36,4 @@ const venueBookingSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('VenueBooking', venueBookingSchema);
+module.exports = mongoose.model('FacilityBooking', facilityBookingSchema);

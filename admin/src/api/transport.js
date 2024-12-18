@@ -73,3 +73,43 @@ export const searchTransport = async (query) => {
     return catchError(error);
   }
 };
+
+export const getTransportBookings = async () => {
+  try {
+    const { data } = await client.get('/transport/bookings');
+    return {
+      success: true,
+      bookings: data.bookings,
+      count: data.count,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};
+
+export const updateBookingStatus = async (id, action) => {
+  try {
+    const { data } = await client.put('/transport/booking/status/' + id, {
+      action,
+    });
+    return {
+      success: true,
+      message: data.message,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};
+
+export const searchTransportBookings = async (query) => {
+  try {
+    const { data } = await client.get(`/transport/search?${query}`);
+    return {
+      success: true,
+      bookings: data.bookings,
+      count: data.count,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};
