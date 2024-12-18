@@ -7,7 +7,7 @@ const {
   resetPassword,
   editProfile,
   getProfile,
-} = require('../controllers/userController');
+} = require('../controllers/user/userController');
 const multer = require('../middlewares/multer');
 const { isResetTokenValid, authenticate } = require('../middlewares/auth');
 const { validate } = require('../middlewares/validator');

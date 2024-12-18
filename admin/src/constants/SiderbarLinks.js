@@ -1,6 +1,8 @@
+import { BiBus } from 'react-icons/bi';
 import { FaRegUser } from 'react-icons/fa';
 import { IoSettingsOutline } from 'react-icons/io5';
-import { LuCalendarDays, LuLayoutDashboard, LuText } from 'react-icons/lu';
+import { LuCalendarDays, LuLayoutDashboard } from 'react-icons/lu';
+import { MdOutlineFormatListBulleted } from 'react-icons/md';
 import { RxDashboard } from 'react-icons/rx';
 
 export const sidebarLinks = [
@@ -11,14 +13,24 @@ export const sidebarLinks = [
     isActive: (pathname) => pathname === '/' || pathname.includes('dashboard'),
   },
   {
-    to: '/user',
-    label: 'User',
+    label: 'Users',
     icon: FaRegUser,
+    isDropdown: true,
+    items: [
+      {
+        to: '/user/users',
+        label: 'User',
+      },
+      {
+        to: '/user/admins',
+        label: 'Admin',
+      },
+    ],
     isActive: (pathname) => pathname.includes('user'),
   },
   {
     label: 'Logistics',
-    icon: LuText,
+    icon: BiBus,
     isDropdown: true,
     items: [
       {
@@ -26,8 +38,8 @@ export const sidebarLinks = [
         label: 'Venue',
       },
       {
-        to: '/logistics/transportation',
-        label: 'Transportation',
+        to: '/logistics/transport',
+        label: 'Transport',
       },
       {
         to: '/logistics/facilities',
@@ -35,6 +47,18 @@ export const sidebarLinks = [
       },
     ],
     isActive: (pathname) => pathname.includes('logistics'),
+  },
+  {
+    label: 'Bookings',
+    icon: MdOutlineFormatListBulleted,
+    isDropdown: true,
+    items: [
+      {
+        to: '/booking/venue',
+        label: 'Venue',
+      },
+    ],
+    isActive: (pathname) => pathname.includes('booking'),
   },
   {
     label: 'Events',

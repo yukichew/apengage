@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { FiEdit2, FiEye, FiTrash2 } from 'react-icons/fi';
+import { GiCheckMark } from 'react-icons/gi';
+import { RiCloseLargeFill } from 'react-icons/ri';
+import { RxLockClosed, RxLockOpen2 } from 'react-icons/rx';
 import { formatDateTime } from '../../utils/formatDate';
 
 const Table = ({
   data,
   columns,
   columnKeys,
-  actions = ['view', 'edit', 'delete'],
+  actions = ['view', 'edit', 'delete', 'activate', 'deactivate'],
   handleAction,
   totalRows,
 }) => {
@@ -19,7 +22,6 @@ const Table = ({
   };
 
   const renderPagination = () => {
-    const pages = [];
     const maxVisiblePages = 3;
 
     let startPage, endPage;
@@ -97,8 +99,10 @@ const Table = ({
   const getStatusClass = (status) => {
     switch (status) {
       case 'Active':
+      case 'Approved':
         return 'bg-green-100 text-green-600 rounded-full px-3 py-1';
       case 'Inactive':
+      case 'Rejected':
         return 'bg-red-100 text-red-600 rounded-full px-3 py-1';
       case 'Pending':
         return 'bg-yellow-100 text-yellow-600 rounded-full px-3 py-1';
@@ -127,9 +131,11 @@ const Table = ({
             <th className='px-4 py-2 text-center text-base border-y font-semibold w-40'>
               Created At
             </th>
-            <th className='px-4 py-2 text-center text-base border-y font-semibold w-40'>
-              Updated At
-            </th>
+            {data.some((row) => row.updatedAt) && (
+              <th className='px-4 py-2 text-center text-base border-y font-semibold w-40'>
+                Updated At
+              </th>
+            )}
             <th className='px-4 py-2 text-center text-base border-y font-semibold w-30'>
               Status
             </th>
@@ -161,9 +167,11 @@ const Table = ({
               </td>
 
               {/* updatedAt column */}
-              <td className='px-4 py-2 text-sm text-center border-y'>
-                {formatDateTime(row.updatedAt)}
-              </td>
+              {row.updatedAt && (
+                <td className='px-4 py-2 text-sm text-center border-y'>
+                  {formatDateTime(row.updatedAt)}
+                </td>
+              )}
 
               {/* status column */}
               <td className='px-4 py-2 text-sm text-center border-y'>
@@ -180,22 +188,82 @@ const Table = ({
               <td className='px-4 py-2 text-center text-sm text-gray-400 border-y font-poppins'>
                 <div className='flex items-center justify-center space-x-3'>
                   {actions.includes('view') && (
-                    <FiEye
-                      className='cursor-pointer hover:text-gray-800'
-                      onClick={() => handleAction('view', row)}
-                    />
+                    <div className='relative group'>
+                      <FiEye
+                        className='cursor-pointer hover:text-gray-800'
+                        onClick={() => handleAction('view', row)}
+                      />
+                      <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-600 text-white text-xs rounded py-1 px-2'>
+                        Details
+                      </span>
+                    </div>
                   )}
                   {actions.includes('edit') && (
-                    <FiEdit2
-                      className='cursor-pointer hover:text-gray-800'
-                      onClick={() => handleAction('edit', row)}
-                    />
+                    <div className='relative group'>
+                      <FiEdit2
+                        className='cursor-pointer hover:text-gray-800'
+                        onClick={() => handleAction('edit', row)}
+                      />
+                      <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-600 text-white text-xs rounded py-1 px-2'>
+                        Edit
+                      </span>
+                    </div>
                   )}
                   {actions.includes('delete') && (
-                    <FiTrash2
-                      className='cursor-pointer hover:text-gray-800'
-                      onClick={() => handleAction('delete', row)}
-                    />
+                    <div className='relative group'>
+                      <FiTrash2
+                        className='cursor-pointer hover:text-gray-800'
+                        onClick={() => handleAction('delete', row)}
+                      />
+                      <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-600 text-white text-xs rounded py-1 px-2'>
+                        Delete
+                      </span>
+                    </div>
+                  )}
+                  {actions.includes('activate') && row.status !== 'Active' && (
+                    <div className='relative group'>
+                      <RxLockOpen2
+                        className='cursor-pointer hover:text-gray-800'
+                        onClick={() => handleAction('activate', row)}
+                      />
+                      <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-600 text-white text-xs rounded py-1 px-2'>
+                        Activate
+                      </span>
+                    </div>
+                  )}
+                  {actions.includes('deactivate') &&
+                    row.status !== 'Inactive' && (
+                      <div className='relative group'>
+                        <RxLockClosed
+                          className='cursor-pointer hover:text-gray-800'
+                          onClick={() => handleAction('deactivate', row)}
+                        />
+                        <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-600 text-white text-xs rounded py-1 px-2'>
+                          Deactivate
+                        </span>
+                      </div>
+                    )}
+                  {actions.includes('approve') && row.status === 'Pending' && (
+                    <div className='relative group'>
+                      <GiCheckMark
+                        className='cursor-pointer hover:text-gray-800'
+                        onClick={() => handleAction('approve', row)}
+                      />
+                      <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-600 text-white text-xs rounded py-1 px-2'>
+                        Approve
+                      </span>
+                    </div>
+                  )}
+                  {actions.includes('reject') && row.status === 'Pending' && (
+                    <div className='relative group'>
+                      <RiCloseLargeFill
+                        className='cursor-pointer hover:text-gray-800'
+                        onClick={() => handleAction('reject', row)}
+                      />
+                      <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-600 text-white text-xs rounded py-1 px-2'>
+                        Reject
+                      </span>
+                    </div>
                   )}
                 </div>
               </td>

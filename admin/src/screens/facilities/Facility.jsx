@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
-  deleteCategory,
-  getCategories,
-  searchCategory,
-} from '../../api/category';
+  deleteFacility,
+  getFacilities,
+  searchFacility,
+} from '../../api/facility';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import CustomButton from '../../components/common/CustomButton';
@@ -14,101 +14,101 @@ import Searchbar from '../../components/common/Searchbar';
 import Table from '../../components/common/Table';
 import Container from '../../components/Container';
 
-const Category = () => {
+const Facility = () => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
+  const [facilities, setFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
   const [showDialog, setShowDialog] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedFacility, setSelectedFacility] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const columns = ['Name', 'Description'];
-  const columnKeys = ['name', 'desc'];
+  const columns = ['Name', 'Type', 'Quantity'];
+  const columnKeys = ['name', 'type', 'quantity'];
 
   const handleAction = (action, row) => {
     if (action === 'edit') {
-      navigate(`/event/categories/edit/${row.id}`);
+      navigate(`/logistics/facilities/edit/${row.id}`);
     } else if (action === 'delete') {
-      setSelectedCategory(row);
+      setSelectedFacility(row);
       setShowDialog(true);
     }
   };
 
-  const handleDelete = async () => {
-    if (!selectedCategory) return;
+  const handleDeleteFacility = async () => {
+    if (!selectedFacility) return;
 
-    const res = await deleteCategory(selectedCategory.id);
+    const res = await deleteFacility(selectedFacility.id);
     if (!res.success) {
       return toast.error(res.error);
     }
 
-    const newCategories = categories.filter(
-      (venue) => venue.id !== selectedCategory.id
+    const newFacilities = facilities.filter(
+      (facility) => facility.id !== selectedFacility.id
     );
-    setCategories(newCategories);
+    setFacilities(newFacilities);
     setCount(count - 1);
     toast.success(res.message);
     setShowDialog(false);
-    setSelectedCategory(null);
+    setSelectedFacility(null);
   };
 
-  const fetchCategories = async (query = '') => {
+  const fetchFacilities = async (query = '') => {
     setLoading(true);
     let res;
 
     if (query) {
-      res = await searchCategory(query);
+      res = await searchFacility(query);
     } else {
-      res = await getCategories();
+      res = await getFacilities();
     }
 
     if (!res.success) {
       return toast.error(res.error);
     }
 
-    setCategories(res.categories);
+    setFacilities(res.facilities);
     setCount(res.count);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchCategories();
+    fetchFacilities();
   }, []);
 
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
-    fetchCategories(query);
+    fetchFacilities(query);
   };
 
   return (
     <Container>
-      <Breadcrumb pageName='Category Management' />
+      <Breadcrumb pageName='Facility Management' />
 
       {/* header */}
       <div className='flex justify-between items-center mb-3'>
         <Searchbar
           value={searchQuery}
           onChange={handleSearchChange}
-          placeholder='Search category'
+          placeholder='Search facility'
           className='w-64'
         />
 
         <CustomButton
-          title='Add Category'
-          onClick={() => navigate('/event/categories/add')}
-          className='w-44'
+          title='Add Facility'
+          onClick={() => navigate('/logistics/facilities/add')}
+          className='w-40'
         />
       </div>
 
       {loading ? (
         <Loader />
       ) : count === 0 ? (
-        <div className='text-center'>No category found</div>
+        <div className='text-center'>No facility found</div>
       ) : (
         <Table
-          data={categories}
+          data={facilities}
           columns={columns}
           columnKeys={columnKeys}
           handleAction={handleAction}
@@ -120,8 +120,8 @@ const Category = () => {
       {showDialog && (
         <ConfirmDialog
           title='Confirm Deletion'
-          message={`Are you sure you want to delete the category "${selectedCategory.name}"?`}
-          onConfirm={handleDelete}
+          message={`Are you sure you want to delete the facility "${selectedFacility.name}"?`}
+          onConfirm={handleDeleteFacility}
           onCancel={() => setShowDialog(false)}
         />
       )}
@@ -129,4 +129,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Facility;

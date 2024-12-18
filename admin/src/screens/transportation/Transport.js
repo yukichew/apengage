@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
-  deleteCategory,
-  getCategories,
-  searchCategory,
-} from '../../api/category';
+  deleteTransport,
+  getTransportation,
+  searchTransport,
+} from '../../api/transport';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import CustomButton from '../../components/common/CustomButton';
@@ -14,101 +14,101 @@ import Searchbar from '../../components/common/Searchbar';
 import Table from '../../components/common/Table';
 import Container from '../../components/Container';
 
-const Category = () => {
+const Transport = () => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
+  const [transportation, setTransportation] = useState([]);
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
   const [showDialog, setShowDialog] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedTransport, setSelectedTransport] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const columns = ['Name', 'Description'];
-  const columnKeys = ['name', 'desc'];
+  const columns = ['Plate', 'Type', 'Capacity'];
+  const columnKeys = ['name', 'type', 'capacity'];
 
   const handleAction = (action, row) => {
     if (action === 'edit') {
-      navigate(`/event/categories/edit/${row.id}`);
+      navigate(`/logistics/transport/edit/${row.id}`);
     } else if (action === 'delete') {
-      setSelectedCategory(row);
+      setSelectedTransport(row);
       setShowDialog(true);
     }
   };
 
   const handleDelete = async () => {
-    if (!selectedCategory) return;
+    if (!selectedTransport) return;
 
-    const res = await deleteCategory(selectedCategory.id);
+    const res = await deleteTransport(selectedTransport.id);
     if (!res.success) {
       return toast.error(res.error);
     }
 
-    const newCategories = categories.filter(
-      (venue) => venue.id !== selectedCategory.id
+    const newTransportation = transportation.filter(
+      (transport) => transport.id !== selectedTransport.id
     );
-    setCategories(newCategories);
+    setTransportation(newTransportation);
     setCount(count - 1);
     toast.success(res.message);
     setShowDialog(false);
-    setSelectedCategory(null);
+    setSelectedTransport(null);
   };
 
-  const fetchCategories = async (query = '') => {
+  const fetchTransportation = async (query = '') => {
     setLoading(true);
     let res;
 
     if (query) {
-      res = await searchCategory(query);
+      res = await searchTransport(query);
     } else {
-      res = await getCategories();
+      res = await getTransportation();
     }
 
     if (!res.success) {
       return toast.error(res.error);
     }
 
-    setCategories(res.categories);
+    setTransportation(res.transportation);
     setCount(res.count);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchCategories();
+    fetchTransportation();
   }, []);
 
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
-    fetchCategories(query);
+    fetchTransportation(query);
   };
 
   return (
     <Container>
-      <Breadcrumb pageName='Category Management' />
+      <Breadcrumb pageName='Transportation Management' />
 
       {/* header */}
       <div className='flex justify-between items-center mb-3'>
         <Searchbar
           value={searchQuery}
           onChange={handleSearchChange}
-          placeholder='Search category'
+          placeholder='Search transport'
           className='w-64'
         />
 
         <CustomButton
-          title='Add Category'
-          onClick={() => navigate('/event/categories/add')}
-          className='w-44'
+          title='Add Transport'
+          onClick={() => navigate('/logistics/transport/add')}
+          className='w-48'
         />
       </div>
 
       {loading ? (
         <Loader />
       ) : count === 0 ? (
-        <div className='text-center'>No category found</div>
+        <div className='text-center'>No transport found</div>
       ) : (
         <Table
-          data={categories}
+          data={transportation}
           columns={columns}
           columnKeys={columnKeys}
           handleAction={handleAction}
@@ -120,7 +120,7 @@ const Category = () => {
       {showDialog && (
         <ConfirmDialog
           title='Confirm Deletion'
-          message={`Are you sure you want to delete the category "${selectedCategory.name}"?`}
+          message={`Are you sure you want to delete "${selectedTransport.name}"?`}
           onConfirm={handleDelete}
           onCancel={() => setShowDialog(false)}
         />
@@ -129,4 +129,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default Transport;

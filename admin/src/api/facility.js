@@ -1,12 +1,12 @@
 import client from '.';
 import { catchError } from '../utils/error';
 
-export const getVenues = async () => {
+export const getFacilities = async () => {
   try {
-    const { data } = await client.get('/venue/venues');
+    const { data } = await client.get('/facility/facilities');
     return {
       success: true,
-      venues: data.venues,
+      facilities: data.facilities,
       count: data.count,
     };
   } catch (error) {
@@ -14,45 +14,45 @@ export const getVenues = async () => {
   }
 };
 
-export const addVenue = async (values) => {
+export const addFacility = async (values) => {
   try {
-    const { data } = await client.post('/venue/create', values);
+    const { data } = await client.post('/facility/create', values);
     return {
       success: true,
-      venue: data.venue,
+      facility: data.facility,
     };
   } catch (error) {
     return catchError(error);
   }
 };
 
-export const updateVenue = async (id, values) => {
+export const updateFacility = async (id, values) => {
   try {
-    const { data } = await client.put('/venue/' + id, values);
+    const { data } = await client.put('/facility/' + id, values);
     return {
       success: true,
-      venue: data.venue,
+      facility: data.facility,
     };
   } catch (error) {
     return catchError(error);
   }
 };
 
-export const getVenue = async (id) => {
+export const getFacility = async (id) => {
   try {
-    const { data } = await client.get('/venue/' + id);
+    const { data } = await client.get('/facility/' + id);
     return {
       success: true,
-      venue: data.venue,
+      facility: data.facility,
     };
   } catch (error) {
     return catchError(error);
   }
 };
 
-export const deleteVenue = async (id) => {
+export const deleteFacility = async (id) => {
   try {
-    const { data } = await client.delete('/venue/' + id);
+    const { data } = await client.delete('/facility/' + id);
     return {
       success: true,
       message: data.message,
@@ -62,21 +62,21 @@ export const deleteVenue = async (id) => {
   }
 };
 
-export const searchVenue = async (query) => {
+export const searchFacility = async (query) => {
   try {
-    const { data } = await client('/venue/search?name=' + query);
+    const { data } = await client('/facility/search?name=' + query);
     return {
       success: true,
-      venues: data.venues,
+      facilities: data.facilities,
     };
   } catch (error) {
     return catchError(error);
   }
 };
 
-export const getVenueBookings = async () => {
+export const getFacilityBookings = async () => {
   try {
-    const { data } = await client.get('/venue/bookings');
+    const { data } = await client.get('/facility/bookings');
     return {
       success: true,
       bookings: data.bookings,
@@ -89,7 +89,7 @@ export const getVenueBookings = async () => {
 
 export const updateBookingStatus = async (id, action) => {
   try {
-    const { data } = await client.put('/venue/booking/status/' + id, {
+    const { data } = await client.put('/facility/booking/status/' + id, {
       action,
     });
     return {
@@ -101,9 +101,9 @@ export const updateBookingStatus = async (id, action) => {
   }
 };
 
-export const searchVenueBookings = async (query) => {
+export const searchFacilityBookings = async (query) => {
   try {
-    const { data } = await client.get(`/venue/search?${query}`);
+    const { data } = await client.get(`/facility/search?${query}`);
     return {
       success: true,
       bookings: data.bookings,

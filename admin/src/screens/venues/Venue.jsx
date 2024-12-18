@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { deleteVenue, getVenues, searchVenue } from '../../api/venue'; // Import searchVenue
+import { deleteVenue, getVenues, searchVenue } from '../../api/venue';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import CustomButton from '../../components/common/CustomButton';
@@ -86,13 +86,13 @@ const Venue = () => {
           value={searchQuery}
           onChange={handleSearchChange}
           placeholder='Search venue'
-          className='w-1/3'
+          className='w-64'
         />
 
         <CustomButton
           title='Add Venue'
           onClick={() => navigate('/logistics/venue/add')}
-          className='w-1/6'
+          className='w-32'
         />
       </div>
 

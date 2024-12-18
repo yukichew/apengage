@@ -5,6 +5,11 @@ const Category = require('../../models/event/category');
 exports.createCategory = async (req, res) => {
   const { name, desc } = req.body;
 
+  const category = await Category.findOne({ name });
+  if (category) {
+    return res.status(400).json({ error: 'Category name already exists' });
+  }
+
   const newCategory = new Category({
     name,
     desc,
@@ -58,15 +63,8 @@ exports.deleteCategory = async (req, res) => {
 };
 
 exports.getCategories = async (req, res) => {
-  const { pageNo, limit = 9 } = req.query;
-
-  const categories = await Category.find({})
-    .sort({ createdAt: -1 })
-    .skip(parseInt(pageNo) * limit)
-    .limit(limit);
-
+  const categories = await Category.find({}).sort({ createdAt: -1 });
   const count = await Category.countDocuments();
-
   res.json({
     categories: categories.map((category) => {
       return {
@@ -101,10 +99,10 @@ exports.getCategory = async (req, res) => {
 };
 
 exports.searchCategory = async (req, res) => {
-  const { query } = req.query;
+  const { name } = req.query;
 
   const result = await Category.find({
-    name: { $regex: query.name, $options: 'i' },
+    name: { $regex: name, $options: 'i' },
   });
 
   res.json({

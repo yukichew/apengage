@@ -27,7 +27,7 @@ const CustomButton = ({
 
   return (
     <div
-      className={`w-full relative flex items-center justify-center font-medium font-poppins tracking-wide text-white ${className}`}
+      className={`flex items-center justify-center font-medium font-poppins tracking-wide text-white ${className}`}
     >
       {LeftIcon && (
         <LeftIcon size={20} className='absolute left-4 pointer-events-none' />

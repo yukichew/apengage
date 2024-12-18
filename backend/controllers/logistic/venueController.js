@@ -3,11 +3,12 @@ const { sendError } = require('../../helpers/error');
 const Venue = require('../../models/logistic/venue');
 const VenueBooking = require('../../models/logistic/venueBooking');
 
+// venue
 exports.createVenue = async (req, res) => {
   const { name, type, capacity } = req.body;
 
-  const existingVenue = await Venue.findOne({ name });
-  if (existingVenue) {
+  const venue = await Venue.findOne({ name });
+  if (venue) {
     return res.status(400).json({ error: 'Venue name already exists' });
   }
 
@@ -133,6 +134,7 @@ exports.searchVenue = async (req, res) => {
   });
 };
 
+// venue bookings
 exports.bookVenue = async (req, res) => {
   const { venueId, startTime, endTime, purpose } = req.body;
   if (!isValidObjectId(venueId)) return sendError(res, 401, 'Invalid Venue id');
@@ -168,4 +170,53 @@ exports.bookVenue = async (req, res) => {
       createdBy: newBooking.createdBy,
     },
   });
+};
+
+exports.getVenueBookings = async (req, res) => {
+  const bookings = await VenueBooking.find({})
+    .sort({ createdAt: -1 })
+    .populate('venue', 'name')
+    .populate('createdBy', 'apkey');
+
+  const count = await VenueBooking.countDocuments();
+  res.json({
+    bookings: bookings.map((booking) => {
+      return {
+        id: booking._id,
+        venue: booking.venue.name,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        purpose: booking.purpose,
+        createdBy: booking.createdBy.apkey.toUpperCase(),
+        createdAt: booking.createdAt,
+        status: booking.status,
+      };
+    }),
+    count,
+  });
+};
+
+exports.udpateVenueBookingStatus = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body;
+
+  if (!isValidObjectId(id))
+    return sendError(res, 401, 'Invalid venue booking id');
+
+  const booking = await VenueBooking.findById(id);
+  if (!booking) return sendError(res, 404, 'Booking not found');
+
+  if (action === 'approve') {
+    booking.status = 'Approved';
+    await booking.save();
+    return res.json({ message: 'Booking approved' });
+  }
+
+  if (action === 'reject') {
+    booking.status = 'Rejected';
+    await booking.save();
+    return res.json({ message: 'Booking rejected' });
+  }
+
+  res.status(400).json({ message: 'Invalid action' });
 };

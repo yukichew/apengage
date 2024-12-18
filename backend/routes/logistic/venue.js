@@ -6,10 +6,15 @@ const {
   getVenue,
   searchVenue,
   bookVenue,
+  getVenueBookings,
+  udpateVenueBookingStatus,
 } = require('../../controllers/logistic/venueController');
 const { authenticate, isAdmin } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validator');
-const { venueValidator } = require('../../middlewares/validator/venue');
+const {
+  venueValidator,
+  venueBookingValidator,
+} = require('../../middlewares/validator/venue');
 
 const router = require('express').Router();
 
@@ -21,7 +26,7 @@ router.post(
   validate,
   createVenue
 );
-router.post('/book', authenticate, validate, bookVenue);
+router.post('/book', authenticate, venueBookingValidator, validate, bookVenue);
 router.put(
   '/:id',
   authenticate,
@@ -30,9 +35,16 @@ router.put(
   validate,
   updateVenue
 );
+router.put(
+  '/booking/status/:id',
+  authenticate,
+  isAdmin,
+  udpateVenueBookingStatus
+);
 router.delete('/:id', authenticate, isAdmin, deleteVenue);
 router.get('/venues', authenticate, getVenues);
 router.get('/search', authenticate, searchVenue);
+router.get('/bookings', authenticate, isAdmin, getVenueBookings);
 router.get('/:id', authenticate, getVenue);
 
 module.exports = router;
