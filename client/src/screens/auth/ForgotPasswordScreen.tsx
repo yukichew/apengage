@@ -1,13 +1,13 @@
 import { StyleSheet, Text } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
+import { forgetPassword } from '../../api/auth';
 import CustomFormik from '../../components/common/CustomFormik';
 import TextInput from '../../components/common/InputText';
 import SubmitButton from '../../components/common/SubmitButton';
 import Title from '../../components/common/Title';
 import AuthContainer from '../../components/containers/AuthContainer';
 import { Props } from '../../constants/types';
-import { forgetPassword } from '../../utils/auth';
 
 const ForgotPasswordScreen = ({ navigation }: Props) => {
   const initialValues = {

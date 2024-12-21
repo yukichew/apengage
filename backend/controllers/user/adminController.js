@@ -157,10 +157,15 @@ exports.searchUser = async (req, res) => {
       return {
         id: user._id,
         fullname: user.fullname,
+        email: user.email,
+        apkey: user?.apkey,
+        contact: user?.contact,
+        gender: user?.gender,
+        course: user?.course,
+        intake: user?.intake,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         status: user.verified ? 'Active' : 'Inactive',
-        apkey: user?.apkey,
       };
     }),
   });

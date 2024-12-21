@@ -2,7 +2,7 @@ const { isValidObjectId } = require('mongoose');
 const { sendError } = require('../../helpers/error');
 const Transport = require('../../models/logistic/transport');
 const TransportBooking = require('../../models/logistic/transport/transportBooking');
-const Event = require('../../models/event/form');
+const Event = require('../../models/event');
 
 // transport
 exports.createTransport = async (req, res) => {

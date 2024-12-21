@@ -2,6 +2,7 @@ import { StackActions } from '@react-navigation/native';
 import { StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
+import { signin } from '../../api/auth';
 import CustomFormik from '../../components/common/CustomFormik';
 import TextInput from '../../components/common/InputText';
 import SubmitButton from '../../components/common/SubmitButton';
@@ -9,7 +10,6 @@ import TextLink from '../../components/common/TextLink';
 import Title from '../../components/common/Title';
 import AuthContainer from '../../components/containers/AuthContainer';
 import { Props } from '../../constants/types';
-import { signin } from '../../utils/auth';
 
 const LoginScreen = ({ navigation }: Props) => {
   const initialValues = {
@@ -55,7 +55,7 @@ const LoginScreen = ({ navigation }: Props) => {
       text1: 'Login Successful',
       text2: 'Welcome to the app!',
     });
-    navigation.dispatch(StackActions.replace('HomeScreen', { user: res.user }));
+    navigation.dispatch(StackActions.replace('Tabs', { user: res.user }));
     formikActions.resetForm();
   };
 

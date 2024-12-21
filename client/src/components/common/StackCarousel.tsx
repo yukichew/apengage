@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
 import Card from './Card';
@@ -15,7 +15,7 @@ const StackCarousel = ({ data, maxVisibleItem }: Props) => {
   const prevIndex = useSharedValue(0);
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <GestureHandlerRootView style={[styles.container]}>
       {data.map((item: any, index: number) => {
         return (
           <Card
@@ -34,11 +34,13 @@ const StackCarousel = ({ data, maxVisibleItem }: Props) => {
   );
 };
 
+const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
     marginTop: 10,
+    height: height * 0.3,
+    width: width - 55,
+    alignSelf: 'center',
   },
 });
 

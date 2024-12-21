@@ -179,12 +179,25 @@ exports.bookVenue = async (req, res) => {
 };
 
 exports.getVenueBookings = async (req, res) => {
-  const bookings = await VenueBooking.find({})
-    .sort({ createdAt: -1 })
-    .populate('venue', 'name')
-    .populate('createdBy', 'apkey');
+  const userRole = req.user.role;
+  const userId = req.user._id;
 
-  const count = await VenueBooking.countDocuments();
+  let bookings;
+  let count;
+  if (userRole === 'admin') {
+    bookings = await VenueBooking.find({})
+      .sort({ createdAt: -1 })
+      .populate('venue', 'name')
+      .populate('createdBy', 'apkey');
+    count = await VenueBooking.countDocuments();
+  } else {
+    bookings = await VenueBooking.find({ createdBy: userId })
+      .sort({ createdAt: -1 })
+      .populate('venue', 'name')
+      .populate('createdBy', 'apkey');
+    count = await VenueBooking.countDocuments({ createdBy: userId });
+  }
+
   res.json({
     bookings: bookings.map((booking) => {
       return {
@@ -202,6 +215,7 @@ exports.getVenueBookings = async (req, res) => {
   });
 };
 
+// admin only
 exports.udpateVenueBookingStatus = async (req, res) => {
   const { id } = req.params;
   const { action } = req.body;

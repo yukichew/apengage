@@ -2,6 +2,7 @@ import { StackActions } from '@react-navigation/native';
 import { StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
+import { signup } from '../../api/auth';
 import CustomFormik from '../../components/common/CustomFormik';
 import TextInput from '../../components/common/InputText';
 import SubmitButton from '../../components/common/SubmitButton';
@@ -9,7 +10,6 @@ import TextLink from '../../components/common/TextLink';
 import Title from '../../components/common/Title';
 import AuthContainer from '../../components/containers/AuthContainer';
 import { Props } from '../../constants/types';
-import { signup } from '../../utils/auth';
 
 const SignUpScreen = ({ navigation }: Props) => {
   const initialValues = {

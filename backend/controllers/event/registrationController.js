@@ -1,5 +1,5 @@
 const { sendError } = require('../../helpers/error');
-const Event = require('../../models/event/form');
+const Event = require('../../models/event');
 const Registration = require('../../models/event/registration');
 
 exports.joinEvent = async (req, res) => {

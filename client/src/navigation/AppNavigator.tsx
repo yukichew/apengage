@@ -1,13 +1,16 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { FC, useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { getToken } from '../api/auth';
 import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import Verification from '../screens/auth/Verification';
 import CustomForm from '../screens/event/CustomForm';
+import EventDetails from '../screens/event/EventDetails';
+import FacilityForm from '../screens/logistics/FacilityForm';
+import VenueForm from '../screens/logistics/VenueForm';
 import EditProfile from '../screens/profile/EditProfile';
-import { getToken } from '../utils/auth';
 import TabNavigator from './TabNavigator';
 import { RootStackNavigatorParamsList } from './types';
 
@@ -47,6 +50,9 @@ const AppNavigator: FC = () => {
       <Stack.Screen name='Verification' component={Verification} />
       <Stack.Screen name='CustomForm' component={CustomForm} />
       <Stack.Screen name='EditProfile' component={EditProfile} />
+      <Stack.Screen name='EventDetails' component={EventDetails} />
+      <Stack.Screen name='BookVenue' component={VenueForm} />
+      <Stack.Screen name='BookFacility' component={FacilityForm} />
     </Stack.Navigator>
   );
 };

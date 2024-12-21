@@ -1,72 +1,11 @@
 const mongoose = require('mongoose');
 
-const eventSchema = new mongoose.Schema(
+const eventFormSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    type: {
-      type: String,
-      required: true,
-      enum: ['public', 'private'],
-    },
-    desc: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    startTime: {
-      type: Date,
-      required: true,
-    },
-    endTime: {
-      type: Date,
-      required: true,
-    },
-    mode: {
-      type: String,
-      required: true,
-      enum: ['online', 'oncampus', 'offcampus'],
-    },
-    categories: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Category',
-    },
-    location: {
-      type: String,
-      trim: true,
-    },
-    venue: {
+    event: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'VenueBooking',
-    },
-    price: {
-      type: Number,
-    },
-    thumbnail: {
-      type: Object,
-      url: {
-        type: String,
-      },
-      public_id: {
-        type: String,
-      },
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-    postedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Event',
       required: true,
-    },
-    organizer: {
-      type: String, // e.g., 'APU E-Sports Club'
-      required: true,
-      trim: true,
     },
     fields: [
       {
@@ -89,10 +28,15 @@ const eventSchema = new mongoose.Schema(
         order: { type: Number },
       },
     ],
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model('Event', eventSchema);
+module.exports = mongoose.model('EventForm', eventFormSchema);

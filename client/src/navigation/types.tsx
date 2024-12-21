@@ -1,5 +1,5 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { User } from '../constants/types';
+import { EventItem, User } from '../constants/types';
 
 export type RootStackNavigatorParamsList = {
   Login: undefined;
@@ -12,10 +12,13 @@ export type RootStackNavigatorParamsList = {
   Event: undefined;
   History: undefined;
   AddEvent: undefined;
-  EventDetails: undefined;
-  CustomForm: undefined;
+  EventDetails: { event: EventItem };
+  CustomForm: { eventId: string };
   EditProfile: undefined;
   ProfileStack: { user: User };
+  BookVenue: undefined;
+  BookTransport: undefined;
+  BookFacility: undefined;
 };
 
 export type Navigation =

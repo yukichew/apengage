@@ -17,9 +17,9 @@ type Props = {
 const FlatListItem = ({ item, onPress }: Props) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Image source={{ uri: item.thumbnail.url }} style={styles.image} />
+      <Image source={{ uri: item.thumbnail }} style={styles.image} />
       <View style={styles.contentContainer}>
-        <Text style={styles.date}>{item.date}</Text>
+        <Text style={styles.date}>{item.startTime}</Text>
         <Text style={styles.title}>{item.name}</Text>
 
         <View style={styles.row}>
@@ -29,7 +29,7 @@ const FlatListItem = ({ item, onPress }: Props) => {
               size={16}
               style={{ color: 'rgba(37, 37, 37, 0.7)' }}
             />
-            <Text style={styles.locationText}>{item.location}</Text>
+            <Text style={styles.locationText}>{item.venue}</Text>
           </View>
           <View style={styles.priceContainer}>
             <Text style={styles.priceText}>RM {item.price}</Text>
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   locationText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'Poppins-Regular',
     color: 'rgba(0, 0, 0, 0.6)',
     marginLeft: 5,
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     borderRadius: 5,
-    padding: 5,
+    padding: 4,
     backgroundColor: 'rgba(42, 114, 255, 0.15)',
   },
   priceText: {

@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { getToken } from '../utils/auth';
+import { getToken } from './auth';
 
 const client = axios.create({
-  baseURL: 'http://192.168.100.87:8000/api',
+  baseURL: 'http://192.168.100.101:8000/api',
 });
 
 client.interceptors.request.use(

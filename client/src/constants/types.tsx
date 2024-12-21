@@ -26,15 +26,19 @@ export type Props = {
 };
 
 export type EventItem = {
-  id: number;
+  id?: number;
   name: string;
+  mode: string;
+  type: string;
   desc: string;
-  date: Date;
-  thumbnail: string;
-  price: number;
-  location: string;
+  startTime: Date;
+  endTime: Date;
   organizer: string;
-  categories: string[];
+  thumbnail?: any;
+  price?: number;
+  venue?: string;
+  location?: string;
+  categories?: string[];
 };
 
 export type User = {
@@ -47,4 +51,25 @@ export type User = {
   course: string;
   intake: string;
   nric: string;
+};
+
+export type ApiResponse = {
+  success: boolean;
+  message?: string;
+  error?: string;
+  data?: any;
+};
+
+export type VenueBooking = {
+  venueId: string;
+  startTime: string;
+  endTime: string;
+  purpose: string;
+};
+
+export type FacilityBooking = {
+  facilityId: string;
+  startTime: string;
+  endTime: string;
+  venueBookingId: string;
 };

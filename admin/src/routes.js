@@ -7,6 +7,7 @@ import VenueBooking from './screens/bookings/VenueBooking';
 import Category from './screens/categories/Category';
 import CategoryForm from './screens/categories/CategoryForm';
 import Dashboard from './screens/Dashboard';
+import Event from './screens/events/Event';
 import Facility from './screens/facilities/Facility';
 import FacilityForm from './screens/facilities/FacilityForm';
 import Transport from './screens/transportation/Transport';
@@ -58,6 +59,11 @@ const routesConfig = [
     path: '/event/categories/edit/:id',
     component: CategoryForm,
     title: 'Edit Event Category',
+  },
+  {
+    path: '/event/events',
+    component: Event,
+    title: 'Event Management',
   },
   {
     path: '/logistics/venue',

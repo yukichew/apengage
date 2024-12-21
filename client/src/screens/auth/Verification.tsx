@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { verifyEmail } from '../../api/auth';
 import Title from '../../components/common/Title';
 import { Navigation } from '../../navigation/types';
-import { verifyEmail } from '../../utils/auth';
 
 type Props = {
   route: {

@@ -1,3 +1,4 @@
+import { StackActions } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
@@ -9,18 +10,29 @@ import {
 } from 'react-native';
 import DocumentPicker, { types } from 'react-native-document-picker';
 import { SelectList } from 'react-native-dropdown-select-list';
+import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
+import { createForm } from '../../api/form';
 import Checkbox from '../../components/common/Checkbox';
 import CustomFormik from '../../components/common/CustomFormik';
 import IconButton from '../../components/common/IconButton';
 import InputText from '../../components/common/InputText';
+import SubmitButton from '../../components/common/SubmitButton';
 import AppContainer from '../../components/containers/AppContainer';
 import useFormFields from '../../components/custom/EventHook';
 import { fieldTypes } from '../../constants/items';
-import { Field, Props } from '../../constants/types';
+import { Field } from '../../constants/types';
+import { Navigation } from '../../navigation/types';
 import FieldModal from './FieldModal';
 
-const CustomForm = ({ navigation }: Props) => {
+type Props = {
+  route: { params: { eventId: string } };
+  navigation: Navigation;
+};
+
+const CustomForm = ({ route, navigation }: Props) => {
+  const { eventId } = route.params;
+  console.log('Event ID:', eventId);
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [selected, setSelected] = useState<string>('');
@@ -131,18 +143,87 @@ const CustomForm = ({ navigation }: Props) => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
   }, [formFields]);
 
+  const onSubmit = async (values: typeof initialValues, formikActions: any) => {
+    const data = {
+      eventId,
+      fields: formFields.map((field) => {
+        if (
+          field.type === 'mcq' ||
+          field.type === 'dropdown' ||
+          field.type === 'checkbox'
+        ) {
+          return {
+            id: field.id,
+            type: field.type,
+            label: field.label,
+            required: field.required || false,
+            placeholder: field.placeholder || '',
+            defaultValue: field.defaultValue || '',
+            // order: field.order || 0,
+            options: field.options || [],
+            selectedOptions: field.selectedOptions || [],
+          };
+        }
+
+        return {
+          id: field.id,
+          type: field.type,
+          label: field.label,
+          required: field.required || false,
+          placeholder: field.placeholder || '',
+          defaultValue: field.defaultValue || '',
+          // order: field.order || 0,
+        };
+      }),
+    };
+
+    const res = await createForm(data);
+    formikActions.setSubmitting(false);
+
+    if (!res.success) {
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to create form',
+        text2: res.error,
+        position: 'top',
+        topOffset: 60,
+      });
+      console.error(res.error);
+      return;
+    }
+
+    Toast.show({
+      type: 'success',
+      text1: 'Form created successfully!',
+    });
+
+    navigation.dispatch(StackActions.replace('Tabs'));
+    formikActions.resetForm();
+  };
+
   return (
     <AppContainer navigation={navigation} showBackButton>
       <CustomFormik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={onSubmit}
       >
         <ScrollView
           ref={scrollViewRef}
           style={{ paddingHorizontal: 20 }}
           contentContainerStyle={{ flexGrow: 1 }}
         >
+          <Text
+            style={{
+              fontFamily: 'Poppins-Bold',
+              fontSize: 18,
+              marginTop: 6,
+              marginBottom: 4,
+            }}
+          >
+            Create Registration Form
+          </Text>
+
           {formFields.map((field) => renderItem({ item: field }))}
           <FieldModal
             field={
@@ -157,16 +238,6 @@ const CustomForm = ({ navigation }: Props) => {
             visible={isModalVisible}
             onClose={closeModal}
           />
-          <Text
-            style={{
-              fontFamily: 'Poppins-Bold',
-              fontSize: 18,
-              marginTop: 6,
-              marginBottom: 4,
-            }}
-          >
-            Create Registration Form
-          </Text>
           <TouchableOpacity
             style={styles.addFieldContainer}
             onPress={() => setShowDropdown(!showDropdown)}
@@ -201,6 +272,8 @@ const CustomForm = ({ navigation }: Props) => {
               ))}
             </View>
           )}
+
+          <SubmitButton title='Save' />
         </ScrollView>
       </CustomFormik>
     </AppContainer>

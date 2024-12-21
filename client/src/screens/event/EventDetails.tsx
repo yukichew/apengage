@@ -9,24 +9,27 @@ import {
 } from 'react-native';
 import IconButton from '../../components/common/IconButton';
 import AppContainer from '../../components/containers/AppContainer';
+import { EventItem } from '../../constants/types';
 import { Navigation } from '../../navigation/types';
 
 type Props = {
+  route: { params: { event: EventItem } };
   navigation: Navigation;
 };
 
-const EventDetails = ({ navigation }: Props) => {
+const EventDetails = ({ route, navigation }: Props) => {
+  const { event } = route.params;
+
   return (
     <AppContainer navigation={navigation} showBackButton>
       <ScrollView>
-        <Image
-          source={{ uri: 'https://picsum.photos/270/250' }}
-          style={styles.image}
-        />
+        {event.thumbnail && (
+          <Image source={{ uri: event.thumbnail }} style={styles.image} />
+        )}
 
         <View style={{ padding: 15 }}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>APU QR SEEK 2024</Text>
+            <Text style={styles.title}>{event.name}</Text>
             <IconButton
               icon='share-square-o'
               iconLibrary='FontAwesome'
@@ -46,8 +49,12 @@ const EventDetails = ({ navigation }: Props) => {
                   />
                 </View>
                 <View style={{ left: 10 }}>
-                  <Text style={styles.text}>29 May 2024</Text>
-                  <Text style={styles.desc}>Wednesday, 09:00 AM</Text>
+                  <Text style={styles.text}>
+                    {new Date(event.startTime).toLocaleDateString()}
+                  </Text>
+                  <Text style={styles.desc}>
+                    {new Date(event.startTime).toLocaleTimeString()}
+                  </Text>
                 </View>
               </View>
 
@@ -60,8 +67,10 @@ const EventDetails = ({ navigation }: Props) => {
                   />
                 </View>
                 <View style={{ left: 10 }}>
-                  <Text style={styles.text}>APU Atrium</Text>
-                  <Text style={styles.desc}>Asia Pacific University</Text>
+                  <Text style={styles.text}>{event.venue}</Text>
+                  {event.mode === 'oncampus' ? (
+                    <Text style={styles.desc}>Asia Pacific University</Text>
+                  ) : null}
                 </View>
               </View>
             </View>
@@ -82,7 +91,7 @@ const EventDetails = ({ navigation }: Props) => {
                   },
                 ]}
               >
-                FREE
+                {event.price ? `RM ${event.price}` : 'Free'}
               </Text>
             </View>
           </View>
@@ -107,11 +116,7 @@ const EventDetails = ({ navigation }: Props) => {
                 },
               ]}
             >
-              Lorem elitr lorem ea dolor et sit amet justo consetetur, amet sit
-              eirmod et sit takimata et sadipscing lorem, sanctus justo ea clita
-              takimata eos, dolor takimata eirmod sit sanctus invidunt lorem
-              lorem magna. Ipsum dolore ipsum et ipsum, clita vero erat rebum
-              sea sadipscing stet. Ipsum invidunt clita ipsum.
+              {event.desc}
             </Text>
           </View>
         </View>
