@@ -1,26 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import client from '../api/client';
-
-type SignUpData = {
-  fullname: string;
-  email: string;
-  password: string;
-  apkey: string;
-};
-
-type SigninData = {
-  email: string;
-  password: string;
-};
-
-type ForgetPasswordData = {
-  email: string;
-};
-
-type VerifyEmailData = {
-  otp: string;
-  userId: string;
-};
+import client from './client';
 
 type ApiResponse = {
   success: boolean;
@@ -37,7 +16,12 @@ const catchAxiosError = (error: any): ApiResponse => {
   return { success: false, error: error.message };
 };
 
-export const signup = async (values: SignUpData): Promise<ApiResponse> => {
+export const signup = async (values: {
+  fullname: string;
+  email: string;
+  password: string;
+  apkey: string;
+}): Promise<ApiResponse> => {
   try {
     const response = await client.post<ApiResponse>('/user/create', {
       ...values,
@@ -51,7 +35,10 @@ export const signup = async (values: SignUpData): Promise<ApiResponse> => {
   }
 };
 
-export const signin = async (values: SigninData): Promise<ApiResponse> => {
+export const signin = async (values: {
+  email: string;
+  password: string;
+}): Promise<ApiResponse> => {
   try {
     const response = await client.post<ApiResponse>('/user/signin', {
       ...values,
@@ -70,9 +57,9 @@ export const signin = async (values: SigninData): Promise<ApiResponse> => {
   }
 };
 
-export const forgetPassword = async (
-  values: ForgetPasswordData
-): Promise<ApiResponse> => {
+export const forgetPassword = async (values: {
+  email: string;
+}): Promise<ApiResponse> => {
   try {
     const response = await client.post<ApiResponse>('/user/forget-password', {
       ...values,
@@ -86,9 +73,10 @@ export const forgetPassword = async (
   }
 };
 
-export const verifyEmail = async (
-  values: VerifyEmailData
-): Promise<ApiResponse> => {
+export const verifyEmail = async (values: {
+  otp: string;
+  userId: string;
+}): Promise<ApiResponse> => {
   try {
     const response = await client.post<ApiResponse>('/user/verify-email', {
       ...values,

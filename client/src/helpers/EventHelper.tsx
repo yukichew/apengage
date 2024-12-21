@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Toast from 'react-native-toast-message';
+import { getEvents } from '../api/event';
 import { EventItem } from '../constants/types';
-import { getEvents } from '../utils/eventManagement';
 
 export const useEvents = () => {
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -11,7 +11,7 @@ export const useEvents = () => {
     setLoading(true);
     const res = await getEvents();
     if (res.success) {
-      setEvents(res.data);
+      setEvents(res.data.events);
     } else {
       Toast.show({
         type: 'error',

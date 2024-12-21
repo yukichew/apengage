@@ -12,7 +12,7 @@ const venueSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    opacity: {
+    capacity: {
       type: Number,
       required: true,
     },

@@ -39,7 +39,7 @@ exports.eventFormValidator = [
       }
       return 'Event location is required for off-campus events';
     }),
-  check('venue')
+  check('venueBooking')
     .if(body('mode').equals('oncampus'))
     .if(body('type').not().equals('public'))
     .trim()
@@ -57,17 +57,6 @@ exports.eventFormValidator = [
     .not()
     .isEmpty()
     .withMessage('Event price is required for public events'),
-  check('thumbnail')
-    .if(body('type').equals('public'))
-    .not()
-    .isEmpty()
-    .withMessage('Event thumbnail is required for public events'),
-  check('fields')
-    .if(body('type').equals('public'))
-    .not()
-    .isEmpty()
-    .withMessage('Custom fields are required for public events'),
-  check('postedBy').trim().not().isEmpty().withMessage('Posted by is missing'),
   check('organizer')
     .trim()
     .not()

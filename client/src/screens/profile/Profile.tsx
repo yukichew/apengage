@@ -9,12 +9,12 @@ import {
   View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { getCurrentUser, logout } from '../../api/auth';
 import IconButton from '../../components/common/IconButton';
 import AppContainer from '../../components/containers/AppContainer';
 import ProfileItem from '../../components/custom/ProfileItem';
 import { User } from '../../constants/types';
 import { Navigation } from '../../navigation/types';
-import { getCurrentUser, logout } from '../../utils/auth';
 
 type Props = {
   navigation: Navigation;

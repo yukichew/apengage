@@ -4,6 +4,8 @@ import { ScrollView, Text } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
+import { getCurrentUser } from '../../api/auth';
+import { editProfile } from '../../api/profile';
 import CustomFormik from '../../components/common/CustomFormik';
 import FilePicker from '../../components/common/FilePicker';
 import InputText from '../../components/common/InputText';
@@ -11,8 +13,6 @@ import SubmitButton from '../../components/common/SubmitButton';
 import AppContainer from '../../components/containers/AppContainer';
 import { gender } from '../../constants/items';
 import { Navigation } from '../../navigation/types';
-import { getCurrentUser } from '../../utils/auth';
-import { editProfile } from '../../utils/profile';
 
 type Props = {
   navigation: Navigation;
@@ -130,6 +130,7 @@ const EditProfile = ({ navigation }: Props) => {
               fontSize: 16,
             }}
             defaultOption={{ key: selected, value: selected }}
+            search={false}
           />
           <FilePicker
             file={file}

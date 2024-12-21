@@ -8,8 +8,9 @@ const cors = require('cors');
 
 const { sendError } = require('./helpers/error');
 const userRouter = require('./routes/user');
-const eventRouter = require('./routes/event/form');
+const eventRouter = require('./routes/event');
 const categoryRouter = require('./routes/event/category');
+const formRouter = require('./routes/event/form');
 const venueRouter = require('./routes/logistic/venue');
 const adminRouter = require('./routes/admin');
 const facilityRouter = require('./routes/logistic/facility');
@@ -28,6 +29,7 @@ app.use('/api/venue', venueRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/facility', facilityRouter);
 app.use('/api/transport', transportRouter);
+app.use('/api/form', formRouter);
 
 app.use((err, req, res, next) => {
   sendError(res, 500, err.message);

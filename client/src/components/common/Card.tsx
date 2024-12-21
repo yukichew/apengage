@@ -95,7 +95,7 @@ const Card = ({
         }}
       >
         <Animated.Image
-          source={{ uri: item.thumbnail.url }}
+          source={{ uri: item.thumbnail }}
           style={[styles.image, animatedStyle, { zIndex: dataLength - index }]}
         />
       </FlingGestureHandler>

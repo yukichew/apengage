@@ -44,7 +44,7 @@ router.put(
 router.delete('/:id', authenticate, isAdmin, deleteVenue);
 router.get('/venues', authenticate, getVenues);
 router.get('/search', authenticate, searchVenue);
-router.get('/bookings', authenticate, isAdmin, getVenueBookings);
+router.get('/bookings', authenticate, getVenueBookings);
 router.get('/:id', authenticate, getVenue);
 
 module.exports = router;
