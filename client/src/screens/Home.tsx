@@ -51,7 +51,7 @@ const Home = ({ navigation }: Props) => {
             <IconButton
               icon='stepforward'
               iconLibrary='AntDesign'
-              onPress={() => navigation.navigate('BookTransport')}
+              onPress={() => navigation.navigate('QRCodeScan')}
               style={styles.iconButton}
             />
           </View>

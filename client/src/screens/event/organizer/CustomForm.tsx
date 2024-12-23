@@ -12,17 +12,17 @@ import DocumentPicker, { types } from 'react-native-document-picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
-import { createForm } from '../../api/form';
-import Checkbox from '../../components/common/Checkbox';
-import CustomFormik from '../../components/common/CustomFormik';
-import IconButton from '../../components/common/IconButton';
-import InputText from '../../components/common/InputText';
-import SubmitButton from '../../components/common/SubmitButton';
-import AppContainer from '../../components/containers/AppContainer';
-import useFormFields from '../../components/custom/EventHook';
-import { fieldTypes } from '../../constants/items';
-import { Field } from '../../constants/types';
-import { Navigation } from '../../navigation/types';
+import { createForm } from '../../../api/form';
+import Checkbox from '../../../components/common/Checkbox';
+import CustomFormik from '../../../components/common/CustomFormik';
+import IconButton from '../../../components/common/IconButton';
+import InputText from '../../../components/common/InputText';
+import SubmitButton from '../../../components/common/SubmitButton';
+import AppContainer from '../../../components/containers/AppContainer';
+import useFormFields from '../../../components/custom/EventHook';
+import { fieldTypes } from '../../../constants/items';
+import { Field } from '../../../constants/types';
+import { Navigation } from '../../../navigation/types';
 import FieldModal from './FieldModal';
 
 type Props = {
@@ -32,7 +32,6 @@ type Props = {
 
 const CustomForm = ({ route, navigation }: Props) => {
   const { eventId } = route.params;
-  console.log('Event ID:', eventId);
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [selected, setSelected] = useState<string>('');
@@ -76,10 +75,15 @@ const CustomForm = ({ route, navigation }: Props) => {
         {item.label}
       </Text>
       {item.type === 'short_ans' && (
-        <InputText placeholder={item.placeholder || ''} name={item.id} />
+        <InputText
+          key={item.id}
+          placeholder={item.placeholder || ''}
+          name={item.id}
+        />
       )}
       {item.type === 'long_ans' && (
         <InputText
+          key={item.id}
           placeholder={item.placeholder || ''}
           name={item.id}
           multiline
@@ -88,6 +92,7 @@ const CustomForm = ({ route, navigation }: Props) => {
       )}
       {item.type === 'checkbox' && (
         <Checkbox
+          key={item.id}
           options={item.options || []}
           selectedOptions={item.selectedOptions || []}
           onChange={(selected) => {
@@ -98,6 +103,7 @@ const CustomForm = ({ route, navigation }: Props) => {
       )}
       {item.type === 'mcq' && (
         <Checkbox
+          key={item.id}
           options={item.options || []}
           selectedOptions={item.selectedOptions || []}
           onChange={(selected) => {
@@ -109,6 +115,7 @@ const CustomForm = ({ route, navigation }: Props) => {
       )}
       {item.type === 'dropdown' && (
         <SelectList
+          key={item.id}
           setSelected={(val: string) => setSelected(val)}
           data={item.options || []}
           save='value'
@@ -116,6 +123,7 @@ const CustomForm = ({ route, navigation }: Props) => {
       )}
       {item.type === 'file' && (
         <TouchableOpacity
+          key={item.id}
           style={styles.uploadButton}
           onPress={async () => {
             try {

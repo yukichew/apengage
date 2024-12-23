@@ -24,6 +24,7 @@ type Props = {
   multiline?: boolean;
   numberOfLines?: number;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  label?: string;
 };
 
 const renderIcon = (iconName: string, iconLibrary?: keyof typeof Icons) => {
@@ -54,6 +55,7 @@ const InputText = ({
 
   return (
     <>
+      {props.label && <Text style={styles.label}>{props.label}</Text>}
       <View style={[styles.field, props.multiline && styles.multilineField]}>
         {leftIcon && renderIcon(leftIcon, leftIconLibrary)}
         <TextInput
@@ -106,6 +108,13 @@ const styles = StyleSheet.create({
   errorMessage: {
     color: 'red',
     paddingVertical: 3,
+    fontFamily: 'Poppins-Regular',
+  },
+  label: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 16,
+    color: 'rgba(0, 0, 0, 0.7)',
+    marginBottom: 5,
   },
 });
 

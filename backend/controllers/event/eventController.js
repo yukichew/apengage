@@ -173,6 +173,44 @@ exports.getLatestEvents = async (req, res) => {
   });
 };
 
+exports.getEvent = async (req, res) => {
+  const { id } = req.params;
+
+  const event = await Event.findById(id)
+    .populate({
+      path: 'venueBooking',
+      populate: {
+        path: 'venue',
+        select: 'name',
+      },
+    })
+    .populate('postedBy', 'apkey');
+
+  if (!event) return sendError(res, 404, 'Event not found');
+
+  res.json({
+    event: {
+      id: event._id,
+      name: event.name,
+      desc: event.desc,
+      type: event.type,
+      mode: event.mode,
+      venue: event?.venueBooking.venue.name,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      location: event?.location,
+      categories: event?.categories,
+      price: event?.price,
+      postedBy: event.postedBy.apkey,
+      organizer: event.organizer,
+      thumbnail: event?.thumbnail.url,
+      createdAt: event.createdAt,
+      updatedAt: event.updatedAt,
+      status: event.status,
+    },
+  });
+};
+
 // Admin only
 exports.getAllEvents = async (req, res) => {
   const { ...filters } = req.query;

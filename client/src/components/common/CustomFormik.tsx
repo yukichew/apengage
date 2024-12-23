@@ -21,7 +21,14 @@ const CustomFormik = ({
       onSubmit={onSubmit}
     >
       {(formikProps) => {
-        return children;
+        return React.Children.map(children, (child) => {
+          if (React.isValidElement(child)) {
+            return React.cloneElement(child, {
+              ...formikProps,
+            });
+          }
+          return child;
+        });
       }}
     </Formik>
   );

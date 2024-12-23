@@ -7,18 +7,18 @@ import {
 } from 'react-native-dropdown-select-list';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
-import { getCategories } from '../../api/category';
-import { addEvent } from '../../api/event';
-import { getVenueBookings } from '../../api/venue';
-import Button from '../../components/common/Button';
-import CustomFormik from '../../components/common/CustomFormik';
-import DateInput from '../../components/common/DateInput';
-import FilePicker from '../../components/common/FilePicker';
-import InputText from '../../components/common/InputText';
-import SubmitButton from '../../components/common/SubmitButton';
-import AppContainer from '../../components/containers/AppContainer';
-import { eventType, mode } from '../../constants/items';
-import { Props } from '../../constants/types';
+import { getCategories } from '../../../api/category';
+import { addEvent } from '../../../api/event';
+import { getVenueBookings } from '../../../api/venue';
+import Button from '../../../components/common/Button';
+import CustomFormik from '../../../components/common/CustomFormik';
+import DateInput from '../../../components/common/DateInput';
+import FilePicker from '../../../components/common/FilePicker';
+import InputText from '../../../components/common/InputText';
+import SubmitButton from '../../../components/common/SubmitButton';
+import AppContainer from '../../../components/containers/AppContainer';
+import { eventType, mode } from '../../../constants/items';
+import { Props } from '../../../constants/types';
 
 const EventForm = ({ navigation }: Props) => {
   const initialValues = {
@@ -125,10 +125,10 @@ const EventForm = ({ navigation }: Props) => {
       text1: 'Successfully created event',
     });
 
-    console.log(res.data);
-    navigation.dispatch(
-      StackActions.replace('CustomForm', { eventId: res.data.event._id })
-    );
+    // navigation.dispatch(
+    //   StackActions.replace('CustomForm', { eventId: res.data.event._id })
+    // );
+    navigation.dispatch(StackActions.replace('Tabs'));
     formikActions.resetForm();
   };
 

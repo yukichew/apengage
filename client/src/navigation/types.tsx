@@ -19,6 +19,9 @@ export type RootStackNavigatorParamsList = {
   BookVenue: undefined;
   BookTransport: undefined;
   BookFacility: undefined;
+  ParticipantForm: { eventId: string };
+  Ticket: { registration: any };
+  QRCodeScan: undefined;
 };
 
 export type Navigation =

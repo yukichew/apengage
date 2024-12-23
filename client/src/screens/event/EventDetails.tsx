@@ -5,8 +5,11 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import IconButton from '../../components/common/IconButton';
 import AppContainer from '../../components/containers/AppContainer';
 import { EventItem } from '../../constants/types';
@@ -19,6 +22,21 @@ type Props = {
 
 const EventDetails = ({ route, navigation }: Props) => {
   const { event } = route.params;
+
+  const handleRegister = () => {
+    const eventIdStr = event.id !== undefined ? String(event.id) : '';
+    if (!eventIdStr) {
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid event',
+        text2: 'Please try again',
+        position: 'top',
+        topOffset: 60,
+      });
+      return;
+    }
+    navigation.navigate('ParticipantForm', { eventId: eventIdStr });
+  };
 
   return (
     <AppContainer navigation={navigation} showBackButton>
@@ -121,6 +139,12 @@ const EventDetails = ({ route, navigation }: Props) => {
           </View>
         </View>
       </ScrollView>
+      <TouchableOpacity style={styles.fab} onPress={handleRegister}>
+        <Text style={styles.fabText}>Register Now</Text>
+        <View style={styles.icon}>
+          <AntDesign name='arrowright' size={18} color='white' />
+        </View>
+      </TouchableOpacity>
     </AppContainer>
   );
 };
@@ -172,5 +196,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 3,
+      height: 5,
+    },
+    flexDirection: 'row',
+  },
+  fabText: {
+    fontSize: 18,
+    fontFamily: 'Poppins-Semibold',
+    alignSelf: 'center',
+  },
+  icon: {
+    marginLeft: 10,
+    borderRadius: 20,
+    backgroundColor: 'black',
+    padding: 8,
   },
 });

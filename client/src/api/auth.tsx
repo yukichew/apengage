@@ -115,6 +115,14 @@ export const getToken = async (): Promise<string | null> => {
   }
 };
 
+export const clearToken = async () => {
+  try {
+    await AsyncStorage.removeItem('authToken');
+  } catch (e) {
+    console.error('Failed to clear token:', e);
+  }
+};
+
 export const getCurrentUser = async () => {
   try {
     const user = await AsyncStorage.getItem('currentUser');
