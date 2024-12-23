@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import Octicons from 'react-native-vector-icons/Octicons';
+import { formatDateTime } from '../../utils/formatDate';
 
 type Props = {
   item: any;
@@ -19,7 +20,7 @@ const FlatListItem = ({ item, onPress }: Props) => {
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image source={{ uri: item.thumbnail }} style={styles.image} />
       <View style={styles.contentContainer}>
-        <Text style={styles.date}>{item.startTime}</Text>
+        <Text style={styles.date}>{formatDateTime(item.startTime)}</Text>
         <Text style={styles.title}>{item.name}</Text>
 
         <View style={styles.row}>

@@ -73,6 +73,8 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string/>
+	<key>NSCalendarsUsageDescription</key>
+	<string>We need your permission to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
 	<string>$APEngage needs access to your Camera.</string>
 	<key>UILaunchStoryboardName</key>

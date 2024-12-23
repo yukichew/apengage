@@ -21,8 +21,8 @@ const registrationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: 'Pending',
-      enum: ['Pending', 'Attended', 'Absent'],
+      default: 'Upcoming',
+      enum: ['Upcoming', 'Attended', 'Absent'],
     },
   },
   {

@@ -92,6 +92,7 @@ const ParticipantForm = ({ route, navigation }: Props) => {
                 <FormikField name={field.id} key={field.id}>
                   {({ field: formikField, form }: any) => (
                     <SelectList
+                      key={field.id}
                       setSelected={(val: string) => {
                         form.setFieldValue(field.id, val);
                       }}

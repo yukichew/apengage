@@ -2,7 +2,6 @@ const { sendError } = require('../../helpers/error');
 const Form = require('../../models/event/form');
 const Registration = require('../../models/event/registration');
 const QRCode = require('qrcode');
-const path = require('path');
 
 exports.joinEvent = async (req, res) => {
   const { id } = req.params;
@@ -58,6 +57,7 @@ exports.joinEvent = async (req, res) => {
   try {
     const qrCode = await QRCode.toDataURL(JSON.stringify(qrCodeData));
     registration.qrCode = qrCode;
+    await registration.save();
 
     res.json({
       registration: {
@@ -91,17 +91,62 @@ exports.getRegistration = async (req, res) => {
   const { id } = req.params;
   const registration = await Registration.findById(id)
     .populate('eventForm', 'event')
-    .populate('participant', 'fullname');
+    .populate('participant', 'fullname apkey');
   if (!registration) return sendError(res, 404, 'Registration not found');
 
   res.json({
     registration: {
       id: registration._id,
       eventId: registration.eventForm.event,
-      participant: registration.participant.fullname,
+      participant: {
+        fullname: registration.participant.fullname,
+        apkey: registration.participant.apkey,
+      },
       response: registration.response,
       qrCode: registration.qrCode,
       status: registration.status,
     },
   });
+};
+
+exports.getParticipatedEvents = async (req, res) => {
+  const userId = req.user._id;
+  const registrations = await Registration.find({
+    participant: userId,
+  }).populate({
+    path: 'eventForm',
+    populate: {
+      path: 'event',
+      select:
+        'name type desc startTime endTime mode organizer categories location venueBooking price thumbnail',
+    },
+  });
+
+  if (!registrations || registrations.length === 0) {
+    return sendError(res, 404, 'No events found');
+  }
+
+  const events = registrations.map((registration) => ({
+    registrationId: registration._id,
+    event: {
+      id: registration.eventForm.event._id,
+      name: registration.eventForm.event.name,
+      type: registration.eventForm.event.type,
+      categories: registration.eventForm.event.categories,
+      desc: registration.eventForm.event.desc,
+      startTime: registration.eventForm.event.startTime,
+      endTime: registration.eventForm.event.endTime,
+      mode: registration.eventForm.event.mode,
+      organizer: registration.eventForm.event.organizer,
+      location: registration.eventForm.event.location,
+      venue: registration.eventForm.event.venueBooking?.venue,
+      price: registration.eventForm.event.price,
+      thumbnail: registration.eventForm.event.thumbnail,
+    },
+    status: registration.status,
+    qrCode: registration.qrCode,
+    response: registration.response,
+  }));
+
+  res.json({ events });
 };
