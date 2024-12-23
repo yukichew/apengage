@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
+import {
+  Dimensions,
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import RNCalendarEvents, { Calendar } from 'react-native-calendar-events';
 import Toast from 'react-native-toast-message';
 import { getEvent, getRegistration } from '../../../api/event';
+import Button from '../../../components/common/Button';
 import AppContainer from '../../../components/containers/AppContainer';
 import { EventItem } from '../../../constants/types';
 import { Navigation } from '../../../navigation/types';
@@ -14,10 +23,13 @@ type Props = {
 
 const Ticket = ({ route, navigation }: Props) => {
   const { registration } = route.params;
-  const [event, setEvent] = useState<EventItem>();
+  const [event, setEvent] = useState<EventItem | null>(null);
+  const [info, setInfo] = useState<any | null>(null);
+  const [calendars, setCalendars] = useState<Calendar[]>([]);
+  const [pickedCal, setPickedCal] = useState<Calendar | null>(null);
 
   const fetchEvent = async () => {
-    const res = await getRegistration({ id: registration.id });
+    const res = await getRegistration({ id: registration });
     if (!res.success) {
       return Toast.show({
         type: 'error',
@@ -27,6 +39,7 @@ const Ticket = ({ route, navigation }: Props) => {
         topOffset: 60,
       });
     }
+    setInfo(res.data.registration);
 
     const res2 = await getEvent({ id: res.data.registration.eventId });
     if (!res2.success) {
@@ -45,59 +58,155 @@ const Ticket = ({ route, navigation }: Props) => {
     fetchEvent();
   }, []);
 
+  useEffect(() => {
+    async function loadCalendars() {
+      try {
+        const perms = await RNCalendarEvents.requestPermissions();
+        if (perms === 'authorized') {
+          const allCalendars = await RNCalendarEvents.findCalendars();
+          const primaryCal = allCalendars.find(
+            (cal) => cal.isPrimary && cal.allowsModifications
+          );
+          setCalendars(allCalendars);
+          setPickedCal(primaryCal || null);
+        } else {
+          console.log('Calendar permission denied.');
+        }
+      } catch (error) {
+        console.log('Error while fetching calendars:', error);
+      }
+    }
+
+    if (Platform.OS === 'android') {
+      loadCalendars();
+    }
+  }, []);
+
+  const addToCalendar = async () => {
+    if (!event) return;
+
+    try {
+      const status = await RNCalendarEvents.requestPermissions();
+      if (status !== 'authorized') {
+        return Toast.show({
+          type: 'error',
+          text1: 'Permission Denied',
+          text2: 'Calendar permission is required to add events',
+          position: 'top',
+          topOffset: 60,
+        });
+      }
+
+      const eventDetails = {
+        title: event.name,
+        startDate: new Date(event.startTime).toISOString(),
+        endDate: new Date(event.endTime).toISOString(),
+        location: event.mode === 'oncampus' ? event.venue : event.location,
+        notes: `${event.desc}`,
+        calendar: 'default',
+      };
+
+      await RNCalendarEvents.saveEvent(eventDetails.title, {
+        ...eventDetails,
+        alarms: [{ date: -24 * 60 }], // 1 day before
+      });
+
+      Toast.show({
+        type: 'success',
+        text1: 'Event Added',
+        text2: 'The event has been added to your calendar',
+        position: 'top',
+        topOffset: 60,
+      });
+    } catch (error) {
+      let errorMessage = 'An unknown error occurred';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      console.error('Error while adding event to calendar:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to Add Event',
+        text2: errorMessage,
+        position: 'top',
+        topOffset: 60,
+      });
+    }
+  };
+  if (!event || !info) {
+    return (
+      <AppContainer navigation={navigation} showBackButton>
+        <View style={styles.container}>
+          <Text style={styles.notFoundText}>No event found</Text>
+        </View>
+      </AppContainer>
+    );
+  }
+
   return (
     <AppContainer navigation={navigation} showBackButton>
       <View style={styles.container}>
         <View style={{ width: '90%', alignSelf: 'center', marginBottom: 14 }}>
-          <Text style={styles.text}>Booking ID</Text>
           <Text style={{ fontFamily: 'Poppins-Bold', fontSize: 20 }}>
-            Title
+            {event.name}
           </Text>
         </View>
 
         <View style={styles.textContainer}>
           <View style={styles.gridItem}>
             <Text style={styles.text}>Location</Text>
-            <Text style={styles.content}></Text>
+            <Text style={styles.content}>
+              {event.mode === 'oncampus' ? event.venue : event.location}
+            </Text>
           </View>
           <View style={styles.gridItem}>
             <Text style={styles.text}>Price</Text>
             <Text style={styles.content}>
-              {event?.price ? `RM${event.price}` : 'Free'}
+              {event.price ? `RM${event.price}` : 'Free'}
             </Text>
           </View>
           <View style={styles.gridItem}>
             <Text style={styles.text}>Ticket Holder</Text>
-            <Text style={styles.content}>{registration.participant}</Text>
+            <Text style={styles.content}>{info.participant.fullname}</Text>
           </View>
           <View style={styles.gridItem}>
             <Text style={styles.text}>APKey</Text>
-            <Text style={styles.content}>
-              {event?.type === 'oncampus' ? event.venue : event?.location}
-            </Text>
+            <Text style={styles.content}>{info.participant.apkey}</Text>
           </View>
           <View style={styles.gridItem}>
             <Text style={styles.text}>Start Time</Text>
             <Text style={styles.content}>
-              {event?.startTime ? formatDateTime(event.startTime) : ''}
+              {event.startTime ? formatDateTime(event.startTime) : ''}
             </Text>
           </View>
           <View style={styles.gridItem}>
             <Text style={styles.text}>End Time</Text>
             <Text style={styles.content}>
-              {event?.endTime ? formatDateTime(event.endTime) : ''}
+              {event.endTime ? formatDateTime(event.endTime) : ''}
             </Text>
           </View>
         </View>
 
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <Image source={{ uri: registration.qrCode }} style={styles.qrCode} />
+          <Image source={{ uri: info.qrCode }} style={styles.qrCode} />
+          <Text
+            style={{
+              fontFamily: 'Poppins-Regular',
+              fontSize: 10,
+              color: 'rgba(0, 0, 0, 0.5)',
+              marginBottom: 10,
+            }}
+          >
+            {registration}
+          </Text>
           <Text style={[styles.text, { width: '90%', textAlign: 'justify' }]}>
             The QR code is unique and only allows one entry per scan.
             Unauthorized duplication of this ticket may prevent you admittance
             to the event.
           </Text>
         </View>
+
+        <Button title='Add to Calendar' onPress={addToCalendar} />
       </View>
     </AppContainer>
   );
@@ -133,7 +242,6 @@ const styles = StyleSheet.create({
   qrCode: {
     width: 170,
     height: 170,
-    marginBottom: 10,
   },
   textContainer: {
     flexDirection: 'row',
@@ -149,5 +257,11 @@ const styles = StyleSheet.create({
   content: {
     fontFamily: 'Poppins-Medium',
     fontSize: 14,
+  },
+  notFoundText: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 20,
+    color: 'red',
+    textAlign: 'center',
   },
 });

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Share from 'react-native-share';
 import Toast from 'react-native-toast-message';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import IconButton from '../../components/common/IconButton';
@@ -38,6 +39,39 @@ const EventDetails = ({ route, navigation }: Props) => {
     navigation.navigate('ParticipantForm', { eventId: eventIdStr });
   };
 
+  const handleShare = async () => {
+    try {
+      const shareOptions = {
+        title: `Check out this event: ${event.name}`,
+        message: `Hey, check out this event: ${
+          event.name
+        } happening on ${new Date(event.startTime).toLocaleDateString()} at ${
+          event.venue
+        }. It's ${event.price ? `RM ${event.price}` : 'FREE'}!`,
+        url: event.thumbnail,
+      };
+
+      const res = await Share.open(shareOptions);
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === 'User did not share') {
+          console.log('User canceled sharing.');
+        } else {
+          console.error('Share failed:', err);
+          Toast.show({
+            type: 'error',
+            text1: 'Sharing Failed',
+            text2: 'Please try again later.',
+            position: 'top',
+            topOffset: 60,
+          });
+        }
+      } else {
+        console.error('An unknown error occurred:', err);
+      }
+    }
+  };
+
   return (
     <AppContainer navigation={navigation} showBackButton>
       <ScrollView>
@@ -52,7 +86,7 @@ const EventDetails = ({ route, navigation }: Props) => {
               icon='share-square-o'
               iconLibrary='FontAwesome'
               style={{ padding: 6 }}
-              onPress={() => console.log('notification')}
+              onPress={handleShare}
             />
           </View>
 
