@@ -9,6 +9,8 @@ export type Field =
       required?: boolean;
       maxLength?: number;
       defaultValue?: string;
+      defaultField?: boolean;
+      value?: string;
     }
   | {
       id: string;
@@ -19,6 +21,8 @@ export type Field =
       options: string[];
       selectedOptions?: string[];
       defaultValue?: string;
+      defaultField?: boolean;
+      value?: string;
     };
 
 export type Props = {

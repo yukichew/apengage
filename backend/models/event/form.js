@@ -10,6 +10,7 @@ const eventFormSchema = new mongoose.Schema(
     fields: [
       {
         label: { type: String, required: true, trim: true },
+        normalizedLabel: { type: String, trim: true },
         required: { type: Boolean, default: false },
         desc: { type: String, trim: true },
         type: {
@@ -26,6 +27,7 @@ const eventFormSchema = new mongoose.Schema(
         },
         options: { type: [String] },
         order: { type: Number },
+        defaultField: { type: Boolean, default: false },
       },
     ],
     createdBy: {
@@ -38,5 +40,16 @@ const eventFormSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+eventFormSchema.pre('save', function (next) {
+  if (this.fields) {
+    this.fields = this.fields.map((field) => ({
+      ...field,
+      normalizedLabel:
+        field.normalizedLabel || field.label.toLowerCase().replace(/\s+/g, '_'),
+    }));
+  }
+  next();
+});
 
 module.exports = mongoose.model('EventForm', eventFormSchema);

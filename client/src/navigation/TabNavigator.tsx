@@ -7,7 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Event from '../screens/event/Event';
-import EventForm from '../screens/event/EventForm';
+import EventForm from '../screens/event/organizer/EventForm';
 import History from '../screens/History';
 import Home from '../screens/Home';
 import Profile from '../screens/profile/Profile';

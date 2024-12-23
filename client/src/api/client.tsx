@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { getToken } from './auth';
+import { navigationRef } from '../navigation/RootNavigator';
+import { clearToken, getToken } from './auth';
 
 const client = axios.create({
-  baseURL: 'http://192.168.100.101:8000/api',
+  baseURL: 'http://192.168.1.18:8000/api',
 });
 
 client.interceptors.request.use(
@@ -14,6 +15,17 @@ client.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+client.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response && error.response.status === 401) {
+      await clearToken();
+      navigationRef.navigate('Login');
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default client;

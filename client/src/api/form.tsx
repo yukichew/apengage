@@ -20,3 +20,39 @@ export const createForm = async (values: {
     return catchAxiosError(error);
   }
 };
+
+export const joinEvent = async (values: {
+  formId: string;
+  response: any;
+}): Promise<ApiResponse> => {
+  try {
+    const response = await client.post<ApiResponse>(
+      `/form/${values.formId}/join`,
+      {
+        response: values.response,
+      }
+    );
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};
+
+export const getForm = async (values: {
+  eventId: string;
+}): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<any>('/form/' + values.eventId);
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};

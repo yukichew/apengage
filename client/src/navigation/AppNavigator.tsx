@@ -6,8 +6,11 @@ import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import Verification from '../screens/auth/Verification';
-import CustomForm from '../screens/event/CustomForm';
 import EventDetails from '../screens/event/EventDetails';
+import CustomForm from '../screens/event/organizer/CustomForm';
+import ParticipantForm from '../screens/event/participant/ParticipantForm';
+import QRCodeScan from '../screens/event/participant/QRCodeScan';
+import Ticket from '../screens/event/participant/Ticket';
 import FacilityForm from '../screens/logistics/FacilityForm';
 import VenueForm from '../screens/logistics/VenueForm';
 import EditProfile from '../screens/profile/EditProfile';
@@ -28,6 +31,16 @@ const AppNavigator: FC = () => {
     };
 
     checkAuth();
+
+    const authMonitor = setInterval(async () => {
+      const token = await getToken();
+      if (!token) {
+        setIsAuthenticated(false);
+        clearInterval(authMonitor);
+      }
+    }, 3000);
+
+    return () => clearInterval(authMonitor);
   }, []);
 
   if (isLoading) {
@@ -53,6 +66,9 @@ const AppNavigator: FC = () => {
       <Stack.Screen name='EventDetails' component={EventDetails} />
       <Stack.Screen name='BookVenue' component={VenueForm} />
       <Stack.Screen name='BookFacility' component={FacilityForm} />
+      <Stack.Screen name='ParticipantForm' component={ParticipantForm} />
+      <Stack.Screen name='Ticket' component={Ticket} />
+      <Stack.Screen name='QRCodeScan' component={QRCodeScan} />
     </Stack.Navigator>
   );
 };

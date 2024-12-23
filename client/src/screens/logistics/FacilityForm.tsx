@@ -86,7 +86,6 @@ const FacilityForm = ({ navigation }: Props) => {
 
   const fetchFacilities = async () => {
     const res = await getFacilities();
-    console.log(res);
     if (!res.success) {
       return Toast.show({
         type: 'error',

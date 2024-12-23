@@ -8,8 +8,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import IconButton from '../../components/common/IconButton';
-import { Field } from '../../constants/types';
+import IconButton from '../../../components/common/IconButton';
+import { Field } from '../../../constants/types';
 
 const FieldModal = ({
   field,

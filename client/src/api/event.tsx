@@ -1,13 +1,9 @@
 import { ApiResponse, EventItem } from '../constants/types';
 import { catchAxiosError } from '../utils/error';
-import { getCurrentUser } from './auth';
 import client from './client';
 
 export const addEvent = async (values: EventItem): Promise<ApiResponse> => {
   try {
-    const currentUser = await getCurrentUser();
-    const userId = currentUser?.id;
-
     const formData = new FormData();
     formData.append('name', values.name);
     formData.append('desc', values.desc);
@@ -16,7 +12,6 @@ export const addEvent = async (values: EventItem): Promise<ApiResponse> => {
     formData.append('startTime', values.startTime);
     formData.append('endTime', values.endTime);
     formData.append('organizer', values.organizer);
-    formData.append('postedBy', userId);
 
     if (values.venue) {
       formData.append('venue', values.venue);
@@ -79,6 +74,34 @@ export const searchEvents = async (query: string): Promise<ApiResponse> => {
     return {
       success: true,
       data: response.data.events,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};
+
+export const getEvent = async (values: {
+  id: string;
+}): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<any>('/event/' + values.id);
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};
+
+export const getRegistration = async (values: {
+  id: string;
+}): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<any>('/event/registration/' + values.id);
+    return {
+      success: true,
+      data: response.data,
     };
   } catch (error: any) {
     return catchAxiosError(error);

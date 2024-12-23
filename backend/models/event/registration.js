@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const registrationSchema = new mongoose.Schema(
   {
-    event: {
+    eventForm: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'EventForm',
       required: true,
@@ -15,6 +15,14 @@ const registrationSchema = new mongoose.Schema(
     response: {
       type: Object,
       required: true,
+    },
+    qrCode: {
+      type: String,
+    },
+    status: {
+      type: String,
+      default: 'Pending',
+      enum: ['Pending', 'Attended', 'Absent'],
     },
   },
   {

@@ -3,6 +3,7 @@ import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import AppNavigator from './src/navigation/AppNavigator';
+import { navigationRef } from './src/navigation/RootNavigator';
 
 const theme = {
   ...DefaultTheme,
@@ -11,9 +12,8 @@ const theme = {
 
 const App = () => {
   return (
-    <NavigationContainer theme={theme}>
+    <NavigationContainer theme={theme} ref={navigationRef}>
       <GestureHandlerRootView>
-        {/* <CustomForm /> */}
         <AppNavigator />
         <Toast />
       </GestureHandlerRootView>
