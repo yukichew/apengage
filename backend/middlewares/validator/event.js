@@ -11,12 +11,24 @@ exports.eventFormValidator = [
     .trim()
     .not()
     .isEmpty()
-    .withMessage('Event start time is missing'),
+    .withMessage('Event start time is missing')
+    .custom((value) => {
+      if (new Date(value) < new Date()) {
+        throw new Error('Event start time cannot be in the past');
+      }
+      return true;
+    }),
   check('endTime')
     .trim()
     .not()
     .isEmpty()
-    .withMessage('Event end time is missing'),
+    .withMessage('Event end time is missing')
+    .custom((value, { req }) => {
+      if (new Date(value) < new Date(req.body.startTime)) {
+        throw new Error('Event end time cannot be earlier than start time');
+      }
+      return true;
+    }),
   check('mode')
     .trim()
     .not()

@@ -30,7 +30,9 @@ const FlatListItem = ({ item, onPress }: Props) => {
               size={16}
               style={{ color: 'rgba(37, 37, 37, 0.7)' }}
             />
-            <Text style={styles.locationText}>{item.venue}</Text>
+            <Text style={styles.locationText}>
+              {item.mode === 'oncampus' ? item.venue : item.location}
+            </Text>
           </View>
           <View style={styles.priceContainer}>
             <Text style={styles.priceText}>RM {item.price}</Text>

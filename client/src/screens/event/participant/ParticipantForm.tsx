@@ -192,7 +192,7 @@ const ParticipantForm = ({ route, navigation }: Props) => {
       text1: 'Form submitted successfully!',
     });
 
-    navigation.navigate('Ticket', { registration: res.data.registration });
+    navigation.navigate('History');
 
     formikActions.resetForm();
   };

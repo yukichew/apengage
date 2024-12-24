@@ -4,10 +4,12 @@ const {
   getAllEvents,
   createEvent,
   getEvent,
+  getCreatedEvents,
 } = require('../../controllers/event/eventController');
 const {
   getRegistration,
   getParticipatedEvents,
+  getRegistrations,
 } = require('../../controllers/event/registrationController');
 const { authenticate, isAdmin } = require('../../middlewares/auth');
 const { isLogoExist } = require('../../middlewares/image');
@@ -30,6 +32,8 @@ router.get('/events', authenticate, getEvents);
 router.get('/allEvents', authenticate, isAdmin, getAllEvents);
 router.get('/search', authenticate, searchEvents);
 router.get('/registration/:id', authenticate, getRegistration);
+router.get('/registrations/:id', authenticate, getRegistrations);
+router.get('/events/organized', authenticate, getCreatedEvents);
 router.get('/events/participated', authenticate, getParticipatedEvents);
 router.get('/:id', authenticate, getEvent);
 

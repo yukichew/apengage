@@ -7,6 +7,7 @@ const eventFormSchema = new mongoose.Schema(
       ref: 'Event',
       required: true,
     },
+    deadline: { type: Date, required: true },
     fields: [
       {
         label: { type: String, required: true, trim: true },

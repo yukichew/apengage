@@ -14,7 +14,6 @@ const App = () => {
   return (
     <NavigationContainer theme={theme} ref={navigationRef}>
       <GestureHandlerRootView>
-        {/* <CustomForm /> */}
         <AppNavigator />
         <Toast />
       </GestureHandlerRootView>

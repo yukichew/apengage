@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, Text } from 'react-native';
+import { FlatList, RefreshControl, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { getParticipatedEvents } from '../../api/event';
 import HistoryItem from '../../components/custom/HistoryItem';
@@ -44,7 +44,7 @@ const ParticipatedEvents = ({ navigation }: Props) => {
 
   return (
     <>
-      {events ? (
+      {events.length !== 0 ? (
         <FlatList
           data={events}
           renderItem={renderItem}
@@ -55,7 +55,23 @@ const ParticipatedEvents = ({ navigation }: Props) => {
           }
         />
       ) : (
-        <Text>No events found</Text>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: 'Poppins-Regular',
+              color: 'rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            No events found
+          </Text>
+        </View>
       )}
     </>
   );

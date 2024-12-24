@@ -7,9 +7,10 @@ import IconButton from './IconButton';
 type Props = {
   placeholder: string;
   name: string;
+  minimumDate?: Date;
 };
 
-const DateInput = ({ placeholder, name }: Props) => {
+const DateInput = ({ placeholder, name, minimumDate }: Props) => {
   const [field, meta, helpers] = useField(name);
   const [open, setOpen] = useState(false);
 
@@ -28,18 +29,23 @@ const DateInput = ({ placeholder, name }: Props) => {
           modal
           open={open}
           date={field.value ? new Date(field.value) : new Date()}
+          minimumDate={minimumDate}
           onConfirm={(date) => {
             setOpen(false);
-            helpers.setValue(date.toISOString());
+            const adjustedDate = new Date(date);
+            adjustedDate.setSeconds(0);
+            adjustedDate.setMilliseconds(0);
+            helpers.setValue(adjustedDate.toISOString());
+            helpers.setTouched(true);
           }}
           onCancel={() => {
             setOpen(false);
           }}
         />
-        {meta.touched && meta.error && (
-          <Text style={styles.errorText}>{meta.error}</Text>
-        )}
       </TouchableOpacity>
+      {meta.touched && meta.error && (
+        <Text style={styles.errorText}>{meta.error}</Text>
+      )}
     </>
   );
 };

@@ -120,3 +120,32 @@ export const getParticipatedEvents = async (): Promise<ApiResponse> => {
     return catchAxiosError(error);
   }
 };
+
+export const getOrganizedEvents = async (): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<any>('/event/events/organized');
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};
+
+export const getAttendees = async (values: {
+  eventId: string;
+}): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<any>(
+      '/event/registrations/' + values.eventId
+    );
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};
