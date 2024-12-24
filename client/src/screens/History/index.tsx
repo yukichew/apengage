@@ -23,7 +23,7 @@ const History = ({ navigation }: Props) => {
       case 'participated':
         return <ParticipatedEvents navigation={navigation} />;
       case 'organized':
-        return <OrganizedEvents />;
+        return <OrganizedEvents navigation={navigation} />;
       default:
         return null;
     }

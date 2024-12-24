@@ -268,3 +268,19 @@ exports.getProfile = async (req, res) => {
     },
   });
 };
+
+// exports.updateFCMToken = async (req, res) => {
+//   const { userId, fcmToken } = req.body;
+
+//   const user = await User.findById(userId);
+//   if (!user) {
+//     return sendError(res, 404, 'User not found');
+//   }
+
+//   user.fcmToken = fcmToken;
+//   await user.save();
+
+//   return res.json({
+//     message: 'FCM token updated successfully',
+//   });
+// };
