@@ -22,6 +22,7 @@ export type RootStackNavigatorParamsList = {
   ParticipantForm: { eventId: string };
   Ticket: { registration: any };
   QRCodeScan: undefined;
+  Dashboard: { eventId: string };
 };
 
 export type Navigation =

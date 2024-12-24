@@ -7,12 +7,12 @@ const morgan = require('morgan');
 const cors = require('cors');
 
 const { sendError } = require('./helpers/error');
-const userRouter = require('./routes/user');
+const userRouter = require('./routes/auth/user');
 const eventRouter = require('./routes/event');
 const categoryRouter = require('./routes/event/category');
 const formRouter = require('./routes/event/form');
 const venueRouter = require('./routes/logistic/venue');
-const adminRouter = require('./routes/admin');
+const adminRouter = require('./routes/auth/admin');
 const facilityRouter = require('./routes/logistic/facility');
 const transportRouter = require('./routes/logistic/transport');
 

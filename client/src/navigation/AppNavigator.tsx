@@ -11,6 +11,7 @@ import CustomForm from '../screens/event/organizer/CustomForm';
 import QRCodeScan from '../screens/event/organizer/QRCodeScan';
 import ParticipantForm from '../screens/event/participant/ParticipantForm';
 import Ticket from '../screens/event/participant/Ticket';
+import Dashboard from '../screens/History/Dashboard';
 import FacilityForm from '../screens/logistics/FacilityForm';
 import VenueForm from '../screens/logistics/VenueForm';
 import EditProfile from '../screens/profile/EditProfile';
@@ -68,6 +69,7 @@ const AppNavigator: FC = () => {
       <Stack.Screen name='BookFacility' component={FacilityForm} />
       <Stack.Screen name='ParticipantForm' component={ParticipantForm} />
       <Stack.Screen name='Ticket' component={Ticket} />
+      <Stack.Screen name='Dashboard' component={Dashboard} />
       <Stack.Screen name='QRCodeScan' component={QRCodeScan} />
     </Stack.Navigator>
   );
