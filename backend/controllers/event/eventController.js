@@ -18,6 +18,7 @@ exports.createEvent = async (req, res) => {
   } = req.body;
 
   const { file } = req;
+
   const newEvent = new Event({
     name,
     desc,
@@ -77,7 +78,7 @@ exports.getEvents = async (req, res) => {
         desc: event.desc,
         type: event.type,
         mode: event.mode,
-        venue: event?.venueBooking.venue.name,
+        venue: event?.venueBooking?.venue.name,
         startTime: event.startTime,
         endTime: event.endTime,
         location: event?.location,
@@ -239,6 +240,49 @@ exports.getAllEvents = async (req, res) => {
         type: event.type,
         mode: event.mode,
         venue: event?.venueBooking.venue.name,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        location: event?.location,
+        categories: event?.categories,
+        price: event?.price,
+        postedBy: event.postedBy.apkey,
+        organizer: event.organizer,
+        thumbnail: event?.thumbnail.url,
+        createdAt: event.createdAt,
+        updatedAt: event.updatedAt,
+        status: event.status,
+      };
+    }),
+    count,
+  });
+};
+
+exports.getCreatedEvents = async (req, res) => {
+  const userId = req.user._id;
+  const query = { postedBy: userId };
+
+  const events = await Event.find(query)
+    .sort({ createdAt: -1 })
+    .populate({
+      path: 'venueBooking',
+      populate: {
+        path: 'venue',
+        select: 'name',
+      },
+    })
+    .populate('postedBy', 'apkey');
+
+  const count = await Event.countDocuments(query);
+
+  res.json({
+    events: events.map((event) => {
+      return {
+        id: event._id,
+        name: event.name,
+        desc: event.desc,
+        type: event.type,
+        mode: event.mode,
+        venue: event?.venueBooking?.venue.name,
         startTime: event.startTime,
         endTime: event.endTime,
         location: event?.location,

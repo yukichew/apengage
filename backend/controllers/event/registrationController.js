@@ -19,6 +19,10 @@ exports.joinEvent = async (req, res) => {
     return sendError(res, 400, 'You have already registered for this event.');
   }
 
+  if (new Date() > form.deadline) {
+    return sendError(res, 400, 'Registration deadline has passed.');
+  }
+
   const formFields = form.fields.map((field) => ({
     id: field._id.toString(),
     label: field.label,
@@ -111,6 +115,7 @@ exports.getRegistration = async (req, res) => {
 
 exports.getParticipatedEvents = async (req, res) => {
   const userId = req.user._id;
+
   const registrations = await Registration.find({
     participant: userId,
   }).populate({
@@ -121,10 +126,6 @@ exports.getParticipatedEvents = async (req, res) => {
         'name type desc startTime endTime mode organizer categories location venueBooking price thumbnail',
     },
   });
-
-  if (!registrations || registrations.length === 0) {
-    return sendError(res, 404, 'No events found');
-  }
 
   const events = registrations.map((registration) => ({
     registrationId: registration._id,
@@ -149,4 +150,47 @@ exports.getParticipatedEvents = async (req, res) => {
   }));
 
   res.json({ events });
+};
+
+exports.getRegistrations = async (req, res) => {
+  const { id } = req.params;
+
+  const eventForm = await Form.findOne({ event: id });
+  if (!eventForm) {
+    return sendError(res, 404, 'Event not found');
+  }
+
+  const registrations = await Registration.find({
+    eventForm: eventForm._id,
+  }).sort({ createdAt: -1 });
+
+  const totalRegistrations = await Registration.countDocuments({
+    eventForm: eventForm._id,
+  });
+
+  const attendedRegistrations = await Registration.countDocuments({
+    eventForm: eventForm._id,
+    status: 'Attended',
+  });
+
+  const attendanceRate =
+    totalRegistrations === 0
+      ? 0
+      : Math.round((attendedRegistrations / totalRegistrations) * 100);
+
+  res.json({
+    registrations: registrations.map((registration) => {
+      return {
+        id: registration._id,
+        eventForm: registration.eventForm,
+        participant: registration.participant,
+        response: registration.response,
+        status: registration.status,
+        createdAt: registration.createdAt,
+        updatedAt: registration.updatedAt,
+      };
+    }),
+    totalParticipants: totalRegistrations,
+    attendanceRate: attendanceRate,
+  });
 };

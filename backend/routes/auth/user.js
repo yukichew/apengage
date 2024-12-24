@@ -7,11 +7,11 @@ const {
   resetPassword,
   editProfile,
   getProfile,
-} = require('../controllers/user/userController');
-const multer = require('../middlewares/multer');
-const { isResetTokenValid, authenticate } = require('../middlewares/auth');
-const { validate } = require('../middlewares/validator');
-const { userValidator } = require('../middlewares/validator/user');
+} = require('../../controllers/user/userController');
+const multer = require('../../middlewares/multer');
+const { isResetTokenValid, authenticate } = require('../../middlewares/auth');
+const { validate } = require('../../middlewares/validator');
+const { userValidator } = require('../../middlewares/validator/user');
 
 // Auth Routes
 router.post(
@@ -34,8 +34,8 @@ router.put(
   multer.single('profile'),
   editProfile
 );
+// router.put('/update-fcm-token', authenticate, updateFCMToken);
 router.delete('/delete-account');
-router.get('/profile', authenticate, getProfile);
 router.get('/profile', authenticate, getProfile);
 
 module.exports = router;

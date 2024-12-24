@@ -5,10 +5,10 @@ const {
   updateAdmin,
   createAdmin,
   updateUserStatus,
-} = require('../controllers/user/adminController');
-const { isAdmin, authenticate } = require('../middlewares/auth');
-const { validate } = require('../middlewares/validator');
-const { adminValidator } = require('../middlewares/validator/user');
+} = require('../../controllers/user/adminController');
+const { isAdmin, authenticate } = require('../../middlewares/auth');
+const { validate } = require('../../middlewares/validator');
+const { adminValidator } = require('../../middlewares/validator/user');
 
 const router = require('express').Router();
 

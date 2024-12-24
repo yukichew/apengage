@@ -119,10 +119,14 @@ const EventDetails = ({ route, navigation }: Props) => {
                   />
                 </View>
                 <View style={{ left: 10 }}>
-                  <Text style={styles.text}>{event.venue}</Text>
-                  {event.mode === 'oncampus' ? (
-                    <Text style={styles.desc}>Asia Pacific University</Text>
-                  ) : null}
+                  <Text style={styles.text}>
+                    {event.mode === 'oncampus' ? event.venue : event.location}
+                  </Text>
+                  <Text style={styles.desc}>
+                    {event.mode === 'oncampus'
+                      ? 'Asia Pacific University'
+                      : event.mode}
+                  </Text>
                 </View>
               </View>
             </View>

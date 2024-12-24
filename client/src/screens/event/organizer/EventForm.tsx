@@ -25,8 +25,8 @@ const EventForm = ({ navigation }: Props) => {
     name: '',
     desc: '',
     organizer: '',
-    startTime: new Date(),
-    endTime: new Date(),
+    startTime: new Date().toISOString(),
+    endTime: new Date().toISOString(),
     location: '',
     price: 0,
   };
@@ -34,8 +34,30 @@ const EventForm = ({ navigation }: Props) => {
   const validationSchema = yup.object({
     name: yup.string().trim().required('Event name is missing'),
     desc: yup.string().trim().required('Event description is missing'),
-    startTime: yup.string().trim().required('Event start time is missing'),
-    endTime: yup.string().trim().required('Event end time is missing'),
+    startTime: yup
+      .string()
+      .trim()
+      .required('Event start time is missing')
+      .test(
+        'is-greater',
+        'Start time must be later than current time',
+        function (value) {
+          const startTime = new Date(value);
+          return startTime > new Date();
+        }
+      ),
+    endTime: yup
+      .string()
+      .required('Event end time is missing')
+      .test(
+        'is-after-start',
+        'End time must be later than start time',
+        function (value) {
+          const startTime = new Date(this.parent.startTime);
+          const endTime = new Date(value);
+          return endTime > startTime;
+        }
+      ),
     organizer: yup.string().trim().required('Event organizer is missing'),
     location: yup.string().when(['selectedMode'], ([mode], schema) => {
       if (mode === 'offcampus' || mode === 'online') {
@@ -292,8 +314,16 @@ const EventForm = ({ navigation }: Props) => {
             leftIcon='file-text'
             leftIconLibrary='Feather'
           />
-          <DateInput placeholder='Start Time' name='startTime' />
-          <DateInput placeholder='End Time' name='endTime' />
+          <DateInput
+            placeholder='Start Time'
+            name='startTime'
+            minimumDate={new Date()}
+          />
+          <DateInput
+            placeholder='End Time'
+            name='endTime'
+            minimumDate={new Date()}
+          />
         </>
       ),
     },

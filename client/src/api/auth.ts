@@ -93,6 +93,7 @@ export const verifyEmail = async (values: {
 export const logout = async (): Promise<void> => {
   try {
     await AsyncStorage.removeItem('token');
+    await AsyncStorage.removeItem('currentUser');
   } catch (error) {
     console.error('Failed to logout:', error);
   }
@@ -135,3 +136,24 @@ export const getCurrentUser = async () => {
     return null;
   }
 };
+
+// export const updateFCMTokent = async (values: {
+//   fcmToken: string;
+// }): Promise<ApiResponse> => {
+//   try {
+//     const response = await client.put<ApiResponse>('/user/update-fcm-token', {
+//       ...values,
+//     });
+
+//     const { token, user } = response.data;
+//     if (token) await saveToken(token);
+//     if (user) await AsyncStorage.setItem('currentUser', JSON.stringify(user));
+
+//     return {
+//       success: true,
+//       user: response.data.user,
+//     };
+//   } catch (error: any) {
+//     return catchAxiosError(error);
+//   }
+// };
