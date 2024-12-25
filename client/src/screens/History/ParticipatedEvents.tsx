@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, RefreshControl, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { getParticipatedEvents } from '../../api/event';
 import HistoryItem from '../../components/custom/HistoryItem';
@@ -47,17 +41,7 @@ const ParticipatedEvents = ({ navigation }: Props) => {
 
   return (
     <>
-      {loading ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <ActivityIndicator size='large' color='rgba(0, 0, 0, 0.5)' />
-        </View>
-      ) : events.length !== 0 ? (
+      {events.length !== 0 ? (
         <FlatList
           data={events}
           renderItem={renderItem}

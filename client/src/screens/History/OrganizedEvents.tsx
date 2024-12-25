@@ -35,7 +35,9 @@ const OrganizedEvents = ({ navigation }: Props) => {
       onPress={() =>
         navigation.navigate('Dashboard', { eventId: item.id.toString() })
       }
-      // onFeedbackPress={() => console.log('Feedback')}
+      onAttendancePress={() => {
+        navigation.navigate('QRCodeScan');
+      }}
     />
   );
 
