@@ -216,34 +216,47 @@ exports.bookTransport = async (req, res) => {
 };
 
 exports.getTransportBookings = async (req, res) => {
-  const bookings = await TransportBooking.find({})
-    .sort({ createdAt: -1 })
-    .populate('transport.departure', 'type')
-    .populate('event', 'name')
-    .populate('createdBy', 'apkey');
+  const userRole = req.user.role;
+  const userId = req.user._id;
 
-  const count = await TransportBooking.countDocuments();
+  let bookings;
+  let count;
+
+  if (userRole === 'admin') {
+    bookings = await TransportBooking.find({})
+      .sort({ createdAt: -1 })
+      .populate('transport.departure', 'type')
+      .populate('event', 'name')
+      .populate('createdBy', 'apkey');
+    count = await TransportBooking.countDocuments();
+  } else {
+    bookings = await TransportBooking.find({ createdBy: userId })
+      .sort({ createdAt: -1 })
+      .populate('transport.departure', 'type')
+      .populate('event', 'name')
+      .populate('createdBy', 'apkey');
+    count = await TransportBooking.countDocuments({ createdBy: userId });
+  }
 
   res.json({
-    bookings: bookings.map((booking) => {
-      return {
-        id: booking._id,
-        transport: booking.transport.departure.type,
-        departFrom: booking.departFrom,
-        departTo: booking.departTo,
-        returnTo: booking.returnTo,
-        departDate: booking.departDate,
-        returnDate: booking.returnDate,
-        event: booking.event.name,
-        status: booking.status,
-        createdBy: booking.createdBy.apkey.toUpperCase(),
-        createdAt: booking.createdAt,
-      };
-    }),
+    bookings: bookings.map((booking) => ({
+      id: booking._id,
+      transport: booking.transport?.departure?.type,
+      departFrom: booking.departFrom,
+      departTo: booking.departTo,
+      returnTo: booking.returnTo,
+      departDate: booking.departDate,
+      returnDate: booking.returnDate,
+      event: booking.event?.name,
+      status: booking.status,
+      createdBy: booking.createdBy?.apkey?.toUpperCase(),
+      createdAt: booking.createdAt,
+    })),
     count,
   });
 };
 
+// admin only
 exports.updateTransportBookingStatus = async (req, res) => {
   const { id } = req.params;
   const { action } = req.body;

@@ -10,6 +10,7 @@ const {
   getRegistration,
   getParticipatedEvents,
   getRegistrations,
+  markAttendance,
 } = require('../../controllers/event/registrationController');
 const { authenticate, isAdmin } = require('../../middlewares/auth');
 const { isLogoExist } = require('../../middlewares/image');
@@ -27,7 +28,7 @@ router.post(
   validate,
   createEvent
 );
-
+router.post('/mark-attendance', authenticate, markAttendance);
 router.get('/events', authenticate, getEvents);
 router.get('/allEvents', authenticate, isAdmin, getAllEvents);
 router.get('/search', authenticate, searchEvents);

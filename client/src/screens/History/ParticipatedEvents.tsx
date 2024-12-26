@@ -8,12 +8,17 @@ import {
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { getParticipatedEvents } from '../../api/event';
+import FeedbackModal from '../../components/custom/FeedbackModal';
 import HistoryItem from '../../components/custom/HistoryItem';
 import { Props } from '../../constants/types';
 
 const ParticipatedEvents = ({ navigation }: Props) => {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [selectedRegistrationId, setSelectedRegistrationId] = useState<
+    string | null
+  >(null);
 
   const refreshEvents = async () => {
     setLoading(true);
@@ -41,7 +46,10 @@ const ParticipatedEvents = ({ navigation }: Props) => {
       onPress={() =>
         navigation.navigate('Ticket', { registration: item.registrationId })
       }
-      onFeedbackPress={() => console.log('Feedback')}
+      onFeedbackPress={() => {
+        setSelectedRegistrationId(item.registrationId);
+        setIsModalVisible(true);
+      }}
     />
   );
 
@@ -86,6 +94,13 @@ const ParticipatedEvents = ({ navigation }: Props) => {
           </Text>
         </View>
       )}
+
+      {/* feedback */}
+      <FeedbackModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        registrationId={selectedRegistrationId || ''}
+      />
     </>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Dimensions,
   Image,
@@ -15,11 +15,8 @@ const placeholder = require('../../assets/placeholder.png');
 type Props = {
   item: any;
   onPress: () => void;
-  //   onFeedbackPress: () => void;
+  onAttendancePress?: () => void;
 };
-
-const OrganizedItem = ({ item, onPress }: Props) => {
-  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -32,10 +29,6 @@ const OrganizedItem = ({ item, onPress }: Props) => {
       default:
         return styles.statusDefault;
     }
-  };
-
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
   };
 
   return (
@@ -64,32 +57,35 @@ const OrganizedItem = ({ item, onPress }: Props) => {
       </View>
       <View style={styles.statusContainer}>
         <Text style={getStatusStyle(item.status)}>{item.status}</Text>
-        <IconButton
-          icon='info-with-circle'
-          iconLibrary='Entypo'
-          style={{
-            color: 'rgba(0, 0, 0, 0.6)',
-            fontSize: 25,
-            marginVertical: 8,
-          }}
-          //   onPress={toggleDropdown}
-        />
-        <Text style={styles.statusDefault}>More</Text>
+        {item.type === 'public' ? (
+          <>
+            <IconButton
+              icon='qrcode-scan'
+              iconLibrary='MaterialCommunityIcons'
+              style={{
+                color: 'rgba(0, 0, 0, 0.6)',
+                fontSize: 34,
+                marginVertical: 8,
+              }}
+              onPress={onAttendancePress}
+            />
+            <Text style={styles.statusDefault}>Attendance</Text>
+          </>
+        ) : (
+          <>
+            <IconButton
+              icon='info-with-circle'
+              iconLibrary='Entypo'
+              style={{
+                color: 'rgba(0, 0, 0, 0.6)',
+                fontSize: 34,
+                marginVertical: 8,
+              }}
+            />
+            <Text style={styles.statusDefault}>Attendance</Text>
+          </>
+        )}
       </View>
-
-      {dropdownVisible && (
-        <View style={styles.dropdown}>
-          <TouchableOpacity
-            onPress={() => console.log('Mark Attendance')}
-            style={styles.dropdownItem}
-          >
-            <Text style={styles.dropdownText}>Mark Attendance</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => console.log('Analytics Dashboard')}>
-            <Text style={styles.dropdownText}>Analytics Dashboard</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </TouchableOpacity>
   );
 };
@@ -158,7 +154,6 @@ const styles = StyleSheet.create({
   statusContainer: {
     alignItems: 'center',
     padding: 10,
-    // backgroundColor: 'rgba(0, 0, 0, 0.1)',
   },
   qrCode: {
     width: 50,
@@ -183,31 +178,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'Poppins-Regular',
     color: 'rgba(0, 0, 0, 0.5)',
-  },
-  dropdown: {
-    position: 'absolute',
-    top: 45,
-    right: 0,
-    backgroundColor: 'white',
-    borderRadius: 5,
-    shadowColor: 'black',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-    zIndex: 9999,
-  },
-  dropdownText: {
-    padding: 8,
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    color: 'black',
-  },
-  dropdownItem: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0, 0, 0, 0.2)',
   },
 });

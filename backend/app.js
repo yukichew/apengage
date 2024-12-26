@@ -15,6 +15,7 @@ const venueRouter = require('./routes/logistic/venue');
 const adminRouter = require('./routes/auth/admin');
 const facilityRouter = require('./routes/logistic/facility');
 const transportRouter = require('./routes/logistic/transport');
+const feedbackRouter = require('./routes/event/feedback');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use('/api/admin', adminRouter);
 app.use('/api/facility', facilityRouter);
 app.use('/api/transport', transportRouter);
 app.use('/api/form', formRouter);
+app.use('/api/feedback', feedbackRouter);
 
 app.use((err, req, res, next) => {
   sendError(res, 500, err.message);

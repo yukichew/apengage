@@ -55,3 +55,15 @@ export const getVenueBookings = async (): Promise<ApiResponse> => {
     return catchAxiosError(error);
   }
 };
+
+export const getVenueBookingHistory = async (): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<ApiResponse>('/venue/bookings');
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};

@@ -3,6 +3,7 @@ import { StyleSheet, useWindowDimensions } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 import AppContainer from '../../components/containers/AppContainer';
 import { Navigation } from '../../navigation/types';
+import Logistics from './Logistics';
 import OrganizedEvents from './OrganizedEvents';
 import ParticipatedEvents from './ParticipatedEvents';
 
@@ -16,6 +17,7 @@ const History = ({ navigation }: Props) => {
   const [routes] = useState([
     { key: 'participated', title: 'Participated' },
     { key: 'organized', title: 'Organized' },
+    { key: 'logistics', title: 'Logistics' },
   ]);
 
   const renderScene = ({ route }: { route: any }) => {
@@ -24,6 +26,8 @@ const History = ({ navigation }: Props) => {
         return <ParticipatedEvents navigation={navigation} />;
       case 'organized':
         return <OrganizedEvents navigation={navigation} />;
+      case 'logistics':
+        return <Logistics />;
       default:
         return null;
     }

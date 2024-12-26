@@ -8,6 +8,7 @@ const {
   searchFacility,
   getFacilityBookings,
   getFacility,
+  getFacilityBookingHistory,
 } = require('../../controllers/logistic/facilityController');
 const { authenticate, isAdmin } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validator');
@@ -50,7 +51,7 @@ router.put(
 router.delete('/:id', authenticate, isAdmin, deleteFacility);
 router.get('/facilities', authenticate, getFacilities);
 router.get('/search', authenticate, searchFacility);
-router.get('/bookings', authenticate, isAdmin, getFacilityBookings);
+router.get('/bookings', authenticate, getFacilityBookings);
 router.get('/:id', authenticate, getFacility);
 
 module.exports = router;

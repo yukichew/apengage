@@ -151,27 +151,6 @@ const Profile = ({ navigation }: Props) => {
                 />
               }
             />
-            <ProfileItem
-              title='Email Notification'
-              desc='Desc'
-              onPress={() => console.log('Item pressed')}
-              leftIcon={
-                <IconButton
-                  icon='email-alert-outline'
-                  iconLibrary='MaterialCommunityIcons'
-                  onPress={() => console.log('edit profile')}
-                  style={{ color: '#2A29FF' }}
-                />
-              }
-              rightIcon={
-                <IconButton
-                  icon='toggle-off'
-                  iconLibrary='Fontisto'
-                  style={{ color: 'rgba(0, 0, 0, 0.4)', fontSize: 30 }}
-                  onPress={() => console.log('notification')}
-                />
-              }
-            />
           </View>
         </View>
       </ScrollView>

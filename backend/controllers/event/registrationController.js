@@ -85,10 +85,14 @@ exports.markAttendance = async (req, res) => {
   const registration = await Registration.findById(registrationId);
   if (!registration) return sendError(res, 404, 'Registration not found');
 
+  if (registration.status === 'Attended') {
+    return sendError(res, 400, 'Attendance already marked');
+  }
+
   registration.status = 'Attended';
   await registration.save();
 
-  res.json({ message: 'Attendance marked', registration });
+  res.json({ message: 'Attendance marked successfully', registration });
 };
 
 exports.getRegistration = async (req, res) => {
@@ -150,4 +154,81 @@ exports.getParticipatedEvents = async (req, res) => {
   }));
 
   res.json({ events });
+};
+
+exports.getRegistrations = async (req, res) => {
+  const { id } = req.params;
+
+  const eventForm = await Form.findOne({ event: id });
+  if (!eventForm) {
+    return res.json({
+      registrations: [],
+      totalParticipants: 0,
+      attended: 0,
+      notAttended: 0,
+      attendanceRate: 0,
+      genderDistribution: [],
+    });
+  }
+
+  const registrations = await Registration.find({
+    eventForm: eventForm._id,
+  }).sort({ createdAt: -1 });
+
+  const totalRegistrations = await Registration.countDocuments({
+    eventForm: eventForm._id,
+  });
+
+  const attendedRegistrations = await Registration.countDocuments({
+    eventForm: eventForm._id,
+    status: 'Attended',
+  });
+
+  const notAttendedRegistrations = totalRegistrations - attendedRegistrations;
+
+  const genderDistribution = await Registration.aggregate([
+    { $match: { eventForm: eventForm._id } },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'participant',
+        foreignField: '_id',
+        as: 'participantDetails',
+      },
+    },
+    { $unwind: '$participantDetails' },
+    {
+      $group: {
+        _id: '$participantDetails.gender',
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const attendanceRate =
+    totalRegistrations === 0
+      ? 0
+      : Math.round((attendedRegistrations / totalRegistrations) * 100);
+
+  res.json({
+    registrations: registrations.map((registration) => {
+      return {
+        id: registration._id,
+        participant: registration.participant,
+        response: registration.response,
+        status: registration.status,
+        createdAt: registration.createdAt,
+        updatedAt: registration.updatedAt,
+      };
+    }),
+    eventForm: eventForm._id,
+    totalParticipants: totalRegistrations,
+    attended: attendedRegistrations,
+    notAttended: notAttendedRegistrations,
+    attendanceRate: attendanceRate,
+    genderDistribution: genderDistribution.map((gender) => ({
+      gender: gender._id,
+      count: gender.count,
+    })),
+  });
 };

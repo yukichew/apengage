@@ -50,7 +50,7 @@ router.put(
 router.delete('/:id', authenticate, isAdmin, deleteTransport);
 router.get('/transportation', authenticate, getTransportation);
 router.get('/search', authenticate, searchTransport);
-router.get('/bookings', authenticate, isAdmin, getTransportBookings);
+router.get('/bookings', authenticate, getTransportBookings);
 router.get('/:id', authenticate, getTransport);
 
 module.exports = router;

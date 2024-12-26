@@ -149,3 +149,17 @@ export const getAttendees = async (values: {
     return catchAxiosError(error);
   }
 };
+
+export const markAttendance = async (values: { qrCodeData: any }) => {
+  try {
+    const response = await client.post<ApiResponse>('/event/mark-attendance', {
+      qrCodeData: values.qrCodeData,
+    });
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};
