@@ -39,3 +39,15 @@ export const bookFacility = async (
     return catchAxiosError(error);
   }
 };
+
+export const getFacilityBookingHistory = async (): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<ApiResponse>('/facility/bookings');
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};

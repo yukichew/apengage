@@ -193,37 +193,58 @@ exports.bookFacility = async (req, res) => {
 };
 
 exports.getFacilityBookings = async (req, res) => {
-  const bookings = await FacilityBooking.find({})
-    .sort({ createdAt: -1 })
-    .populate('facility', 'name')
-    .populate('createdBy', 'apkey')
-    .populate({
-      path: 'venueBooking',
-      populate: {
-        path: 'venue',
-        select: 'name',
-      },
-    });
+  const userRole = req.user.role;
+  const userId = req.user._id;
 
-  const count = await FacilityBooking.countDocuments();
+  let bookings;
+  let count;
+
+  if (userRole === 'admin') {
+    bookings = await FacilityBooking.find({})
+      .sort({ createdAt: -1 })
+      .populate('facility', 'name')
+      .populate('createdBy', 'apkey')
+      .populate({
+        path: 'venueBooking',
+        populate: {
+          path: 'venue',
+          select: 'name',
+        },
+      });
+
+    count = await FacilityBooking.countDocuments();
+  } else {
+    bookings = await FacilityBooking.find({ createdBy: userId })
+      .sort({ createdAt: -1 })
+      .populate('facility', 'name')
+      .populate('createdBy', 'apkey')
+      .populate({
+        path: 'venueBooking',
+        populate: {
+          path: 'venue',
+          select: 'name',
+        },
+      });
+
+    count = await FacilityBooking.countDocuments({ createdBy: userId });
+  }
 
   res.json({
-    bookings: bookings.map((booking) => {
-      return {
-        id: booking._id,
-        facility: booking.facility.name,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        venueBooking: booking.venueBooking.venue.name,
-        createdBy: booking.createdBy.apkey.toUpperCase(),
-        createdAt: booking.createdAt,
-        status: booking.status,
-      };
-    }),
+    bookings: bookings.map((booking) => ({
+      id: booking._id,
+      facility: booking.facility?.name,
+      startTime: booking.startTime,
+      endTime: booking.endTime,
+      venueBooking: booking.venueBooking?.venue?.name,
+      createdBy: booking.createdBy?.apkey?.toUpperCase(),
+      createdAt: booking.createdAt,
+      status: booking.status,
+    })),
     count,
   });
 };
 
+// admin only
 exports.udpateFacilityBookingStatus = async (req, res) => {
   const { id } = req.params;
   const { action } = req.body;

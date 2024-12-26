@@ -61,6 +61,7 @@ const InputText = ({
         <TextInput
           value={value}
           placeholder={placeholder}
+          placeholderTextColor={'rgba(0, 0, 0, 0.4)'}
           onChangeText={handleChange(name)}
           onBlur={handleBlurWrapper}
           style={[styles.input, leftIcon ? { marginLeft: 10 } : null]}

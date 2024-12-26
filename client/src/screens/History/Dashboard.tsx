@@ -143,7 +143,7 @@ const Dashboard = ({ route, navigation }: Props) => {
               <Text style={styles.text}>{data?.totalParticipants ?? 0}</Text>
             </View>
             <View style={styles.textContainer}>
-              <Text style={styles.subtitle}>Total Participants</Text>
+              <Text style={styles.subtitle}>Rating</Text>
               <Text style={styles.text}>{data?.totalParticipants ?? 0}</Text>
             </View>
           </View>

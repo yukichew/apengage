@@ -29,7 +29,7 @@ const SubmitButton = ({ title, onPress }: Props) => {
         { backgroundColor: isSubmitting ? 'gray' : 'black' },
       ]}
     >
-      <Text style={styles.btnText}>{title}</Text>
+      <Text style={styles.btnText}>{title.toUpperCase()}</Text>
     </Pressable>
   );
 };
@@ -37,18 +37,19 @@ const SubmitButton = ({ title, onPress }: Props) => {
 const styles = StyleSheet.create({
   btnContainer: {
     width: '100%',
-    marginVertical: 12,
+    marginVertical: 10,
     height: 50,
+    backgroundColor: 'rgba(0, 0, 0, 1)',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   btnText: {
     color: 'white',
-    fontSize: 24,
+    fontSize: 18,
     textAlign: 'center',
     lineHeight: 50,
-    fontFamily: 'Poppins-Bold',
+    fontFamily: 'Poppins-Semibold',
     letterSpacing: 2,
   },
 });

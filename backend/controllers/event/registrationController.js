@@ -80,7 +80,6 @@ exports.joinEvent = async (req, res) => {
 
 exports.markAttendance = async (req, res) => {
   const { qrCodeData } = req.body;
-  console.log(qrCodeData);
   const { registrationId } = JSON.parse(qrCodeData);
 
   const registration = await Registration.findById(registrationId);

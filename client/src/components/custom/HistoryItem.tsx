@@ -62,7 +62,7 @@ const HistoryItem = ({ item, onPress, onFeedbackPress }: Props) => {
               iconLibrary='MaterialIcons'
               style={{
                 color: 'rgba(0, 0, 0, 0.6)',
-                fontSize: 25,
+                fontSize: 35,
                 marginVertical: 6,
               }}
               onPress={onFeedbackPress}

@@ -77,3 +77,10 @@ export type FacilityBooking = {
   endTime: string;
   venueBookingId: string;
 };
+
+export type Feedback = {
+  id?: number;
+  registration: string;
+  rating: number;
+  comment: string;
+};
