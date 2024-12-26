@@ -18,7 +18,6 @@ type Props = {
   onAttendancePress?: () => void;
 };
 
-const OrganizedItem = ({ item, onPress, onAttendancePress }: Props) => {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case 'Approved':

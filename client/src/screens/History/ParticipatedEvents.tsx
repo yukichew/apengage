@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  View,
+} from 'react-native';
 import Toast from 'react-native-toast-message';
 import { getParticipatedEvents } from '../../api/event';
 import FeedbackModal from '../../components/custom/FeedbackModal';
@@ -49,7 +55,17 @@ const ParticipatedEvents = ({ navigation }: Props) => {
 
   return (
     <>
-      {events.length !== 0 ? (
+      {loading ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <ActivityIndicator size='large' color='rgba(0, 0, 0, 0.5)' />
+        </View>
+      ) : events.length !== 0 ? (
         <FlatList
           data={events}
           renderItem={renderItem}
