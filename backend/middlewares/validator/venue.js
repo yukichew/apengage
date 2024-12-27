@@ -16,7 +16,23 @@ exports.venueBookingValidator = [
     .trim()
     .not()
     .isEmpty()
-    .withMessage('Start time is missing'),
-  check('endTime').trim().not().isEmpty().withMessage('End time is missing'),
+    .withMessage('Start time is missing')
+    .custom((value) => {
+      if (new Date(value) < new Date()) {
+        throw new Error('Atart time cannot be in the past');
+      }
+      return true;
+    }),
+  check('endTime')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('End time is missing')
+    .custom((value, { req }) => {
+      if (new Date(value) < new Date(req.body.startTime)) {
+        throw new Error('End time cannot be earlier than start time');
+      }
+      return true;
+    }),
   check('purpose').trim().not().isEmpty().withMessage('Purpose is missing'),
 ];

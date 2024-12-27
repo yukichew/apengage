@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Icons from '../../constants/icons';
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 
 const Checkbox = ({
   options,
-  selectedOptions,
+  selectedOptions = [],
   onChange,
   multiple = true,
 }: Props) => {
@@ -24,7 +24,7 @@ const Checkbox = ({
   };
 
   return (
-    <View>
+    <>
       {options.map((option, idx) => (
         <TouchableOpacity
           key={idx}
@@ -46,7 +46,7 @@ const Checkbox = ({
           <Text style={styles.optionText}>{option}</Text>
         </TouchableOpacity>
       ))}
-    </View>
+    </>
   );
 };
 
@@ -54,11 +54,14 @@ const styles = StyleSheet.create({
   optionContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: 10,
     marginVertical: 2,
   },
   optionText: {
     fontFamily: 'Poppins-Regular',
     marginLeft: 8,
+    flex: 1,
   },
 });
 

@@ -8,6 +8,7 @@ import {
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Loader from '../../components/common/Loader';
+import Modal from '../../components/common/Modal';
 import Searchbar from '../../components/common/Searchbar';
 import Table from '../../components/common/Table';
 import Container from '../../components/Container';
@@ -21,6 +22,7 @@ const VenueBooking = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [actionType, setActionType] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   const columns = ['By', 'Venue', 'Start Time', 'End Time', 'Purpose'];
   const columnKeys = ['createdBy', 'venue', 'startTime', 'endTime', 'purpose'];
@@ -36,6 +38,10 @@ const VenueBooking = () => {
         setActionType('reject');
         setSelectedBooking(row);
         setShowDialog(true);
+        break;
+      case 'view':
+        setSelectedBooking(row);
+        setShowModal(true);
         break;
       default:
         break;
@@ -70,11 +76,8 @@ const VenueBooking = () => {
     setLoading(true);
     let res;
 
-    const params = new URLSearchParams({ role: 'admin' });
-    if (query) params.append('fullname', query);
-
     if (query) {
-      res = await searchVenueBookings(params);
+      res = await searchVenueBookings(query);
     } else {
       res = await getVenueBookings();
     }
@@ -113,7 +116,7 @@ const VenueBooking = () => {
         <Searchbar
           value={searchQuery}
           onChange={handleSearchChange}
-          placeholder='Search venue booking'
+          placeholder='Search venue booking by venue name'
           className='w-64'
         />
       </div>
@@ -142,6 +145,35 @@ const VenueBooking = () => {
           onConfirm={handleChangeStatus}
           onCancel={() => setShowDialog(false)}
         />
+      )}
+
+      {showModal && selectedBooking && (
+        <Modal
+          isVisible={showModal}
+          onClose={() => setShowModal(false)}
+          className='w-1/2'
+        >
+          <div className='flex flex-col'>
+            <table className='w-full rounded-lg'>
+              <tbody>
+                {Object.entries(selectedBooking)
+                  .filter(([key]) => key !== 'id')
+                  .map(([key, value]) => (
+                    <tr key={key}>
+                      <td className='font-semibold capitalize'>
+                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                      </td>
+                      <td>
+                        {key === 'updatedAt' || key === 'createdAt'
+                          ? formatDateTime(value)
+                          : value || 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </Modal>
       )}
     </Container>
   );

@@ -19,14 +19,7 @@ const VenueBooking = ({ bookings, loading, refreshEvents }: Props) => {
     return <ActivityIndicator size='large' color='rgba(0,0,0,0.5)' />;
   }
 
-  const renderItem = ({ item }: { item: any }) => (
-    <VenueItem
-      item={item}
-      onPress={() =>
-        console.log('VenueBooking.tsx: VenueBooking: onPress: item:', item)
-      }
-    />
-  );
+  const renderItem = ({ item }: { item: any }) => <VenueItem item={item} />;
 
   return (
     <>

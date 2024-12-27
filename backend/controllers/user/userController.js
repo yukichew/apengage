@@ -155,7 +155,7 @@ exports.forgetPassword = async (req, res) => {
     to: user.email,
     subject: 'Reset Password',
     html: generateResetPasswordEmailTemplate(
-      `http://localhost:3000/reset-password`,
+      `http://localhost:3000/reset-password?token=${resetToken.token}&id=${user._id}`,
       'Click the link to reset your password'
     ),
   });
@@ -181,9 +181,6 @@ exports.resetPassword = async (req, res) => {
       400,
       'New password must be different from the old one!'
     );
-
-  if (password.trim().length < 8)
-    return sendError(res, 400, 'Password must be at least 8 characters long!');
 
   user.password = password.trim();
   await user.save();

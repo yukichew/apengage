@@ -11,6 +11,8 @@ export type Field =
       defaultValue?: string;
       defaultField?: boolean;
       value?: string;
+      order?: number;
+      normalizedLabel?: string;
     }
   | {
       id: string;
@@ -23,6 +25,8 @@ export type Field =
       defaultValue?: string;
       defaultField?: boolean;
       value?: string;
+      order?: number;
+      normalizedLabel?: string;
     };
 
 export type Props = {
@@ -41,6 +45,7 @@ export type EventItem = {
   thumbnail?: any;
   price?: number;
   venue?: string;
+  venueBooking?: string;
   location?: string;
   categories?: string[];
 };

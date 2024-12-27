@@ -42,3 +42,15 @@ export const logout = async () => {
     return catchError(error);
   }
 };
+
+export const resetPassword = async (values) => {
+  try {
+    const { data } = await client.post('/user/reset-password', values);
+    return {
+      success: true,
+      admin: data.user,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};

@@ -1,5 +1,5 @@
 import { StackActions, useFocusEffect } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -23,13 +23,16 @@ type Props = {
 const Profile = ({ navigation }: Props) => {
   const [user, setUser] = useState<User | null>(null);
 
-  useFocusEffect(() => {
-    const fetchUser = async () => {
-      const currentUser = await getCurrentUser();
-      setUser(currentUser);
-    };
-    fetchUser();
-  });
+  const fetchUser = async () => {
+    const currentUser = await getCurrentUser();
+    setUser(currentUser);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUser();
+    }, [])
+  );
 
   const defaultProfile = require('../../assets/profile.png');
   const handleLogout = async () => {
@@ -118,36 +121,6 @@ const Profile = ({ navigation }: Props) => {
                   iconLibrary='MaterialIcons'
                   onPress={() => console.log('edit profile')}
                   style={{ color: '#2A29FF' }}
-                />
-              }
-            />
-          </View>
-
-          <Text
-            style={{ fontSize: 16, fontFamily: 'Poppins-Medium', margin: 12 }}
-          >
-            Notifications
-          </Text>
-
-          <View style={styles.accountContainer}>
-            <ProfileItem
-              title='Push Notification'
-              desc='Desc'
-              onPress={() => console.log('Item pressed')}
-              leftIcon={
-                <IconButton
-                  icon='notifications-outline'
-                  iconLibrary='Ionicons'
-                  onPress={() => console.log('edit profile')}
-                  style={{ color: '#2A29FF' }}
-                />
-              }
-              rightIcon={
-                <IconButton
-                  icon='toggle-on'
-                  iconLibrary='Fontisto'
-                  style={{ color: '#2A29FF', fontSize: 30 }}
-                  onPress={() => console.log('notification')}
                 />
               }
             />

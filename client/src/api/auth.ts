@@ -132,8 +132,7 @@ export const getCurrentUser = async () => {
       return response.data.user;
     }
   } catch (error) {
-    console.error('Failed to get current user:', error);
-    return null;
+    return catchAxiosError(error);
   }
 };
 

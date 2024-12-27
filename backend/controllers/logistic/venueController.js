@@ -2,6 +2,8 @@ const { isValidObjectId } = require('mongoose');
 const { sendError } = require('../../helpers/error');
 const Venue = require('../../models/logistic/venue');
 const VenueBooking = require('../../models/logistic/venue/venueBooking');
+const venue = require('../../models/logistic/venue');
+const user = require('../../models/auth/user');
 
 // venue
 exports.createVenue = async (req, res) => {
@@ -187,8 +189,8 @@ exports.getVenueBookings = async (req, res) => {
   if (userRole === 'admin') {
     bookings = await VenueBooking.find({})
       .sort({ createdAt: -1 })
-      .populate('venue', 'name')
-      .populate('createdBy', 'apkey');
+      .populate('venue', 'name type capacity')
+      .populate('createdBy', 'apkey fullname email contact');
     count = await VenueBooking.countDocuments();
   } else {
     bookings = await VenueBooking.find({ createdBy: userId })
@@ -203,10 +205,15 @@ exports.getVenueBookings = async (req, res) => {
       return {
         id: booking._id,
         venue: booking.venue.name,
+        venueType: booking.venue.type,
+        venueCapacity: booking.venue.capacity,
         startTime: booking.startTime,
         endTime: booking.endTime,
         purpose: booking.purpose,
         createdBy: booking.createdBy.apkey.toUpperCase(),
+        userEmail: booking.createdBy.email,
+        userContact: booking.createdBy.contact,
+        userFullname: booking.createdBy.fullname,
         createdAt: booking.createdAt,
         status: booking.status,
       };
@@ -239,4 +246,42 @@ exports.udpateVenueBookingStatus = async (req, res) => {
   }
 
   res.status(400).json({ message: 'Invalid action' });
+};
+
+exports.searchVenueBookings = async (req, res) => {
+  const { name } = req.query;
+
+  const venues = await Venue.find({
+    name: { $regex: name, $options: 'i' },
+  });
+
+  const venueIds = venues.map((venue) => venue._id);
+
+  const bookings = await VenueBooking.find({
+    venue: { $in: venueIds },
+  })
+    .sort({ createdAt: -1 })
+    .populate('venue', 'name type capacity')
+    .populate('createdBy', 'apkey fullname email contact');
+
+  res.json({
+    bookings: bookings.map((booking) => {
+      return {
+        id: booking._id,
+        venue: booking.venue.name,
+        venueType: booking.venue.type,
+        venueCapacity: booking.venue.capacity,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        purpose: booking.purpose,
+        createdBy: booking.createdBy.apkey.toUpperCase(),
+        userEmail: booking.createdBy.email,
+        userContact: booking.createdBy.contact,
+        userFullname: booking.createdBy.fullname,
+        createdAt: booking.createdAt,
+        status: booking.status,
+      };
+    }),
+    count: bookings.length,
+  });
 };

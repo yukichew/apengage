@@ -1,4 +1,4 @@
-const { defaultFields } = require('../../db/fields');
+const { get } = require('mongoose');
 const { sendError } = require('../../helpers/error');
 const Event = require('../../models/event');
 const Form = require('../../models/event/form');
@@ -18,23 +18,9 @@ exports.createForm = async (req, res) => {
       'A form has already been created for this event.'
     );
   }
-
-  const allFields = [
-    ...defaultFields.map((field) => ({
-      ...field,
-      normalizedLabel:
-        field.normalizeLabel || field.label.toLowerCase().replace(/\s+/g, '_'),
-    })),
-    ...fields.map((field) => ({
-      ...field,
-      normalizedLabel:
-        field.normalizedLabel || field.label.toLowerCase().replace(/\s+/g, '_'),
-    })),
-  ];
-
   const newForm = new Form({
     event: eventId,
-    fields: allFields,
+    fields,
     createdBy,
     deadline,
   });
@@ -50,15 +36,12 @@ exports.getForm = async (req, res) => {
   const form = await Form.findOne({ event: id }).populate('fields');
   if (!form) return sendError(res, 404, 'Form not found');
 
-  const fieldMapping = defaultFields.reduce((acc, field) => {
-    if (field.normalizeLabel) {
-      acc[field.label.toLowerCase()] = field.normalizeLabel;
-    }
-    return acc;
-  }, {});
+  const getUserField = (normalizedLabel) => {
+    return user[normalizedLabel] !== undefined ? normalizedLabel : null;
+  };
 
   const preFilledFields = form.fields.map((field) => {
-    const userKey = fieldMapping[field.label.toLowerCase()];
+    const userKey = getUserField(field.normalizedLabel);
     if (field.defaultField && userKey) {
       return {
         id: field._id,

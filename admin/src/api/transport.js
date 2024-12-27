@@ -64,7 +64,7 @@ export const deleteTransport = async (id) => {
 
 export const searchTransport = async (query) => {
   try {
-    const { data } = await client('/transport/search?name=' + query);
+    const { data } = await client.get('/transport/search?name=' + query);
     return {
       success: true,
       transportation: data.transportation,
@@ -103,7 +103,9 @@ export const updateBookingStatus = async (id, action) => {
 
 export const searchTransportBookings = async (query) => {
   try {
-    const { data } = await client.get(`/transport/search?${query}`);
+    const { data } = await client.get(
+      '/transport/bookings/search?name=' + query
+    );
     return {
       success: true,
       bookings: data.bookings,

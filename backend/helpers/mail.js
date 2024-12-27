@@ -43,7 +43,7 @@ exports.generateEmailTemplate = (code, title, description) => {
               color: #434343;
             ">
             <header style="text-align: center">
-                <img src="https://res.cloudinary.com/dkhkqvqf0/image/upload/v1716989103/Black_xmcngn.svg"
+                <img src="https://res.cloudinary.com/dkhkqvqf0/image/upload/v1735204925/logo_syfpsu.png"
                     style="width: 200px;" />
             </header>
 
@@ -128,7 +128,7 @@ exports.plainEmailTemplate = (heading, message) => {
             color: #434343;
           ">
           <header style="text-align: center">
-              <img src="https://res.cloudinary.com/dkhkqvqf0/image/upload/v1716989103/Black_xmcngn.svg"
+              <img src="https://res.cloudinary.com/dkhkqvqf0/image/upload/v1735204925/logo_syfpsu.png"
                   style="width: 200px;" />
           </header>
   
@@ -210,7 +210,7 @@ exports.generateResetPasswordEmailTemplate = (url, description) => {
             color: #434343;
           ">
           <header style="text-align: center">
-              <img src="https://res.cloudinary.com/dkhkqvqf0/image/upload/v1716989103/Black_xmcngn.svg"
+              <img src="https://res.cloudinary.com/dkhkqvqf0/image/upload/v1735204925/logo_syfpsu.png"
                   style="width: 200px;" />
           </header>
 

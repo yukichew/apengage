@@ -15,9 +15,10 @@ const placeholder = require('../../assets/placeholder.png');
 type Props = {
   item: any;
   onPress: () => void;
-  onAttendancePress?: () => void;
+  onActionPress?: () => void;
 };
 
+const OrganizedItem = ({ item, onPress, onActionPress }: Props) => {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case 'Approved':
@@ -34,9 +35,7 @@ type Props = {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image
-        source={{
-          uri: item.thumbnail ? item.thumbnail : placeholder,
-        }}
+        source={item.thumbnail ? { uri: item.thumbnail } : placeholder}
         style={styles.image}
       />
       <View style={styles.contentContainer}>
@@ -60,16 +59,16 @@ type Props = {
         {item.type === 'public' ? (
           <>
             <IconButton
-              icon='qrcode-scan'
-              iconLibrary='MaterialCommunityIcons'
+              icon='form'
+              iconLibrary='AntDesign'
               style={{
                 color: 'rgba(0, 0, 0, 0.6)',
                 fontSize: 34,
                 marginVertical: 8,
               }}
-              onPress={onAttendancePress}
+              onPress={onActionPress}
             />
-            <Text style={styles.statusDefault}>Attendance</Text>
+            <Text style={styles.statusDefault}>Create Form</Text>
           </>
         ) : (
           <>
@@ -82,7 +81,7 @@ type Props = {
                 marginVertical: 8,
               }}
             />
-            <Text style={styles.statusDefault}>Attendance</Text>
+            <Text style={styles.statusDefault}>Info</Text>
           </>
         )}
       </View>

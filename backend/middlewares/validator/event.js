@@ -53,7 +53,6 @@ exports.eventFormValidator = [
     }),
   check('venueBooking')
     .if(body('mode').equals('oncampus'))
-    .if(body('type').not().equals('public'))
     .trim()
     .not()
     .isEmpty()

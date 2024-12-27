@@ -1,6 +1,7 @@
 const Event = require('../../models/event');
 const cloudinary = require('../../config/cloud');
 const { sendError } = require('../../helpers/error');
+const VenueBooking = require('../../models/logistic/venue/venueBooking');
 
 exports.createEvent = async (req, res) => {
   const {
@@ -17,7 +18,18 @@ exports.createEvent = async (req, res) => {
     organizer,
   } = req.body;
 
+  console.log(req.body);
+
   const { file } = req;
+
+  let eventStatus = 'Approved';
+  if (venueBooking) {
+    const venue = await VenueBooking.findById(venueBooking);
+    if (!venue) return sendError(res, 404, 'Venue booking not found');
+    if (venue.status === 'Pending') {
+      eventStatus = 'Pending';
+    }
+  }
 
   const newEvent = new Event({
     name,
@@ -32,6 +44,7 @@ exports.createEvent = async (req, res) => {
     price,
     postedBy: req.user._id,
     organizer,
+    status: eventStatus,
   });
 
   if (type === 'public' && !file) {
@@ -51,11 +64,10 @@ exports.createEvent = async (req, res) => {
 };
 
 exports.getEvents = async (req, res) => {
-  const { mode, categories } = req.query;
+  const { mode } = req.query;
 
   const query = { status: 'Approved', type: 'public' };
   if (mode) query.mode = mode;
-  if (categories) query.categories = categories;
 
   const events = await Event.find(query)
     .sort({ createdAt: -1 })
@@ -66,7 +78,8 @@ exports.getEvents = async (req, res) => {
         select: 'name',
       },
     })
-    .populate('postedBy', 'apkey');
+    .populate('postedBy', 'apkey')
+    .populate('categories', 'name');
 
   const count = await Event.countDocuments(query);
 
@@ -82,7 +95,7 @@ exports.getEvents = async (req, res) => {
         startTime: event.startTime,
         endTime: event.endTime,
         location: event?.location,
-        categories: event?.categories,
+        categories: event?.categories.map((category) => category.name),
         price: event?.price,
         postedBy: event.postedBy.apkey,
         organizer: event.organizer,
@@ -97,11 +110,23 @@ exports.getEvents = async (req, res) => {
 };
 
 exports.searchEvents = async (req, res) => {
-  const { name } = req.query;
+  const userRole = req.user.role;
+  const { name, categories } = req.query;
 
-  const events = await Event.find({
+  const query = {
     name: { $regex: name, $options: 'i' },
-  })
+  };
+
+  if (userRole === 'user') {
+    query.status = 'Approved';
+    query.type = 'public';
+  }
+
+  if (categories) {
+    query.categories = { $in: categories.split(',') };
+  }
+
+  const events = await Event.find(query)
     .populate({
       path: 'venueBooking',
       populate: {
@@ -109,7 +134,8 @@ exports.searchEvents = async (req, res) => {
         select: 'name',
       },
     })
-    .populate('postedBy', 'apkey');
+    .populate('postedBy', 'apkey')
+    .populate('categories', 'name');
 
   res.json({
     events: events.map((event) => {
@@ -119,11 +145,11 @@ exports.searchEvents = async (req, res) => {
         desc: event.desc,
         type: event.type,
         mode: event.mode,
-        venue: event?.venueBooking.venue.name,
+        venue: event?.venueBooking?.venue.name,
         startTime: event.startTime,
         endTime: event.endTime,
         location: event?.location,
-        categories: event?.categories,
+        categories: event?.categories.map((category) => category.name),
         price: event?.price,
         postedBy: event.postedBy.apkey,
         organizer: event.organizer,
@@ -157,7 +183,7 @@ exports.getLatestEvents = async (req, res) => {
         desc: event.desc,
         type: event.type,
         mode: event.mode,
-        venue: event?.venueBooking.venue.name,
+        venue: event?.venueBooking?.venue.name,
         startTime: event.startTime,
         endTime: event.endTime,
         location: event?.location,
@@ -196,7 +222,7 @@ exports.getEvent = async (req, res) => {
       desc: event.desc,
       type: event.type,
       mode: event.mode,
-      venue: event?.venueBooking.venue.name,
+      venue: event?.venueBooking?.venue.name,
       startTime: event.startTime,
       endTime: event.endTime,
       location: event?.location,
@@ -239,7 +265,7 @@ exports.getAllEvents = async (req, res) => {
         desc: event.desc,
         type: event.type,
         mode: event.mode,
-        venue: event?.venueBooking.venue.name,
+        venue: event?.venueBooking?.venue.name,
         startTime: event.startTime,
         endTime: event.endTime,
         location: event?.location,
@@ -290,7 +316,7 @@ exports.getCreatedEvents = async (req, res) => {
         price: event?.price,
         postedBy: event.postedBy.apkey,
         organizer: event.organizer,
-        thumbnail: event?.thumbnail.url,
+        thumbnail: event.thumbnail?.url,
         createdAt: event.createdAt,
         updatedAt: event.updatedAt,
         status: event.status,

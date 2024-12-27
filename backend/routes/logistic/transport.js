@@ -8,6 +8,7 @@ const {
   bookTransport,
   updateTransportBookingStatus,
   getTransportBookings,
+  searchTransportBookings,
 } = require('../../controllers/logistic/transportController');
 const { authenticate, isAdmin } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validator');
@@ -51,6 +52,7 @@ router.delete('/:id', authenticate, isAdmin, deleteTransport);
 router.get('/transportation', authenticate, getTransportation);
 router.get('/search', authenticate, searchTransport);
 router.get('/bookings', authenticate, getTransportBookings);
+router.get('/bookings/search', authenticate, searchTransportBookings);
 router.get('/:id', authenticate, getTransport);
 
 module.exports = router;

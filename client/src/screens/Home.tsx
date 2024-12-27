@@ -49,13 +49,13 @@ const Home = ({ navigation }: Props) => {
         <View style={styles.iconWrapper}>
           <View style={styles.iconContainer}>
             <IconButton
-              icon='stepforward'
-              iconLibrary='AntDesign'
+              icon='qrcode-scan'
+              iconLibrary='MaterialCommunityIcons'
               onPress={() => navigation.navigate('QRCodeScan')}
               style={styles.iconButton}
             />
           </View>
-          <Text style={styles.label}>Label</Text>
+          <Text style={styles.label}>Attendance</Text>
         </View>
       </View>
     </AppContainer>
@@ -68,7 +68,6 @@ const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   serviceContainer: {
     flexDirection: 'row',
-    marginTop: 15,
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -87,7 +86,6 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     color: 'white',
-    // fontSize: 20,
   },
   label: {
     marginTop: 5,

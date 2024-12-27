@@ -225,9 +225,9 @@ exports.getTransportBookings = async (req, res) => {
   if (userRole === 'admin') {
     bookings = await TransportBooking.find({})
       .sort({ createdAt: -1 })
-      .populate('transport.departure', 'type')
+      .populate('transport.departure', 'type name')
       .populate('event', 'name')
-      .populate('createdBy', 'apkey');
+      .populate('createdBy', 'apkey fullname email contact');
     count = await TransportBooking.countDocuments();
   } else {
     bookings = await TransportBooking.find({ createdBy: userId })
@@ -242,6 +242,7 @@ exports.getTransportBookings = async (req, res) => {
     bookings: bookings.map((booking) => ({
       id: booking._id,
       transport: booking.transport?.departure?.type,
+      carPlate: booking.transport?.departure?.name,
       departFrom: booking.departFrom,
       departTo: booking.departTo,
       returnTo: booking.returnTo,
@@ -250,6 +251,9 @@ exports.getTransportBookings = async (req, res) => {
       event: booking.event?.name,
       status: booking.status,
       createdBy: booking.createdBy?.apkey?.toUpperCase(),
+      userEmail: booking.createdBy.email,
+      userContact: booking.createdBy.contact,
+      userFullname: booking.createdBy.fullname,
       createdAt: booking.createdAt,
     })),
     count,
@@ -280,4 +284,42 @@ exports.updateTransportBookingStatus = async (req, res) => {
   }
 
   res.status(400).json({ message: 'Invalid action' });
+};
+
+exports.searchTransportBookings = async (req, res) => {
+  const { name } = req.query;
+
+  const events = await Event.find({
+    name: { $regex: name, $options: 'i' },
+  });
+  const eventIds = events.map((event) => event._id);
+
+  const bookings = await TransportBooking.find({
+    event: { $in: eventIds },
+  })
+    .sort({ createdAt: -1 })
+    .populate('transport.departure', 'type name')
+    .populate('event', 'name')
+    .populate('createdBy', 'apkey fullname email contact');
+
+  res.json({
+    bookings: bookings.map((booking) => ({
+      id: booking._id,
+      transport: booking.transport?.departure?.type,
+      carPlate: booking.transport?.departure?.name,
+      departFrom: booking.departFrom,
+      departTo: booking.departTo,
+      returnTo: booking.returnTo,
+      departDate: booking.departDate,
+      returnDate: booking.returnDate,
+      event: booking.event?.name,
+      status: booking.status,
+      createdBy: booking.createdBy?.apkey?.toUpperCase(),
+      userEmail: booking.createdBy.email,
+      userContact: booking.createdBy.contact,
+      userFullname: booking.createdBy.fullname,
+      createdAt: booking.createdAt,
+    })),
+    count: bookings.length,
+  });
 };

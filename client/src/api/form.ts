@@ -5,11 +5,13 @@ import client from './client';
 export const createForm = async (values: {
   eventId: string;
   fields: Field[];
+  deadline: string;
 }): Promise<ApiResponse> => {
   try {
     const response = await client.post<ApiResponse>('/form/create', {
       eventId: values.eventId,
       fields: values.fields,
+      deadline: values.deadline,
     });
 
     return {

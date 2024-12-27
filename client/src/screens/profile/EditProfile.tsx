@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, Text } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Toast from 'react-native-toast-message';
@@ -30,21 +30,24 @@ const EditProfile = ({ navigation }: Props) => {
     contact: '',
   });
 
-  useFocusEffect(() => {
-    const fetchUser = async () => {
-      const user = await getCurrentUser();
-      if (user) {
-        setInitialValues({
-          name: user.name,
-          course: user.course,
-          intake: user.intake,
-          contact: user.contact,
-        });
-        setSelected(user.gender);
-      }
-    };
-    fetchUser();
-  });
+  const fetchUser = async () => {
+    const user = await getCurrentUser();
+    if (user) {
+      setInitialValues({
+        name: user.name,
+        course: user.course,
+        intake: user.intake,
+        contact: user.contact,
+      });
+      setSelected(user.gender);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUser();
+    }, [])
+  );
 
   const validationSchema = yup.object({
     name: yup.string().required('Name is required'),

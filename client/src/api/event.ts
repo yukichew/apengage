@@ -13,8 +13,8 @@ export const addEvent = async (values: EventItem): Promise<ApiResponse> => {
     formData.append('endTime', values.endTime);
     formData.append('organizer', values.organizer);
 
-    if (values.venue) {
-      formData.append('venue', values.venue);
+    if (values.venueBooking) {
+      formData.append('venueBooking', values.venueBooking);
     }
 
     if (values.price) {
@@ -39,6 +39,7 @@ export const addEvent = async (values: EventItem): Promise<ApiResponse> => {
       });
     }
 
+    console.log('formData', formData);
     const response = await client.post<ApiResponse>('/event/create', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -67,9 +68,16 @@ export const getEvents = async (): Promise<ApiResponse> => {
   }
 };
 
-export const searchEvents = async (query: string): Promise<ApiResponse> => {
+export const searchEvents = async (
+  query: string,
+  category?: string
+): Promise<ApiResponse> => {
   try {
-    const response = await client.get<any>('/event/search?name=' + query);
+    const response = await client.get<any>(
+      '/event/search?name=' +
+        query +
+        (category ? '&categories=' + category : '')
+    );
 
     return {
       success: true,
