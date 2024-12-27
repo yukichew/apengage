@@ -29,7 +29,8 @@ const facilitySchema = new mongoose.Schema(
 facilitySchema.statics.isAvailable = async function (
   facilityId,
   startTime,
-  endTime
+  endTime,
+  requestedQuantity
 ) {
   const facility = await this.findById(facilityId);
   if (!facility) throw new Error('Facility not found');
@@ -48,7 +49,7 @@ facilitySchema.statics.isAvailable = async function (
     0
   );
 
-  return totalBookedQuantity < facility.quantity;
+  return totalBookedQuantity + requestedQuantity <= facility.quantity;
 };
 
 module.exports = mongoose.model('Facility', facilitySchema);

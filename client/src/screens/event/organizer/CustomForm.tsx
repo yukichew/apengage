@@ -8,18 +8,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import DocumentPicker, { types } from 'react-native-document-picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
 import { createForm } from '../../../api/form';
+import Button from '../../../components/common/Button';
 import Checkbox from '../../../components/common/Checkbox';
 import CustomFormik from '../../../components/common/CustomFormik';
+import DateInput from '../../../components/common/DateInput';
 import IconButton from '../../../components/common/IconButton';
 import InputText from '../../../components/common/InputText';
 import SubmitButton from '../../../components/common/SubmitButton';
 import AppContainer from '../../../components/containers/AppContainer';
 import useFormFields from '../../../components/custom/EventHook';
+import defaultFields from '../../../constants/fields';
 import { fieldTypes } from '../../../constants/items';
 import { Field } from '../../../constants/types';
 import { Navigation } from '../../../navigation/types';
@@ -32,12 +34,17 @@ type Props = {
 
 const CustomForm = ({ route, navigation }: Props) => {
   const { eventId } = route.params;
-  const [selectedFile, setSelectedFile] = useState<any>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [selected, setSelected] = useState<string>('');
 
-  const initialValues = {};
-  const validationSchema = yup.object({});
+  const initialValues = {
+    deadline: '',
+  };
+
+  const validationSchema = yup.object({
+    deadline: yup.string().trim().required('Registration deadline is missing'),
+  });
+
   const scrollViewRef = useRef<ScrollView>(null);
 
   const {
@@ -48,7 +55,7 @@ const CustomForm = ({ route, navigation }: Props) => {
     saveField,
     closeModal,
     openModal,
-  } = useFormFields();
+  } = useFormFields(defaultFields);
 
   const handleSelectField = (type: string) => {
     addFormField(
@@ -119,30 +126,16 @@ const CustomForm = ({ route, navigation }: Props) => {
           setSelected={(val: string) => setSelected(val)}
           data={item.options || []}
           save='value'
+          boxStyles={{ width: '100%', marginVertical: 7, minHeight: 50 }}
+          inputStyles={{
+            color: 'rgba(0, 0, 0, 0.5)',
+            fontSize: 16,
+          }}
+          dropdownStyles={{ width: '100%' }}
         />
       )}
       {item.type === 'file' && (
-        <TouchableOpacity
-          key={item.id}
-          style={styles.uploadButton}
-          onPress={async () => {
-            try {
-              const result = await DocumentPicker.pick({
-                type: [types.allFiles],
-              });
-              setSelectedFile(result);
-              console.log('Selected File:', result);
-            } catch (err) {
-              if (DocumentPicker.isCancel(err)) {
-                console.log('File selection canceled');
-              } else {
-                console.error('Unknown Error: ', err);
-              }
-            }
-          }}
-        >
-          <Text style={styles.uploadText}>Upload File</Text>
-        </TouchableOpacity>
+        <Button title='Upload File' containerStyle={{ width: width - 62 }} />
       )}
     </TouchableOpacity>
   );
@@ -154,6 +147,7 @@ const CustomForm = ({ route, navigation }: Props) => {
   const onSubmit = async (values: typeof initialValues, formikActions: any) => {
     const data = {
       eventId,
+      deadline: values.deadline,
       fields: formFields.map((field) => {
         if (
           field.type === 'mcq' ||
@@ -170,6 +164,10 @@ const CustomForm = ({ route, navigation }: Props) => {
             // order: field.order || 0,
             options: field.options || [],
             selectedOptions: field.selectedOptions || [],
+            defaultField: field.defaultField || false,
+            normalizedLabel:
+              field.normalizedLabel ||
+              field.label.toLowerCase().replace(/\s+/g, '_'),
           };
         }
 
@@ -180,11 +178,16 @@ const CustomForm = ({ route, navigation }: Props) => {
           required: field.required || false,
           placeholder: field.placeholder || '',
           defaultValue: field.defaultValue || '',
+          defaultField: field.defaultField || false,
+          normalizedLabel:
+            field.normalizedLabel ||
+            field.label.toLowerCase().replace(/\s+/g, '_'),
           // order: field.order || 0,
         };
       }),
     };
 
+    console.log('Form Data:', data);
     const res = await createForm(data);
     formikActions.setSubmitting(false);
 
@@ -231,6 +234,22 @@ const CustomForm = ({ route, navigation }: Props) => {
           >
             Create Registration Form
           </Text>
+
+          <Text
+            style={{
+              fontFamily: 'Poppins-Regular',
+              fontSize: 12,
+              marginBottom: 4,
+            }}
+          >
+            Click to edit field
+          </Text>
+
+          <DateInput
+            placeholder='Registration Deadline'
+            name='deadline'
+            minimumDate={new Date()}
+          />
 
           {formFields.map((field) => renderItem({ item: field }))}
           <FieldModal
@@ -308,19 +327,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderLeftColor: '#2A29FF',
     borderLeftWidth: 5,
-  },
-  uploadButton: {
-    backgroundColor: 'black',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-  uploadText: {
-    color: 'white',
-    fontSize: 16,
-    fontFamily: 'Poppins-Semibold',
   },
   addFieldContainer: {
     marginTop: 20,

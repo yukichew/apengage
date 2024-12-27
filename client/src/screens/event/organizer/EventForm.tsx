@@ -118,8 +118,8 @@ const EventForm = ({ navigation }: Props) => {
       mode,
     };
 
-    if (mode === 'oncampus') {
-      data.venue = selectedVenue;
+    if (mode === 'oncampus' && venueBooking) {
+      data.venueBooking = selectedVenue;
     }
 
     if (type === 'public') {

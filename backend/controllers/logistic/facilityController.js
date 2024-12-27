@@ -137,7 +137,7 @@ exports.searchFacility = async (req, res) => {
 
 // facility bookings
 exports.bookFacility = async (req, res) => {
-  const { facilityId, startTime, endTime, venueBookingId } = req.body;
+  const { facilityId, startTime, endTime, venueBookingId, quantity } = req.body;
   if (!isValidObjectId(facilityId))
     return sendError(res, 401, 'Invalid Facility id');
 
@@ -149,19 +149,28 @@ exports.bookFacility = async (req, res) => {
   );
   if (!venueBooking) return sendError(res, 404, 'Venue booking not found');
 
-  // if (venueBooking.venue.type !== 'Other')
-  //   return sendError(
-  //     res,
-  //     400,
-  //     'Auditorium and room are not required to book facility.'
-  //   );
+  if (
+    new Date(startTime) < new Date(venueBooking.startTime) ||
+    new Date(endTime) > new Date(venueBooking.endTime)
+  ) {
+    return sendError(
+      res,
+      400,
+      'Facility booking time must be within the venue booking time range.'
+    );
+  }
 
-  const isAvailable = await Facility.isAvailable(facility, startTime, endTime);
+  const isAvailable = await Facility.isAvailable(
+    facility,
+    startTime,
+    endTime,
+    quantity
+  );
   if (!isAvailable)
     return sendError(
       res,
       400,
-      'Facility is not available for the selected time slot'
+      'Facility is not available for the selected time slot.'
     );
 
   const currentTime = new Date();
@@ -169,13 +178,19 @@ exports.bookFacility = async (req, res) => {
   const timeDifference = bookingStartTime - currentTime;
   const hoursDifference = timeDifference / (1000 * 60 * 60);
 
+  let bookingStatus = hoursDifference > 48 ? 'Approved' : 'Pending';
+  if (venueBooking.status === 'Pending') {
+    bookingStatus = 'Pending';
+  }
+
   const newBooking = new FacilityBooking({
     facility: facilityId,
     startTime,
     endTime,
     venueBooking,
+    quantity,
     createdBy: req.user.id,
-    status: hoursDifference > 48 ? 'Approved' : 'Pending',
+    status: bookingStatus,
   });
 
   await newBooking.save();
@@ -186,6 +201,7 @@ exports.bookFacility = async (req, res) => {
       facility: newBooking.facility,
       startTime: newBooking.startTime,
       endTime: newBooking.endTime,
+      quantity: newBooking.quantity,
       venueBooking: newBooking.venueBooking,
       createdBy: newBooking.createdBy,
     },
@@ -202,8 +218,8 @@ exports.getFacilityBookings = async (req, res) => {
   if (userRole === 'admin') {
     bookings = await FacilityBooking.find({})
       .sort({ createdAt: -1 })
-      .populate('facility', 'name')
-      .populate('createdBy', 'apkey')
+      .populate('facility', 'name type')
+      .populate('createdBy', 'apkey fullname email contact')
       .populate({
         path: 'venueBooking',
         populate: {
@@ -232,11 +248,16 @@ exports.getFacilityBookings = async (req, res) => {
   res.json({
     bookings: bookings.map((booking) => ({
       id: booking._id,
-      facility: booking.facility?.name,
+      facility: booking.facility.name,
+      facilityType: booking.facility.type,
+      quantity: booking.quantity,
       startTime: booking.startTime,
       endTime: booking.endTime,
-      venueBooking: booking.venueBooking?.venue?.name,
-      createdBy: booking.createdBy?.apkey?.toUpperCase(),
+      venueBooking: booking.venueBooking.venue.name,
+      createdBy: booking.createdBy.apkey.toUpperCase(),
+      userEmail: booking.createdBy.email,
+      userContact: booking.createdBy.contact,
+      userFullname: booking.createdBy.fullname,
       createdAt: booking.createdAt,
       status: booking.status,
     })),
@@ -268,4 +289,47 @@ exports.udpateFacilityBookingStatus = async (req, res) => {
   }
 
   res.status(400).json({ message: 'Invalid action' });
+};
+
+exports.searchFacilityBookings = async (req, res) => {
+  const { name } = req.query;
+
+  const facilities = await Facility.find({
+    name: { $regex: name, $options: 'i' },
+  });
+
+  const facilityIds = facilities.map((facility) => facility._id);
+
+  const bookings = await FacilityBooking.find({
+    facility: { $in: facilityIds },
+  })
+    .sort({ createdAt: -1 })
+    .populate('facility', 'name type')
+    .populate('createdBy', 'apkey fullname email contact')
+    .populate({
+      path: 'venueBooking',
+      populate: {
+        path: 'venue',
+        select: 'name',
+      },
+    });
+
+  res.json({
+    bookings: bookings.map((booking) => ({
+      id: booking._id,
+      facility: booking.facility.name,
+      facilityType: booking.facility.type,
+      quantity: booking.quantity,
+      startTime: booking.startTime,
+      endTime: booking.endTime,
+      venueBooking: booking.venueBooking.venue.name,
+      createdBy: booking.createdBy.apkey.toUpperCase(),
+      userEmail: booking.createdBy.email,
+      userContact: booking.createdBy.contact,
+      userFullname: booking.createdBy.fullname,
+      createdAt: booking.createdAt,
+      status: booking.status,
+    })),
+    count: bookings.length,
+  });
 };

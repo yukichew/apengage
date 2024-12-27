@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Field } from '../../constants/types';
 
-const useFormFields = () => {
-  const [formFields, setFormFields] = useState<Field[]>([]);
+const useFormFields = (initialFields: Field[] = []) => {
+  const [formFields, setFormFields] = useState<Field[]>(initialFields);
   const [selectedField, setSelectedField] = useState<Field | null>(null);
   const [isModalVisible, setModalVisible] = useState(false);
 

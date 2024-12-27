@@ -6,6 +6,7 @@ const QRCode = require('qrcode');
 exports.joinEvent = async (req, res) => {
   const { id } = req.params;
   const { response } = req.body;
+  const { file } = req;
 
   const form = await Form.findById(id).populate('fields');
   if (!form) return sendError(res, 404, 'Event not found');

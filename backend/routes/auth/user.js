@@ -11,7 +11,10 @@ const {
 const multer = require('../../middlewares/multer');
 const { isResetTokenValid, authenticate } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validator');
-const { userValidator } = require('../../middlewares/validator/user');
+const {
+  userValidator,
+  resetPasswordValidator,
+} = require('../../middlewares/validator/user');
 
 // Auth Routes
 router.post(
@@ -24,7 +27,13 @@ router.post(
 router.post('/signin', signin);
 router.post('/verify-email', verifyEmail);
 router.post('/forget-password', forgetPassword);
-router.post('/reset-password', isResetTokenValid, resetPassword);
+router.post(
+  '/reset-password',
+  isResetTokenValid,
+  resetPasswordValidator,
+  validate,
+  resetPassword
+);
 
 // Profile Routes
 router.patch('/change-password', authenticate);

@@ -4,9 +4,11 @@ import { getUsers, searchUser, updateUserStatus } from '../../api/user';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Loader from '../../components/common/Loader';
+import Modal from '../../components/common/Modal';
 import Searchbar from '../../components/common/Searchbar';
 import Table from '../../components/common/Table';
 import Container from '../../components/Container';
+import { formatDateTime } from '../../utils/formatDate';
 
 const User = () => {
   const [users, setUsers] = useState([]);
@@ -16,6 +18,7 @@ const User = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [actionType, setActionType] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   const columns = ['Name', 'Email', 'AP Key'];
   const columnKeys = ['fullname', 'email', 'apkey'];
@@ -31,6 +34,10 @@ const User = () => {
         setActionType('deactivate');
         setSelectedUser(row);
         setShowDialog(true);
+        break;
+      case 'view':
+        setSelectedUser(row);
+        setShowModal(true);
         break;
       default:
         break;
@@ -127,6 +134,42 @@ const User = () => {
           onConfirm={handleChangeStatus}
           onCancel={() => setShowDialog(false)}
         />
+      )}
+
+      {showModal && selectedUser && (
+        <Modal
+          isVisible={showModal}
+          onClose={() => setShowModal(false)}
+          className='w-1/2'
+        >
+          <div className='flex flex-col'>
+            {selectedUser.profile && (
+              <img
+                src={selectedUser.profile}
+                alt='Profile'
+                className='w-20 h-20 rounded-full mb-4 object-cover'
+              />
+            )}
+            <table className='w-full rounded-lg'>
+              <tbody>
+                {Object.entries(selectedUser)
+                  .filter(([key]) => key !== 'profile' && key !== 'id')
+                  .map(([key, value]) => (
+                    <tr key={key}>
+                      <td className='font-semibold capitalize'>
+                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                      </td>
+                      <td>
+                        {key === 'updatedAt' || key === 'createdAt'
+                          ? formatDateTime(value)
+                          : value || 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </Modal>
       )}
     </Container>
   );

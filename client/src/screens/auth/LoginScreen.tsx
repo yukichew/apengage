@@ -1,4 +1,5 @@
 import { StackActions } from '@react-navigation/native';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
@@ -12,6 +13,8 @@ import AuthContainer from '../../components/containers/AuthContainer';
 import { Props } from '../../constants/types';
 
 const LoginScreen = ({ navigation }: Props) => {
+  const [showPassword, setShowPassword] = useState(false);
+
   const initialValues = {
     email: '',
     password: '',
@@ -91,9 +94,10 @@ const LoginScreen = ({ navigation }: Props) => {
           name='password'
           leftIcon='lock-outline'
           leftIconLibrary='MaterialIcons'
-          rightIcon='eye-with-line'
+          rightIcon={showPassword ? 'eye' : 'eye-with-line'}
           rightIconLibrary='Entypo'
-          secureTextEntry
+          secureTextEntry={!showPassword}
+          onPressRightIcon={() => setShowPassword(!showPassword)}
         />
         <View style={styles.forgetPasswordContainer}>
           <TextLink

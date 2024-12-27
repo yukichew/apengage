@@ -8,9 +8,10 @@ type Props = {
   secureTextEntry?: boolean;
   onSubmitEditing: () => void;
   placeholder: string;
+  onClear?: () => void;
 };
 
-const SearchBar = ({ value, placeholder, ...props }: Props) => {
+const SearchBar = ({ value, placeholder, onClear, ...props }: Props) => {
   return (
     <View style={styles.field}>
       <IconButton icon='search' iconLibrary='Feather' />
@@ -20,11 +21,9 @@ const SearchBar = ({ value, placeholder, ...props }: Props) => {
         style={styles.input}
         {...props}
       />
-      <IconButton
-        icon='close'
-        iconLibrary='AntDesign'
-        onPress={() => console.log('close')}
-      />
+      {value ? (
+        <IconButton icon='close' iconLibrary='AntDesign' onPress={onClear} />
+      ) : null}
     </View>
   );
 };

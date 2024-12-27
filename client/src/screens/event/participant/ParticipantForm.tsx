@@ -6,6 +6,7 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
 import { getForm, joinEvent } from '../../../api/form';
+import Checkbox from '../../../components/common/Checkbox';
 import CustomFormik from '../../../components/common/CustomFormik';
 import InputText from '../../../components/common/InputText';
 import SubmitButton from '../../../components/common/SubmitButton';
@@ -28,6 +29,7 @@ const ParticipantForm = ({ route, navigation }: Props) => {
   const [formId, setFormId] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const scrollViewRef = useRef<ScrollView>(null);
+  const [initialValues, setInitialValues] = useState<InitialValues>({});
 
   const fetchFields = async () => {
     const res = await getForm({ eventId });
@@ -48,24 +50,20 @@ const ParticipantForm = ({ route, navigation }: Props) => {
     fetchFields();
   }, []);
 
-  const initialValues: InitialValues = (formFields || []).reduce(
-    (values, field) => {
-      values[field.id] = field.value || '';
-      return values;
-    },
-    {} as InitialValues
-  );
+  const validationSchema = yup.object();
 
-  const validationSchema = yup.object().shape(
-    formFields.reduce((schema, field) => {
-      if (field.required) {
-        schema[field.id] = yup.string().required(`${field.label} is required.`);
+  useEffect(() => {
+    const initialValues = formFields.reduce((values, field) => {
+      if (field.type === 'checkbox') {
+        values[field.id] = field.value || [];
       } else {
-        schema[field.id] = yup.string();
+        values[field.id] = field.value || '';
       }
-      return schema;
-    }, {} as Record<string, yup.StringSchema | yup.MixedSchema>)
-  );
+      return values;
+    }, {} as InitialValues);
+
+    setInitialValues(initialValues);
+  }, [formFields]);
 
   const renderItem = ({ field }: { field: Field }) => {
     return (
@@ -103,7 +101,11 @@ const ParticipantForm = ({ route, navigation }: Props) => {
                       save='value'
                       placeholder={field.label}
                       search={false}
-                      boxStyles={{ marginVertical: 7, minHeight: 50 }}
+                      boxStyles={{
+                        marginVertical: 7,
+                        minHeight: 50,
+                        width: '100%',
+                      }}
                       inputStyles={{
                         color: formikField.value
                           ? 'rgba(0, 0, 0, 1)'
@@ -114,6 +116,39 @@ const ParticipantForm = ({ route, navigation }: Props) => {
                         key: field.value,
                         value: field.value,
                       }}
+                    />
+                  )}
+                </FormikField>
+              );
+
+            case 'mcq':
+              return (
+                <FormikField name={field.id} key={field.id}>
+                  {({ field: formikField, form }: any) => (
+                    <Checkbox
+                      key={field.id}
+                      options={field.options}
+                      selectedOptions={formikField.value}
+                      onChange={(selected) => {
+                        form.setFieldValue(field.id, selected[0]);
+                      }}
+                      multiple={false}
+                    />
+                  )}
+                </FormikField>
+              );
+
+            case 'checkbox':
+              return (
+                <FormikField name={field.id} key={field.id}>
+                  {({ field: formikField, form }: any) => (
+                    <Checkbox
+                      options={field.options}
+                      selectedOptions={formikField.value || []}
+                      onChange={(selected: string[]) => {
+                        form.setFieldValue(field.id, selected);
+                      }}
+                      multiple={true}
                     />
                   )}
                 </FormikField>
@@ -159,17 +194,16 @@ const ParticipantForm = ({ route, navigation }: Props) => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
   }, [formFields]);
 
+  console.log('Form Fields:', initialValues);
+
   const onSubmit = async (values: typeof initialValues, formikActions: any) => {
     // const formData = new FormData();
-
     // for (const key in values) {
     //   formData.append(key, values[key]);
     // }
-
     // if (selectedFile) {
     //   formData.append('file', selectedFile[0]);
     // }
-
     const res = await joinEvent({
       formId,
       response: values,

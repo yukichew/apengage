@@ -53,3 +53,15 @@ exports.adminValidator = [
     .withMessage('Name must be between 3 and 20 characters'),
   check('email').normalizeEmail().isEmail().withMessage('Email is invalid'),
 ];
+
+exports.resetPasswordValidator = [
+  check('password')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Password is missing')
+    .matches(/^(?=.*[A-Z])(?=.*[\W_])(?=.*\d)[a-zA-Z\d\W_]{8,}$/)
+    .withMessage(
+      'Password must be at least 8 characters long, contain at least 1 uppercase letter, and 1 special character'
+    ),
+];

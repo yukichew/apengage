@@ -42,7 +42,6 @@ const Logistics = () => {
     }
 
     setBookings(response?.data.bookings);
-    console.log(response?.data.bookings);
     setLoading(false);
   };
 

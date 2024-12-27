@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { TabBar, TabView } from 'react-native-tab-view';
 import AppContainer from '../../components/containers/AppContainer';
 import { Navigation } from '../../navigation/types';
@@ -53,11 +53,3 @@ const History = ({ navigation }: Props) => {
 };
 
 export default History;
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    padding: 15,
-    backgroundColor: 'white',
-    borderRadius: 10,
-  },
-});

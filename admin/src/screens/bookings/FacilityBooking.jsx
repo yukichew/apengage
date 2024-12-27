@@ -8,6 +8,7 @@ import {
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Loader from '../../components/common/Loader';
+import Modal from '../../components/common/Modal';
 import Searchbar from '../../components/common/Searchbar';
 import Table from '../../components/common/Table';
 import Container from '../../components/Container';
@@ -21,11 +22,20 @@ const FacilityBooking = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [actionType, setActionType] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
-  const columns = ['By', 'Facility', 'Venue', 'Start Time', 'End Time'];
+  const columns = [
+    'By',
+    'Facility',
+    'Quantity',
+    'Venue',
+    'Start Time',
+    'End Time',
+  ];
   const columnKeys = [
     'createdBy',
     'facility',
+    'quantity',
     'venueBooking',
     'startTime',
     'endTime',
@@ -42,6 +52,10 @@ const FacilityBooking = () => {
         setActionType('reject');
         setSelectedBooking(row);
         setShowDialog(true);
+        break;
+      case 'view':
+        setSelectedBooking(row);
+        setShowModal(true);
         break;
       default:
         break;
@@ -72,15 +86,12 @@ const FacilityBooking = () => {
     setActionType('');
   };
 
-  const fetchbookings = async (query = '') => {
+  const fetchBookings = async (query = '') => {
     setLoading(true);
     let res;
 
-    const params = new URLSearchParams({ role: 'admin' });
-    if (query) params.append('fullname', query);
-
     if (query) {
-      res = await searchFacilityBookings(params);
+      res = await searchFacilityBookings(query);
     } else {
       res = await getFacilityBookings();
     }
@@ -101,13 +112,13 @@ const FacilityBooking = () => {
   };
 
   useEffect(() => {
-    fetchbookings();
+    fetchBookings();
   }, []);
 
   const handleSearchChange = (e) => {
     const query = e.target.value.trim();
     setSearchQuery(query);
-    fetchbookings(query);
+    fetchBookings(query);
   };
 
   return (
@@ -119,7 +130,7 @@ const FacilityBooking = () => {
         <Searchbar
           value={searchQuery}
           onChange={handleSearchChange}
-          placeholder='Search facility booking'
+          placeholder='Search facility booking by facility name'
           className='w-64'
         />
       </div>
@@ -148,6 +159,35 @@ const FacilityBooking = () => {
           onConfirm={handleChangeStatus}
           onCancel={() => setShowDialog(false)}
         />
+      )}
+
+      {showModal && selectedBooking && (
+        <Modal
+          isVisible={showModal}
+          onClose={() => setShowModal(false)}
+          className='w-1/2'
+        >
+          <div className='flex flex-col'>
+            <table className='w-full rounded-lg'>
+              <tbody>
+                {Object.entries(selectedBooking)
+                  .filter(([key]) => key !== 'id')
+                  .map(([key, value]) => (
+                    <tr key={key}>
+                      <td className='font-semibold capitalize'>
+                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                      </td>
+                      <td>
+                        {key === 'updatedAt' || key === 'createdAt'
+                          ? formatDateTime(value)
+                          : value || 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </Modal>
       )}
     </Container>
   );

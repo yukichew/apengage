@@ -64,7 +64,7 @@ export const deleteVenue = async (id) => {
 
 export const searchVenue = async (query) => {
   try {
-    const { data } = await client('/venue/search?name=' + query);
+    const { data } = await client.get('/venue/search?name=' + query);
     return {
       success: true,
       venues: data.venues,
@@ -103,7 +103,7 @@ export const updateBookingStatus = async (id, action) => {
 
 export const searchVenueBookings = async (query) => {
   try {
-    const { data } = await client.get(`/venue/search?${query}`);
+    const { data } = await client('/venue/bookings/search?name=' + query);
     return {
       success: true,
       bookings: data.bookings,

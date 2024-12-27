@@ -23,6 +23,7 @@ type Props = {
 
 const EventDetails = ({ route, navigation }: Props) => {
   const { event } = route.params;
+  console.log(event);
 
   const handleRegister = () => {
     const eventIdStr = event.id !== undefined ? String(event.id) : '';
@@ -79,7 +80,16 @@ const EventDetails = ({ route, navigation }: Props) => {
           <Image source={{ uri: event.thumbnail }} style={styles.image} />
         )}
 
-        <View style={{ padding: 15 }}>
+        <View style={{ padding: 18 }}>
+          {event.categories && (
+            <View style={styles.categoriesContainer}>
+              {event.categories.map((category, index) => (
+                <View key={index} style={styles.category}>
+                  <Text style={styles.categoryText}>{category}</Text>
+                </View>
+              ))}
+            </View>
+          )}
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{event.name}</Text>
             <IconButton
@@ -263,5 +273,21 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: 'black',
     padding: 8,
+  },
+  categoriesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  category: {
+    borderRadius: 5,
+    padding: 5,
+    backgroundColor: 'rgba(42, 114, 255, 0.15)',
+    marginRight: 10,
+    marginBottom: 5,
+  },
+  categoryText: {
+    fontSize: 13,
+    fontFamily: 'Poppins-Medium',
+    color: '#2A29FF',
   },
 });

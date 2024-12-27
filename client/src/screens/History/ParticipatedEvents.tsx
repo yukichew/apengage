@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -36,9 +37,11 @@ const ParticipatedEvents = ({ navigation }: Props) => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    refreshEvents();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      refreshEvents();
+    }, [])
+  );
 
   const renderItem = ({ item }: { item: any }) => (
     <HistoryItem

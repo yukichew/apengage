@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
 import { FlatList, RefreshControl, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { getOrganizedEvents } from '../../api/event';
@@ -12,6 +13,7 @@ const OrganizedEvents = ({ navigation }: Props) => {
   const refreshEvents = async () => {
     setLoading(true);
     const response = await getOrganizedEvents();
+    console.log(response);
     setEvents(response.data.events);
     if (!response.success) {
       Toast.show({
@@ -25,9 +27,11 @@ const OrganizedEvents = ({ navigation }: Props) => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    refreshEvents();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      refreshEvents();
+    }, [])
+  );
 
   const renderItem = ({ item }: { item: any }) => (
     <OrganizedItem
@@ -35,8 +39,8 @@ const OrganizedEvents = ({ navigation }: Props) => {
       onPress={() =>
         navigation.navigate('Dashboard', { eventId: item.id.toString() })
       }
-      onAttendancePress={() => {
-        navigation.navigate('QRCodeScan');
+      onActionPress={() => {
+        navigation.navigate('CustomForm', { eventId: item.id.toString() });
       }}
     />
   );

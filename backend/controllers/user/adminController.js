@@ -109,6 +109,7 @@ exports.getUsers = async (req, res) => {
         gender: user?.gender,
         course: user?.course,
         intake: user?.intake,
+        profile: user.profile?.url,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         status: user.verified ? 'Active' : 'Inactive',

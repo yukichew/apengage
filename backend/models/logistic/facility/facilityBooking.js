@@ -7,6 +7,10 @@ const facilityBookingSchema = new mongoose.Schema(
       ref: 'Facility',
       required: true,
     },
+    quantity: {
+      type: Number,
+      required: true,
+    },
     startTime: {
       type: Date,
       required: true,

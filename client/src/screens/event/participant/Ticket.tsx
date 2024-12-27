@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   Platform,
@@ -27,10 +28,13 @@ const Ticket = ({ route, navigation }: Props) => {
   const [info, setInfo] = useState<any | null>(null);
   const [calendars, setCalendars] = useState<Calendar[]>([]);
   const [pickedCal, setPickedCal] = useState<Calendar | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fetchEvent = async () => {
+    setLoading(true);
     const res = await getRegistration({ id: registration });
     if (!res.success) {
+      setLoading(false);
       return Toast.show({
         type: 'error',
         text1: 'Failed to fetch event',
@@ -52,6 +56,7 @@ const Ticket = ({ route, navigation }: Props) => {
       });
     }
     setEvent(res2.data.event);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -123,7 +128,6 @@ const Ticket = ({ route, navigation }: Props) => {
       if (error instanceof Error) {
         errorMessage = error.message;
       }
-      console.error('Error while adding event to calendar:', error);
       Toast.show({
         type: 'error',
         text1: 'Failed to Add Event',
@@ -133,81 +137,96 @@ const Ticket = ({ route, navigation }: Props) => {
       });
     }
   };
-  if (!event || !info) {
-    return (
-      <AppContainer navigation={navigation} showBackButton>
-        <View style={styles.container}>
-          <Text style={styles.notFoundText}>No event found</Text>
-        </View>
-      </AppContainer>
-    );
-  }
 
   return (
     <AppContainer navigation={navigation} showBackButton>
-      <View style={styles.container}>
-        <View style={{ width: '90%', alignSelf: 'center', marginBottom: 14 }}>
-          <Text style={{ fontFamily: 'Poppins-Bold', fontSize: 20 }}>
-            {event.name}
-          </Text>
+      {loading ? (
+        <View style={styles.container}>
+          <ActivityIndicator size='large' color='#0000ff' />
         </View>
-
-        <View style={styles.textContainer}>
-          <View style={styles.gridItem}>
-            <Text style={styles.text}>Location</Text>
-            <Text style={styles.content}>
-              {event.mode === 'oncampus' ? event.venue : event.location}
-            </Text>
-          </View>
-          <View style={styles.gridItem}>
-            <Text style={styles.text}>Price</Text>
-            <Text style={styles.content}>
-              {event.price ? `RM${event.price}` : 'Free'}
-            </Text>
-          </View>
-          <View style={styles.gridItem}>
-            <Text style={styles.text}>Ticket Holder</Text>
-            <Text style={styles.content}>{info.participant.fullname}</Text>
-          </View>
-          <View style={styles.gridItem}>
-            <Text style={styles.text}>APKey</Text>
-            <Text style={styles.content}>{info.participant.apkey}</Text>
-          </View>
-          <View style={styles.gridItem}>
-            <Text style={styles.text}>Start Time</Text>
-            <Text style={styles.content}>
-              {event.startTime ? formatDateTime(event.startTime) : ''}
-            </Text>
-          </View>
-          <View style={styles.gridItem}>
-            <Text style={styles.text}>End Time</Text>
-            <Text style={styles.content}>
-              {event.endTime ? formatDateTime(event.endTime) : ''}
-            </Text>
-          </View>
-        </View>
-
-        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <Image source={{ uri: info.qrCode }} style={styles.qrCode} />
+      ) : !event || !info ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <Text
             style={{
+              fontSize: 16,
               fontFamily: 'Poppins-Regular',
-              fontSize: 10,
               color: 'rgba(0, 0, 0, 0.5)',
-              marginBottom: 10,
             }}
           >
-            {registration}
-          </Text>
-          <Text style={[styles.text, { width: '90%', textAlign: 'justify' }]}>
-            The QR code is unique and only allows one entry per scan.
-            Unauthorized duplication of this ticket may prevent you admittance
-            to the event.
+            No event found
           </Text>
         </View>
+      ) : (
+        <View style={styles.container}>
+          <View style={{ width: '90%', alignSelf: 'center', marginBottom: 14 }}>
+            <Text style={{ fontFamily: 'Poppins-Bold', fontSize: 20 }}>
+              {event.name}
+            </Text>
+          </View>
 
-        <Button title='Add to Calendar' onPress={addToCalendar} />
-      </View>
+          <View style={styles.textContainer}>
+            <View style={styles.gridItem}>
+              <Text style={styles.text}>Location</Text>
+              <Text style={styles.content}>
+                {event.mode === 'oncampus' ? event.venue : event.location}
+              </Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.text}>Price</Text>
+              <Text style={styles.content}>
+                {event.price ? `RM${event.price}` : 'Free'}
+              </Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.text}>Ticket Holder</Text>
+              <Text style={styles.content}>{info.participant.fullname}</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.text}>APKey</Text>
+              <Text style={styles.content}>{info.participant.apkey}</Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.text}>Start Time</Text>
+              <Text style={styles.content}>
+                {event.startTime ? formatDateTime(event.startTime) : ''}
+              </Text>
+            </View>
+            <View style={styles.gridItem}>
+              <Text style={styles.text}>End Time</Text>
+              <Text style={styles.content}>
+                {event.endTime ? formatDateTime(event.endTime) : ''}
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <Image source={{ uri: info.qrCode }} style={styles.qrCode} />
+            <Text
+              style={{
+                fontFamily: 'Poppins-Regular',
+                fontSize: 10,
+                color: 'rgba(0, 0, 0, 0.5)',
+                marginBottom: 10,
+              }}
+            >
+              {registration}
+            </Text>
+            <Text style={[styles.text, { width: '90%', textAlign: 'justify' }]}>
+              The QR code is unique and only allows one entry per scan.
+              Unauthorized duplication of this ticket may prevent you admittance
+              to the event.
+            </Text>
+          </View>
+
+          <Button title='Add to Calendar' onPress={addToCalendar} />
+        </View>
+      )}
     </AppContainer>
   );
 };
@@ -257,11 +276,5 @@ const styles = StyleSheet.create({
   content: {
     fontFamily: 'Poppins-Medium',
     fontSize: 14,
-  },
-  notFoundText: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: 20,
-    color: 'red',
-    textAlign: 'center',
   },
 });

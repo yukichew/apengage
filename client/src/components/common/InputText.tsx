@@ -6,6 +6,7 @@ import {
   Text,
   TextInput,
   TextInputFocusEventData,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import Icons from '../../constants/icons';
@@ -25,14 +26,23 @@ type Props = {
   numberOfLines?: number;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
   label?: string;
+  onPressRightIcon?: () => void;
 };
 
-const renderIcon = (iconName: string, iconLibrary?: keyof typeof Icons) => {
+const renderIcon = (
+  iconName: string,
+  iconLibrary?: keyof typeof Icons,
+  onPress?: () => void
+) => {
   if (!iconLibrary) {
     return null;
   }
   const IconComponent = Icons[iconLibrary];
-  return <IconComponent name={iconName} style={styles.icon} />;
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <IconComponent name={iconName} style={styles.icon} />
+    </TouchableOpacity>
+  );
 };
 
 const InputText = ({
@@ -71,7 +81,8 @@ const InputText = ({
           keyboardType={props.keyboardType || 'default'}
           {...props}
         />
-        {rightIcon && renderIcon(rightIcon, rightIconLibrary)}
+        {rightIcon &&
+          renderIcon(rightIcon, rightIconLibrary, props.onPressRightIcon)}
       </View>
       {error && isInputTouched ? (
         <Text style={styles.errorMessage}>{error}</Text>

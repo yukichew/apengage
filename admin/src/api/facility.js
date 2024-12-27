@@ -64,7 +64,7 @@ export const deleteFacility = async (id) => {
 
 export const searchFacility = async (query) => {
   try {
-    const { data } = await client('/facility/search?name=' + query);
+    const { data } = await client.get('/facility/search?name=' + query);
     return {
       success: true,
       facilities: data.facilities,
@@ -103,7 +103,9 @@ export const updateBookingStatus = async (id, action) => {
 
 export const searchFacilityBookings = async (query) => {
   try {
-    const { data } = await client.get(`/facility/search?${query}`);
+    const { data } = await client.get(
+      '/facility/bookings/search?name=' + query
+    );
     return {
       success: true,
       bookings: data.bookings,
