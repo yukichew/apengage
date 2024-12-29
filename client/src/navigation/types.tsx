@@ -23,6 +23,7 @@ export type RootStackNavigatorParamsList = {
   Ticket: { registration: any };
   QRCodeScan: undefined;
   Dashboard: { eventId: string };
+  ChangePassword: undefined;
 };
 
 export type Navigation =

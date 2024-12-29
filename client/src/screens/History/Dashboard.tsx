@@ -10,6 +10,7 @@ import {
 import { BarChart, PieChart } from 'react-native-gifted-charts';
 import Toast from 'react-native-toast-message';
 import { getAttendees } from '../../api/event';
+import { getFeedbacks } from '../../api/feedback';
 import { getForm } from '../../api/form';
 import AppContainer from '../../components/containers/AppContainer';
 import { Field } from '../../constants/types';
@@ -25,6 +26,7 @@ const Dashboard = ({ route, navigation }: Props) => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<Field[]>([]);
+  const [feedback, setFeedback] = useState<any>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -54,6 +56,19 @@ const Dashboard = ({ route, navigation }: Props) => {
         });
       }
       setForm(res2.data.form.fields);
+
+      const res3 = await getFeedbacks({ id: eventId });
+      if (!res2.success) {
+        setLoading(false);
+        return Toast.show({
+          type: 'error',
+          text1: 'Failed to fetch form',
+          text2: res2.error,
+          position: 'top',
+          topOffset: 60,
+        });
+      }
+      setFeedback(res3.data);
       setLoading(false);
     };
 
@@ -143,8 +158,8 @@ const Dashboard = ({ route, navigation }: Props) => {
               <Text style={styles.text}>{data?.totalParticipants ?? 0}</Text>
             </View>
             <View style={styles.textContainer}>
-              <Text style={styles.subtitle}>Rating</Text>
-              <Text style={styles.text}>{data?.totalParticipants ?? 0}</Text>
+              <Text style={styles.subtitle}>Average Rating</Text>
+              <Text style={styles.text}>{feedback?.averageRating ?? 0}</Text>
             </View>
           </View>
           <View style={styles.chartContainer}>

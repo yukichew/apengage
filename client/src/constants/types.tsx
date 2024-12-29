@@ -83,6 +83,16 @@ export type FacilityBooking = {
   venueBookingId: string;
 };
 
+export type TransportBooking = {
+  transportType: string;
+  departDate: string;
+  returnDate?: string;
+  departFrom: string;
+  departTo: string;
+  returnTo?: string;
+  eventId: string;
+};
+
 export type Feedback = {
   id?: number;
   registration: string;

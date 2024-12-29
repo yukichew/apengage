@@ -9,6 +9,7 @@ const {
   getVenueBookings,
   udpateVenueBookingStatus,
   searchVenueBookings,
+  getAvailableVenueBookings,
 } = require('../../controllers/logistic/venueController');
 const { authenticate, isAdmin } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validator');
@@ -46,6 +47,7 @@ router.delete('/:id', authenticate, isAdmin, deleteVenue);
 router.get('/venues', authenticate, getVenues);
 router.get('/search', authenticate, searchVenue);
 router.get('/bookings', authenticate, getVenueBookings);
+router.get('/bookings/available', authenticate, getAvailableVenueBookings);
 router.get('/bookings/search', authenticate, searchVenueBookings);
 router.get('/:id', authenticate, getVenue);
 

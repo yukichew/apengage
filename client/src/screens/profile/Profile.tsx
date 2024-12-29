@@ -74,21 +74,14 @@ const Profile = ({ navigation }: Props) => {
               {user?.apkey}
             </Text>
           </View>
-
-          <IconButton
-            icon='mode-edit'
-            iconLibrary='MaterialIcons'
-            onPress={() => navigation.navigate('EditProfile')}
-            style={{ color: 'white', right: 10 }}
-          />
         </View>
 
         <View style={styles.listContainter}>
           <View style={styles.accountContainer}>
             <ProfileItem
               title='My Account'
-              desc='Desc'
-              onPress={() => console.log('Item pressed')}
+              desc='Make changes to your account'
+              onPress={() => navigation.navigate('EditProfile')}
               leftIcon={
                 <IconButton
                   icon='mode-edit'
@@ -100,8 +93,8 @@ const Profile = ({ navigation }: Props) => {
             />
             <ProfileItem
               title='Change Password'
-              desc='Desc'
-              onPress={() => console.log('Item pressed')}
+              desc='Further secure your account'
+              onPress={() => navigation.navigate('ChangePassword')}
               leftIcon={
                 <IconButton
                   icon='form-textbox-password'
@@ -113,7 +106,7 @@ const Profile = ({ navigation }: Props) => {
             />
             <ProfileItem
               title='Logout'
-              desc='Desc'
+              desc='Logout from your account'
               onPress={handleLogout}
               leftIcon={
                 <IconButton
@@ -139,17 +132,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     borderRadius: 10,
     width: width - 30,
-    marginVertical: 10,
+    marginBottom: 10,
     alignSelf: 'center',
     padding: 15,
     shadowColor: 'black',
     shadowOffset: {
-      width: 4,
-      height: 5,
+      width: 2,
+      height: 3,
     },
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
+    marginTop: 20,
   },
   image: {
     width: 70,

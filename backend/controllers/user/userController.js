@@ -266,6 +266,30 @@ exports.getProfile = async (req, res) => {
   });
 };
 
+exports.changePassword = async (req, res) => {
+  const { password } = req.body;
+
+  if (!password) return sendError(res, 400, 'Invalid request');
+
+  const user = await User.findById(req.user._id).select('+password');
+  if (!user) return sendError(res, 404, 'User not found!');
+
+  const isSamePassword = await user.comparePassword(password);
+  if (isSamePassword)
+    return sendError(
+      res,
+      400,
+      'New password must be different from the old one!'
+    );
+
+  user.password = password.trim();
+  await user.save();
+
+  res.json({
+    message: 'Password reset successfully!',
+  });
+};
+
 // exports.updateFCMToken = async (req, res) => {
 //   const { userId, fcmToken } = req.body;
 

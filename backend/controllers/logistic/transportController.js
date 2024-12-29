@@ -154,24 +154,29 @@ exports.bookTransport = async (req, res) => {
     transportType,
     departDate
   );
-  const availableReturnTransports = await Transport.findAvailable(
-    transportType,
-    returnDate
-  );
 
   if (availableDepartTransports.length === 0) {
     return sendError(res, 400, 'No transport available for departure');
   }
 
-  if (returnDate && availableReturnTransports.length === 0) {
-    return sendError(res, 400, 'No transport available for return');
-  }
-
   let assignedDepartTransport = availableDepartTransports[0];
-  let assignedReturnTransport =
-    availableReturnTransports.find((t) =>
-      t._id.equals(assignedDepartTransport._id)
-    ) || availableReturnTransports[0];
+  let assignedReturnTransport;
+
+  if (returnDate) {
+    const availableReturnTransports = await Transport.findAvailable(
+      transportType,
+      returnDate
+    );
+
+    if (availableReturnTransports.length === 0) {
+      return sendError(res, 400, 'No transport available for return');
+    }
+
+    assignedReturnTransport =
+      availableReturnTransports.find((t) =>
+        t._id.equals(assignedDepartTransport._id)
+      ) || availableReturnTransports[0];
+  }
 
   const currentTime = new Date();
   const bookingStartTime = new Date(departDate);
@@ -187,7 +192,7 @@ exports.bookTransport = async (req, res) => {
     createdBy: req.user.id,
     transport: {
       departure: assignedDepartTransport._id,
-      return: assignedReturnTransport ? assignedReturnTransport._id : null,
+      return: assignedReturnTransport,
     },
     event: eventId,
     status: hoursDifference > 48 ? 'Approved' : 'Pending',
@@ -200,7 +205,7 @@ exports.bookTransport = async (req, res) => {
       id: newBooking._id,
       transport: {
         departure: assignedDepartTransport.name,
-        return: assignedReturnTransport ? assignedReturnTransport.name : null,
+        return: assignedReturnTransport?.name,
       },
       departFrom: newBooking.departFrom,
       departTo: newBooking.departTo,

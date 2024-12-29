@@ -68,6 +68,24 @@ export const getEvents = async (): Promise<ApiResponse> => {
   }
 };
 
+export const getEventHistory = async (): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<any>('/event/events/organized/approved');
+
+    const events = response.data.events.map((event: any) => ({
+      key: event.id,
+      value: event.name,
+    }));
+
+    return {
+      success: true,
+      data: events,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};
+
 export const searchEvents = async (
   query: string,
   category?: string

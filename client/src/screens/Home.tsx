@@ -1,95 +1,46 @@
 import React from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
-import IconButton from '../components/common/IconButton';
+import { FlatList, RefreshControl, Text } from 'react-native';
 import StackCarousel from '../components/common/StackCarousel';
 import AppContainer from '../components/containers/AppContainer';
-import { Props } from '../constants/types';
+import FlatListItem from '../components/custom/EventItem';
+import ServiceContainer from '../components/custom/ServiceContainer';
+import { EventItem, Props } from '../constants/types';
 import { useEvents } from '../helpers/EventHelper';
 
 const Home = ({ navigation }: Props) => {
-  const { events } = useEvents();
+  const { events, loading, refreshEvents } = useEvents();
+
+  const renderItem = ({ item }: { item: EventItem }) => (
+    <FlatListItem
+      item={item}
+      onPress={() => navigation.navigate('EventDetails', { event: item })}
+    />
+  );
 
   return (
     <AppContainer navigation={navigation}>
       <StackCarousel data={events} maxVisibleItem={3} />
-      <View style={styles.serviceContainer}>
-        <View style={styles.iconWrapper}>
-          <View style={styles.iconContainer}>
-            <IconButton
-              icon='stepforward'
-              iconLibrary='AntDesign'
-              onPress={() => navigation.navigate('BookVenue')}
-              style={styles.iconButton}
-            />
-          </View>
-          <Text style={styles.label}>Venue</Text>
-        </View>
-        <View style={styles.iconWrapper}>
-          <View style={styles.iconContainer}>
-            <IconButton
-              icon='stepforward'
-              iconLibrary='AntDesign'
-              onPress={() => navigation.navigate('BookFacility')}
-              style={styles.iconButton}
-            />
-          </View>
-          <Text style={styles.label}>Facilities</Text>
-        </View>
-        <View style={styles.iconWrapper}>
-          <View style={styles.iconContainer}>
-            <IconButton
-              icon='stepforward'
-              iconLibrary='AntDesign'
-              onPress={() => navigation.navigate('BookTransport')}
-              style={styles.iconButton}
-            />
-          </View>
-          <Text style={styles.label}>Transport</Text>
-        </View>
-        <View style={styles.iconWrapper}>
-          <View style={styles.iconContainer}>
-            <IconButton
-              icon='qrcode-scan'
-              iconLibrary='MaterialCommunityIcons'
-              onPress={() => navigation.navigate('QRCodeScan')}
-              style={styles.iconButton}
-            />
-          </View>
-          <Text style={styles.label}>Attendance</Text>
-        </View>
-      </View>
+      <ServiceContainer navigation={navigation} />
+      <Text
+        style={{
+          fontSize: 22,
+          fontFamily: 'Poppins-Bold',
+          marginLeft: 26,
+          marginTop: 10,
+        }}
+      >
+        Latest Events
+      </Text>
+      <FlatList
+        data={events.slice(0, 5)}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id?.toString() || item.name}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={refreshEvents} />
+        }
+      />
     </AppContainer>
   );
 };
 
 export default Home;
-
-const { width } = Dimensions.get('window');
-const styles = StyleSheet.create({
-  serviceContainer: {
-    flexDirection: 'row',
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: width - 80,
-  },
-  iconWrapper: {
-    alignItems: 'center',
-  },
-  iconContainer: {
-    backgroundColor: 'black',
-    borderRadius: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 55,
-    height: 55,
-  },
-  iconButton: {
-    color: 'white',
-  },
-  label: {
-    marginTop: 5,
-    fontSize: 11,
-    color: 'black',
-  },
-});

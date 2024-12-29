@@ -1,4 +1,3 @@
-const { get } = require('mongoose');
 const { sendError } = require('../../helpers/error');
 const Event = require('../../models/event');
 const Form = require('../../models/event/form');

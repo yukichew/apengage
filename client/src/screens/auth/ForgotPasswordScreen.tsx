@@ -40,7 +40,6 @@ const ForgotPasswordScreen = ({ navigation }: Props) => {
       text1: 'Forget Password Link Sent',
       text2: 'Check your email for a reset link',
     });
-    console.log(res);
   };
 
   return (

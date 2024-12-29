@@ -2,6 +2,7 @@ const Event = require('../../models/event');
 const cloudinary = require('../../config/cloud');
 const { sendError } = require('../../helpers/error');
 const VenueBooking = require('../../models/logistic/venue/venueBooking');
+const Form = require('../../models/event/form');
 
 exports.createEvent = async (req, res) => {
   const {
@@ -66,45 +67,88 @@ exports.createEvent = async (req, res) => {
 exports.getEvents = async (req, res) => {
   const { mode } = req.query;
 
-  const query = { status: 'Approved', type: 'public' };
-  if (mode) query.mode = mode;
+  const match = { status: 'Approved', type: 'public' };
+  if (mode) match.mode = mode;
 
-  const events = await Event.find(query)
-    .sort({ createdAt: -1 })
-    .populate({
-      path: 'venueBooking',
-      populate: {
-        path: 'venue',
-        select: 'name',
+  const events = await Event.aggregate([
+    { $match: match },
+    { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: 'venuebookings',
+        localField: 'venueBooking',
+        foreignField: '_id',
+        as: 'venueBooking',
       },
-    })
-    .populate('postedBy', 'apkey')
-    .populate('categories', 'name');
+    },
+    { $unwind: { path: '$venueBooking', preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: 'venues',
+        localField: 'venueBooking.venue',
+        foreignField: '_id',
+        as: 'venueBooking.venue',
+      },
+    },
+    {
+      $unwind: {
+        path: '$venueBooking.venue',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'postedBy',
+        foreignField: '_id',
+        as: 'postedBy',
+      },
+    },
+    { $unwind: { path: '$postedBy', preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'categories',
+        foreignField: '_id',
+        as: 'categories',
+      },
+    },
+    {
+      $lookup: {
+        from: 'eventforms',
+        localField: '_id',
+        foreignField: 'event',
+        as: 'forms',
+      },
+    },
+    { $match: { 'forms.0': { $exists: true } } },
+    {
+      $project: {
+        id: '$_id',
+        name: 1,
+        desc: 1,
+        type: 1,
+        mode: 1,
+        venue: '$venueBooking.venue.name',
+        startTime: 1,
+        endTime: 1,
+        location: 1,
+        categories: '$categories.name',
+        price: 1,
+        postedBy: '$postedBy.apkey',
+        organizer: 1,
+        thumbnail: '$thumbnail.url',
+        createdAt: 1,
+        updatedAt: 1,
+        status: 1,
+      },
+    },
+  ]);
 
-  const count = await Event.countDocuments(query);
+  const count = events.length;
 
   res.json({
-    events: events.map((event) => {
-      return {
-        id: event._id,
-        name: event.name,
-        desc: event.desc,
-        type: event.type,
-        mode: event.mode,
-        venue: event?.venueBooking?.venue.name,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        location: event?.location,
-        categories: event?.categories.map((category) => category.name),
-        price: event?.price,
-        postedBy: event.postedBy.apkey,
-        organizer: event.organizer,
-        thumbnail: event?.thumbnail.url,
-        createdAt: event.createdAt,
-        updatedAt: event.updatedAt,
-        status: event.status,
-      };
-    }),
+    events,
     count,
   });
 };
@@ -154,44 +198,6 @@ exports.searchEvents = async (req, res) => {
         postedBy: event.postedBy.apkey,
         organizer: event.organizer,
         thumbnail: event?.thumbnail.url,
-        createdAt: event.createdAt,
-        updatedAt: event.updatedAt,
-        status: event.status,
-      };
-    }),
-  });
-};
-
-exports.getLatestEvents = async (req, res) => {
-  const events = await Event.find({})
-    .sort({ createdAt: -1 })
-    .limit(5)
-    .populate({
-      path: 'venueBooking',
-      populate: {
-        path: 'venue',
-        select: 'name',
-      },
-    })
-    .populate('postedBy', 'apkey');
-
-  res.json({
-    events: events.map((event) => {
-      return {
-        id: event._id,
-        name: event.name,
-        desc: event.desc,
-        type: event.type,
-        mode: event.mode,
-        venue: event?.venueBooking?.venue.name,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        location: event?.location,
-        categories: event?.categories,
-        price: event?.price,
-        postedBy: event.postedBy.apkey,
-        organizer: event.organizer,
-        thumbnail: event?.thumbnail,
         createdAt: event.createdAt,
         updatedAt: event.updatedAt,
         status: event.status,
@@ -286,6 +292,49 @@ exports.getAllEvents = async (req, res) => {
 exports.getCreatedEvents = async (req, res) => {
   const userId = req.user._id;
   const query = { postedBy: userId };
+
+  const events = await Event.find(query)
+    .sort({ createdAt: -1 })
+    .populate({
+      path: 'venueBooking',
+      populate: {
+        path: 'venue',
+        select: 'name',
+      },
+    })
+    .populate('postedBy', 'apkey');
+
+  const count = await Event.countDocuments(query);
+
+  res.json({
+    events: events.map((event) => {
+      return {
+        id: event._id,
+        name: event.name,
+        desc: event.desc,
+        type: event.type,
+        mode: event.mode,
+        venue: event?.venueBooking?.venue.name,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        location: event?.location,
+        categories: event?.categories,
+        price: event?.price,
+        postedBy: event.postedBy.apkey,
+        organizer: event.organizer,
+        thumbnail: event.thumbnail?.url,
+        createdAt: event.createdAt,
+        updatedAt: event.updatedAt,
+        status: event.status,
+      };
+    }),
+    count,
+  });
+};
+
+exports.getCreatedActiveEvents = async (req, res) => {
+  const userId = req.user._id;
+  const query = { postedBy: userId, status: { $nin: ['Past', 'Rejected'] } };
 
   const events = await Event.find(query)
     .sort({ createdAt: -1 })

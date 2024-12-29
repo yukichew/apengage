@@ -38,7 +38,7 @@ const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,
-    height: height * 0.3,
+    height: height * 0.28,
     width: width - 55,
     alignSelf: 'center',
   },

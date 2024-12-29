@@ -40,7 +40,7 @@ export const bookVenue = async (values: VenueBooking): Promise<ApiResponse> => {
 
 export const getVenueBookings = async (): Promise<ApiResponse> => {
   try {
-    const response = await client.get<any>('/venue/bookings');
+    const response = await client.get<any>('/venue/bookings/available');
 
     const venues = response.data.bookings.map((booking: any) => ({
       key: booking.id,
