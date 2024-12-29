@@ -1,9 +1,16 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  View,
+} from 'react-native';
 import Toast from 'react-native-toast-message';
 import { getOrganizedEvents } from '../../api/event';
 import OrganizedItem from '../../components/custom/OrganizedItem';
+import ServiceContainer from '../../components/custom/ServiceContainer';
 import { Props } from '../../constants/types';
 
 const OrganizedEvents = ({ navigation }: Props) => {
@@ -13,7 +20,6 @@ const OrganizedEvents = ({ navigation }: Props) => {
   const refreshEvents = async () => {
     setLoading(true);
     const response = await getOrganizedEvents();
-    console.log(response);
     setEvents(response.data.events);
     if (!response.success) {
       Toast.show({
@@ -47,7 +53,18 @@ const OrganizedEvents = ({ navigation }: Props) => {
 
   return (
     <>
-      {events.length !== 0 ? (
+      <ServiceContainer navigation={navigation} />
+      {loading ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <ActivityIndicator size='large' color='rgba(0, 0, 0, 0.5)' />
+        </View>
+      ) : events.length !== 0 ? (
         <FlatList
           data={events}
           renderItem={renderItem}

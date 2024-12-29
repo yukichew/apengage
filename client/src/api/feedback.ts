@@ -19,3 +19,17 @@ export const createFeedback = async (
     return catchAxiosError(error);
   }
 };
+
+export const getFeedbacks = async (values: {
+  id: string;
+}): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<any>('/feedback/feedbacks/' + values.id);
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};

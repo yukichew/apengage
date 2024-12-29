@@ -32,13 +32,23 @@ exports.transportBookingValidator = [
     .isEmpty()
     .withMessage('Departure date is missing'),
   check('returnDate')
+    .optional()
     .trim()
-    .not()
-    .isEmpty()
-    .withMessage('Return date is missing'),
+    .custom((value, { req }) => {
+      if (value && new Date(value) <= new Date(req.body.departDate)) {
+        throw new Error('Return date must be after departure date');
+      }
+      return true;
+    }),
   check('returnTo')
+    .optional()
     .trim()
-    .not()
-    .isEmpty()
-    .withMessage('Return location is missing'),
+    .custom((value, { req }) => {
+      if (req.body.returnDate && !value) {
+        throw new Error(
+          'Return destination is required if return date is provided'
+        );
+      }
+      return true;
+    }),
 ];

@@ -222,6 +222,31 @@ exports.getVenueBookings = async (req, res) => {
   });
 };
 
+exports.getAvailableVenueBookings = async (req, res) => {
+  const userId = req.user._id;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const bookings = await VenueBooking.find({
+    createdBy: userId,
+    endTime: { $gte: today },
+  })
+    .sort({ createdAt: -1 })
+    .populate('venue', 'name')
+    .populate('createdBy', 'apkey');
+
+  res.json({
+    bookings: bookings.map((booking) => {
+      return {
+        id: booking._id,
+        venue: booking.venue.name,
+      };
+    }),
+    count: bookings.length,
+  });
+};
+
 // admin only
 exports.udpateVenueBookingStatus = async (req, res) => {
   const { id } = req.params;

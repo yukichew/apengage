@@ -1,5 +1,6 @@
 const {
   createFeedback,
+  getFeedbackForEvent,
 } = require('../../controllers/event/feedbackController');
 const { authenticate } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validator');
@@ -13,5 +14,6 @@ router.post(
   validate,
   createFeedback
 );
+router.get('/feedbacks/:id', authenticate, getFeedbackForEvent);
 
 module.exports = router;

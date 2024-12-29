@@ -25,7 +25,6 @@ const transportBookingSchema = new mongoose.Schema(
     },
     returnTo: {
       type: String,
-      required: true,
       enum: ['APU Campus', 'Fortune Park', 'LRT Bukit Jalil'],
     },
     departDate: {

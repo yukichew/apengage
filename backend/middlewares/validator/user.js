@@ -65,3 +65,21 @@ exports.resetPasswordValidator = [
       'Password must be at least 8 characters long, contain at least 1 uppercase letter, and 1 special character'
     ),
 ];
+
+exports.signInValidator = [
+  check('email')
+    .normalizeEmail()
+    .isEmail()
+    .withMessage('Email is invalid')
+    .matches(/^([a-zA-Z0-9._%+-]+)@mail\.apu\.edu\.my$/)
+    .withMessage('Email must be a valid APU email address'),
+  check('password')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Password is missing')
+    .matches(/^(?=.*[A-Z])(?=.*[\W_])(?=.*\d)[a-zA-Z\d\W_]{8,}$/)
+    .withMessage(
+      'Password must be at least 8 characters long, contain at least 1 uppercase letter, and 1 special character'
+    ),
+];

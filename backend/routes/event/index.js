@@ -5,6 +5,7 @@ const {
   createEvent,
   getEvent,
   getCreatedEvents,
+  getCreatedActiveEvents,
 } = require('../../controllers/event/eventController');
 const {
   getRegistration,
@@ -35,6 +36,7 @@ router.get('/search', authenticate, searchEvents);
 router.get('/registration/:id', authenticate, getRegistration);
 router.get('/registrations/:id', authenticate, getRegistrations);
 router.get('/events/organized', authenticate, getCreatedEvents);
+router.get('/events/organized/approved', authenticate, getCreatedActiveEvents);
 router.get('/events/participated', authenticate, getParticipatedEvents);
 router.get('/:id', authenticate, getEvent);
 

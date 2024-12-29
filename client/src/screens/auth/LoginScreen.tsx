@@ -21,7 +21,14 @@ const LoginScreen = ({ navigation }: Props) => {
   };
 
   const validationSchema = yup.object({
-    email: yup.string().email('Invalid email').required('Email is required'),
+    email: yup
+      .string()
+      .email('Invalid email')
+      .matches(
+        /^([a-zA-Z0-9._%+-]+)@mail\.apu\.edu\.my$/,
+        'Should only be an APU email address'
+      )
+      .required('Email is required'),
     password: yup
       .string()
       .trim()

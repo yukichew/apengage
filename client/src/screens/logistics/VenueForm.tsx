@@ -20,8 +20,30 @@ const VenueForm = ({ navigation }: Props) => {
   };
 
   const validationSchema = yup.object({
-    startTime: yup.string().required('Start time is required'),
-    endTime: yup.string().required('End time is required'),
+    startTime: yup
+      .string()
+      .trim()
+      .required('Start time is missing')
+      .test(
+        'is-greater',
+        'Start time must be later than current time',
+        function (value) {
+          const startTime = new Date(value);
+          return startTime > new Date();
+        }
+      ),
+    endTime: yup
+      .string()
+      .required('End time is missing')
+      .test(
+        'is-after-start',
+        'End time must be later than start time',
+        function (value) {
+          const startTime = new Date(this.parent.startTime);
+          const endTime = new Date(value);
+          return endTime > startTime;
+        }
+      ),
     purpose: yup.string().required('Purpose is required'),
   });
 
@@ -121,11 +143,18 @@ const VenueForm = ({ navigation }: Props) => {
             leftIcon='title'
             leftIconLibrary='MaterialIcons'
           />
-          <DateInput placeholder='Start Time' name='startTime' />
-          <DateInput placeholder='End Time' name='endTime' />
+          <DateInput
+            placeholder='Start Time'
+            name='startTime'
+            minimumDate={new Date()}
+          />
+          <DateInput
+            placeholder='End Time'
+            name='endTime'
+            minimumDate={new Date()}
+          />
           <SelectList
             setSelected={(val: string) => {
-              const selectedVenue = venues.find((venue) => venue.key === val);
               setSelected(val);
             }}
             data={venues}
@@ -145,7 +174,7 @@ const VenueForm = ({ navigation }: Props) => {
                 'Select Venue',
             }}
           />
-          <SubmitButton title='Next' />
+          <SubmitButton title='save' />
         </CustomFormik>
       </ScrollView>
     </AppContainer>

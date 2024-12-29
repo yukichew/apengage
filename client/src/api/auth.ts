@@ -90,6 +90,22 @@ export const verifyEmail = async (values: {
   }
 };
 
+export const changePassword = async (values: {
+  password: string;
+}): Promise<ApiResponse> => {
+  try {
+    const response = await client.put<ApiResponse>('/user/change-password', {
+      ...values,
+    });
+    return {
+      success: true,
+      user: response.data.user,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};
+
 export const logout = async (): Promise<void> => {
   try {
     await AsyncStorage.removeItem('token');

@@ -1,6 +1,6 @@
 import { StackActions } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { ScrollView, Switch, Text, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import {
   MultipleSelectList,
   SelectList,
@@ -78,7 +78,6 @@ const EventForm = ({ navigation }: Props) => {
   const [selectedMode, setSelectedMode] = useState<string>();
   const [selectedType, setSelectedType] = useState<string>();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [venueBooking, setVenueBooking] = useState<boolean>(false);
   const [venueBookings, setVenueBookings] = useState<any[]>([]);
   const [selectedVenue, setSelectedVenue] = useState<string>();
   const [page, setPage] = useState<number>(0);
@@ -118,7 +117,7 @@ const EventForm = ({ navigation }: Props) => {
       mode,
     };
 
-    if (mode === 'oncampus' && venueBooking) {
+    if (mode === 'oncampus') {
       data.venueBooking = selectedVenue;
     }
 
@@ -147,9 +146,6 @@ const EventForm = ({ navigation }: Props) => {
       text1: 'Successfully created event',
     });
 
-    // navigation.dispatch(
-    //   StackActions.replace('CustomForm', { eventId: res.data.event._id })
-    // );
     navigation.dispatch(StackActions.replace('Tabs'));
     formikActions.resetForm();
   };
@@ -248,10 +244,25 @@ const EventForm = ({ navigation }: Props) => {
                   color: 'rgba(0, 0, 0, 0.8)',
                 }}
               >
-                Have you booked a venue?
+                Please ensure you have booked a venue before proceeding. If not,
+                please book a venue first.
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('BookVenue')}
+                >
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontFamily: 'Poppins-SemiBold',
+                      color: 'blue',
+                      textDecorationLine: 'underline',
+                      marginTop: 2,
+                    }}
+                  >
+                    Book a Venue
+                  </Text>
+                </TouchableOpacity>
               </Text>
-              <Switch value={venueBooking} onValueChange={setVenueBooking} />
-              {venueBooking && venueBookings.length > 0 && (
+              {venueBookings.length > 0 && (
                 <SelectList
                   setSelected={(val: string) => {
                     const selectedVenue = venueBookings.find(

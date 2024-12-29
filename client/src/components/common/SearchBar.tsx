@@ -11,14 +11,22 @@ type Props = {
   onClear?: () => void;
 };
 
-const SearchBar = ({ value, placeholder, onClear, ...props }: Props) => {
+const SearchBar = ({
+  value,
+  placeholder,
+  onClear,
+  onSubmitEditing,
+  ...props
+}: Props) => {
   return (
     <View style={styles.field}>
       <IconButton icon='search' iconLibrary='Feather' />
       <TextInput
         value={value}
         placeholder={placeholder}
+        onSubmitEditing={onSubmitEditing}
         style={styles.input}
+        placeholderTextColor={'rgba(0, 0, 0, 0.5)'}
         {...props}
       />
       {value ? (
