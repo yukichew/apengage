@@ -24,6 +24,19 @@ exports.joinEvent = async (req, res) => {
     return sendError(res, 400, 'Registration deadline has passed.');
   }
 
+  if (form.capacity && form.capacity > 0) {
+    const currentRegistrations = await Registration.countDocuments({
+      eventForm: form._id,
+    });
+    if (currentRegistrations >= form.capacity) {
+      return sendError(
+        res,
+        400,
+        `Registrations are full. Maximum capacity of ${form.capacity} reached.`
+      );
+    }
+  }
+
   const formFields = form.fields.map((field) => ({
     id: field._id.toString(),
     label: field.label,
@@ -127,6 +140,13 @@ exports.getParticipatedEvents = async (req, res) => {
     path: 'eventForm',
     populate: {
       path: 'event',
+      populate: {
+        path: 'venueBooking',
+        populate: {
+          path: 'venue',
+          select: 'name',
+        },
+      },
       select:
         'name type desc startTime endTime mode organizer categories location venueBooking price thumbnail',
     },
@@ -145,7 +165,7 @@ exports.getParticipatedEvents = async (req, res) => {
       mode: registration.eventForm.event.mode,
       organizer: registration.eventForm.event.organizer,
       location: registration.eventForm.event.location,
-      venue: registration.eventForm.event.venueBooking?.venue,
+      venue: registration.eventForm.event.venueBooking?.venue.name,
       price: registration.eventForm.event.price,
       thumbnail: registration.eventForm.event.thumbnail,
     },

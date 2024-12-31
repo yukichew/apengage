@@ -118,3 +118,27 @@ exports.searchCategory = async (req, res) => {
     }),
   });
 };
+
+exports.updateCategoryStatus = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body;
+
+  if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid category id');
+
+  const category = await Category.findById(id);
+  if (!category) return sendError(res, 404, 'Category not found');
+
+  if (action === 'activate') {
+    category.isActive = true;
+    await category.save();
+    return res.json({ message: 'Category activated' });
+  }
+
+  if (action === 'deactivate') {
+    category.isActive = false;
+    await category.save();
+    return res.json({ message: 'Category deactivated' });
+  }
+
+  res.status(400).json({ message: 'Invalid action' });
+};

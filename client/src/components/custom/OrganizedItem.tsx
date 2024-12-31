@@ -50,13 +50,15 @@ const OrganizedItem = ({ item, onPress, onActionPress }: Props) => {
               size={16}
               style={{ color: 'rgba(37, 37, 37, 0.7)' }}
             />
-            <Text style={styles.locationText}>test</Text>
+            <Text style={styles.locationText}>
+              {item.mode === 'oncampus' ? item.venue : item.location}
+            </Text>
           </View>
         </View>
       </View>
       <View style={styles.statusContainer}>
         <Text style={getStatusStyle(item.status)}>{item.status}</Text>
-        {item.type === 'public' ? (
+        {item.type === 'public' && !item.form ? (
           <>
             <IconButton
               icon='form'

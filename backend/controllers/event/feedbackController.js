@@ -47,25 +47,35 @@ exports.getFeedbackForEvent = async (req, res) => {
     registration: { $in: registrationIds },
   }).populate({
     path: 'registration',
-    populate: { path: 'participant', select: 'name email' },
+    populate: { path: 'participant', select: 'apkey' },
   });
 
   const totalRating = feedbacks.reduce(
     (sum, feedback) => sum + feedback.rating,
     0
   );
-  const averageRating = feedbacks.length ? totalRating / feedbacks.length : 0;
+  const averageRating = feedbacks.length
+    ? (totalRating / feedbacks.length).toFixed(1)
+    : 0;
+
+  const ratingDistribution = feedbacks.reduce(
+    (acc, feedback) => {
+      acc[feedback.rating] = (acc[feedback.rating] || 0) + 1;
+      return acc;
+    },
+    { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+  );
 
   res.json({
     feedbacks: feedbacks.map((feedback) => {
       return {
         id: feedback._id,
-        registration: feedback.registration._id,
-        createdBy: feedback.registration.participant,
+        createdBy: feedback.registration.participant.apkey,
         rating: feedback.rating,
         comment: feedback.comment,
       };
     }),
     averageRating,
+    ratingDistribution,
   });
 };

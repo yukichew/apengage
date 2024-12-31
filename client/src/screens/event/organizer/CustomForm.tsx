@@ -39,10 +39,16 @@ const CustomForm = ({ route, navigation }: Props) => {
 
   const initialValues = {
     deadline: '',
+    capacity: '',
   };
 
   const validationSchema = yup.object({
     deadline: yup.string().trim().required('Registration deadline is missing'),
+    capacity: yup
+      .string()
+      .trim()
+      .required('Registration capacity is missing')
+      .matches(/^[0-9]+$/, 'Capacity must be a number'),
   });
 
   const scrollViewRef = useRef<ScrollView>(null);
@@ -250,6 +256,8 @@ const CustomForm = ({ route, navigation }: Props) => {
             name='deadline'
             minimumDate={new Date()}
           />
+
+          <InputText placeholder='Registration Capacity' name='capacity' />
 
           {formFields.map((field) => renderItem({ item: field }))}
           <FieldModal

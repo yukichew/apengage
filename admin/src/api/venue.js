@@ -113,3 +113,17 @@ export const searchVenueBookings = async (query) => {
     return catchError(error);
   }
 };
+
+export const updateVenueStatus = async (id, action) => {
+  try {
+    const { data } = await client.put('/venue/status/' + id, {
+      action,
+    });
+    return {
+      success: true,
+      message: data.message,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};

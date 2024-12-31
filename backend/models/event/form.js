@@ -8,6 +8,7 @@ const eventFormSchema = new mongoose.Schema(
       required: true,
     },
     deadline: { type: Date, required: true },
+    capacity: { type: Number, required: true, default: 0 },
     fields: [
       {
         label: { type: String, required: true, trim: true },

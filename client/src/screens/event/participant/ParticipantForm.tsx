@@ -257,7 +257,7 @@ const ParticipantForm = ({ route, navigation }: Props) => {
 
           {formFields.map((field) => renderItem({ field }))}
 
-          <SubmitButton title='Save' />
+          <SubmitButton title='join' />
         </ScrollView>
       </CustomFormik>
     </AppContainer>

@@ -115,3 +115,17 @@ export const searchTransportBookings = async (query) => {
     return catchError(error);
   }
 };
+
+export const updateTransportStatus = async (id, action) => {
+  try {
+    const { data } = await client.put('/transport/status/' + id, {
+      action,
+    });
+    return {
+      success: true,
+      message: data.message,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};

@@ -5,6 +5,7 @@ import {
   deleteTransport,
   getTransportation,
   searchTransport,
+  updateTransportStatus,
 } from '../../api/transport';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
@@ -22,16 +23,33 @@ const Transport = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedTransport, setSelectedTransport] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [actionType, setActionType] = useState('');
 
   const columns = ['Plate', 'Type', 'Capacity'];
   const columnKeys = ['name', 'type', 'capacity'];
 
   const handleAction = (action, row) => {
-    if (action === 'edit') {
-      navigate(`/logistics/transport/edit/${row.id}`);
-    } else if (action === 'delete') {
-      setSelectedTransport(row);
-      setShowDialog(true);
+    switch (action) {
+      case 'activate':
+        setActionType('activate');
+        setSelectedTransport(row);
+        setShowDialog(true);
+        break;
+      case 'deactivate':
+        setActionType('deactivate');
+        setSelectedTransport(row);
+        setShowDialog(true);
+        break;
+      case 'edit':
+        navigate(`/logistics/transport/edit/${row.id}`);
+        break;
+      case 'delete':
+        setActionType('delete');
+        setSelectedTransport(row);
+        setShowDialog(true);
+        break;
+      default:
+        break;
     }
   };
 
@@ -43,14 +61,10 @@ const Transport = () => {
       return toast.error(res.error);
     }
 
-    const newTransportation = transportation.filter(
-      (transport) => transport.id !== selectedTransport.id
-    );
-    setTransportation(newTransportation);
-    setCount(count - 1);
     toast.success(res.message);
     setShowDialog(false);
     setSelectedTransport(null);
+    fetchTransportation();
   };
 
   const fetchTransportation = async (query = '') => {
@@ -80,6 +94,21 @@ const Transport = () => {
     const query = e.target.value;
     setSearchQuery(query);
     fetchTransportation(query);
+  };
+
+  const handleChangeStatus = async () => {
+    if (!selectedTransport || !actionType) return;
+
+    const res = await updateTransportStatus(selectedTransport.id, actionType);
+    if (!res.success) {
+      return toast.error(res.error);
+    }
+
+    toast.success(res.message);
+    setShowDialog(false);
+    setSelectedTransport(null);
+    setActionType('');
+    fetchTransportation();
   };
 
   return (
@@ -113,15 +142,23 @@ const Transport = () => {
           columnKeys={columnKeys}
           handleAction={handleAction}
           totalRows={count}
-          actions={['edit', 'delete']}
+          actions={['edit', 'delete', 'activate', 'deactivate']}
         />
       )}
 
       {showDialog && (
         <ConfirmDialog
-          title='Confirm Deletion'
-          message={`Are you sure you want to delete "${selectedTransport.name}"?`}
-          onConfirm={handleDelete}
+          title={`Confirm ${
+            actionType === 'delete'
+              ? 'Deletion'
+              : actionType === 'activate'
+              ? 'Activation'
+              : 'Deactivation'
+          }`}
+          message={`Are you sure you want to ${actionType} the transport "${selectedTransport.name}"?`}
+          onConfirm={
+            actionType === 'delete' ? handleDelete : handleChangeStatus
+          }
           onCancel={() => setShowDialog(false)}
         />
       )}

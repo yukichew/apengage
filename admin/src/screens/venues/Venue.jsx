@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { deleteVenue, getVenues, searchVenue } from '../../api/venue';
+import {
+  deleteVenue,
+  getVenues,
+  searchVenue,
+  updateVenueStatus,
+} from '../../api/venue';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import CustomButton from '../../components/common/CustomButton';
@@ -18,16 +23,33 @@ const Venue = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedVenue, setSelectedVenue] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [actionType, setActionType] = useState('');
 
   const columns = ['Name', 'Type', 'Capacity'];
   const columnKeys = ['name', 'type', 'capacity'];
 
   const handleAction = (action, row) => {
-    if (action === 'edit') {
-      navigate(`/logistics/venue/edit/${row.id}`);
-    } else if (action === 'delete') {
-      setSelectedVenue(row);
-      setShowDialog(true);
+    switch (action) {
+      case 'activate':
+        setActionType('activate');
+        setSelectedVenue(row);
+        setShowDialog(true);
+        break;
+      case 'deactivate':
+        setActionType('deactivate');
+        setSelectedVenue(row);
+        setShowDialog(true);
+        break;
+      case 'edit':
+        navigate(`/logistics/venue/edit/${row.id}`);
+        break;
+      case 'delete':
+        setActionType('delete');
+        setSelectedVenue(row);
+        setShowDialog(true);
+        break;
+      default:
+        break;
     }
   };
 
@@ -39,12 +61,10 @@ const Venue = () => {
       return toast.error(res.error);
     }
 
-    const newVenues = venues.filter((venue) => venue.id !== selectedVenue.id);
-    setVenues(newVenues);
-    setCount(count - 1);
     toast.success(res.message);
     setShowDialog(false);
     setSelectedVenue(null);
+    fetchVenues();
   };
 
   const fetchVenues = async (query = '') => {
@@ -74,6 +94,21 @@ const Venue = () => {
     const query = e.target.value;
     setSearchQuery(query);
     fetchVenues(query);
+  };
+
+  const handleChangeStatus = async () => {
+    if (!selectedVenue || !actionType) return;
+
+    const res = await updateVenueStatus(selectedVenue.id, actionType);
+    if (!res.success) {
+      return toast.error(res.error);
+    }
+
+    toast.success(res.message);
+    setShowDialog(false);
+    setSelectedVenue(null);
+    setActionType('');
+    fetchVenues();
   };
 
   return (
@@ -107,15 +142,23 @@ const Venue = () => {
           columnKeys={columnKeys}
           handleAction={handleAction}
           totalRows={count}
-          actions={['edit', 'delete']}
+          actions={['edit', 'delete', 'activate', 'deactivate']}
         />
       )}
 
       {showDialog && (
         <ConfirmDialog
-          title='Confirm Deletion'
-          message={`Are you sure you want to delete the venue "${selectedVenue.name}"?`}
-          onConfirm={handleDeleteVenue}
+          title={`Confirm ${
+            actionType === 'delete'
+              ? 'Deletion'
+              : actionType === 'activate'
+              ? 'Activation'
+              : 'Deactivation'
+          }`}
+          message={`Are you sure you want to ${actionType} the venue "${selectedVenue.name}"?`}
+          onConfirm={
+            actionType === 'delete' ? handleDeleteVenue : handleChangeStatus
+          }
           onCancel={() => setShowDialog(false)}
         />
       )}

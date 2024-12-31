@@ -136,6 +136,30 @@ exports.searchVenue = async (req, res) => {
   });
 };
 
+exports.updateVenueStatus = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body;
+
+  if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid venue id');
+
+  const venue = await Venue.findById(id);
+  if (!venue) return sendError(res, 404, 'venue not found');
+
+  if (action === 'activate') {
+    venue.isActive = true;
+    await venue.save();
+    return res.json({ message: 'Venue activated' });
+  }
+
+  if (action === 'deactivate') {
+    venue.isActive = false;
+    await venue.save();
+    return res.json({ message: 'Venue deactivated' });
+  }
+
+  res.status(400).json({ message: 'Invalid action' });
+};
+
 // venue bookings
 exports.bookVenue = async (req, res) => {
   const { venueId, startTime, endTime, purpose } = req.body;

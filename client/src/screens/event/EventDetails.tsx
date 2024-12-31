@@ -15,6 +15,7 @@ import IconButton from '../../components/common/IconButton';
 import AppContainer from '../../components/containers/AppContainer';
 import { EventItem } from '../../constants/types';
 import { Navigation } from '../../navigation/types';
+import { formatDate, formatTime } from '../../utils/formatDate';
 
 type Props = {
   route: { params: { event: EventItem } };
@@ -23,7 +24,6 @@ type Props = {
 
 const EventDetails = ({ route, navigation }: Props) => {
   const { event } = route.params;
-  console.log(event);
 
   const handleRegister = () => {
     const eventIdStr = event.id !== undefined ? String(event.id) : '';
@@ -107,26 +107,22 @@ const EventDetails = ({ route, navigation }: Props) => {
                   <IconButton
                     icon='calendar-month'
                     iconLibrary='MaterialCommunityIcons'
-                    onPress={() => console.log('notification')}
                   />
                 </View>
                 <View style={{ left: 10 }}>
                   <Text style={styles.text}>
-                    {new Date(event.startTime).toLocaleDateString()}
+                    {formatDate(new Date(event.startTime))}
                   </Text>
                   <Text style={styles.desc}>
-                    {new Date(event.startTime).toLocaleTimeString()}
+                    {formatTime(new Date(event.startTime))} -{' '}
+                    {formatTime(new Date(event.endTime))}
                   </Text>
                 </View>
               </View>
 
               <View style={{ flexDirection: 'row', marginTop: 12 }}>
                 <View style={styles.iconContainer}>
-                  <IconButton
-                    icon='location-pin'
-                    iconLibrary='MaterialIcons'
-                    onPress={() => console.log('notification')}
-                  />
+                  <IconButton icon='location-pin' iconLibrary='MaterialIcons' />
                 </View>
                 <View style={{ left: 10 }}>
                   <Text style={styles.text}>
@@ -137,6 +133,18 @@ const EventDetails = ({ route, navigation }: Props) => {
                       ? 'Asia Pacific University'
                       : event.mode}
                   </Text>
+                </View>
+              </View>
+
+              <View style={{ flexDirection: 'row', marginTop: 12 }}>
+                <View style={styles.iconContainer}>
+                  <IconButton
+                    icon='account-group'
+                    iconLibrary='MaterialCommunityIcons'
+                  />
+                </View>
+                <View style={{ left: 10, alignSelf: 'center' }}>
+                  <Text style={styles.text}>{event.organizer}</Text>
                 </View>
               </View>
             </View>

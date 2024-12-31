@@ -52,16 +52,10 @@ const Admin = () => {
     }
 
     toast.success(res.message);
-    const updatedUsers = users.map((user) =>
-      user.id === selectedUser.id
-        ? { ...user, status: actionType === 'activate' ? 'Active' : 'Inactive' }
-        : user
-    );
-
-    setUsers(updatedUsers);
     setShowDialog(false);
     setSelectedUser(null);
     setActionType('');
+    fetchUsers();
   };
 
   const fetchUsers = async (query = '') => {

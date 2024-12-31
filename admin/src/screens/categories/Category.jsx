@@ -5,6 +5,7 @@ import {
   deleteCategory,
   getCategories,
   searchCategory,
+  updateCategoryStatus,
 } from '../../api/category';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
@@ -22,16 +23,33 @@ const Category = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [actionType, setActionType] = useState('');
 
   const columns = ['Name', 'Description'];
   const columnKeys = ['name', 'desc'];
 
   const handleAction = (action, row) => {
-    if (action === 'edit') {
-      navigate(`/event/categories/edit/${row.id}`);
-    } else if (action === 'delete') {
-      setSelectedCategory(row);
-      setShowDialog(true);
+    switch (action) {
+      case 'activate':
+        setActionType('activate');
+        setSelectedCategory(row);
+        setShowDialog(true);
+        break;
+      case 'deactivate':
+        setActionType('deactivate');
+        setSelectedCategory(row);
+        setShowDialog(true);
+        break;
+      case 'edit':
+        navigate(`/event/categories/edit/${row.id}`);
+        break;
+      case 'delete':
+        setActionType('delete');
+        setSelectedCategory(row);
+        setShowDialog(true);
+        break;
+      default:
+        break;
     }
   };
 
@@ -43,14 +61,10 @@ const Category = () => {
       return toast.error(res.error);
     }
 
-    const newCategories = categories.filter(
-      (venue) => venue.id !== selectedCategory.id
-    );
-    setCategories(newCategories);
-    setCount(count - 1);
     toast.success(res.message);
     setShowDialog(false);
     setSelectedCategory(null);
+    fetchCategories();
   };
 
   const fetchCategories = async (query = '') => {
@@ -80,6 +94,21 @@ const Category = () => {
     const query = e.target.value;
     setSearchQuery(query);
     fetchCategories(query);
+  };
+
+  const handleChangeStatus = async () => {
+    if (!selectedCategory || !actionType) return;
+
+    const res = await updateCategoryStatus(selectedCategory.id, actionType);
+    if (!res.success) {
+      return toast.error(res.error);
+    }
+
+    toast.success(res.message);
+    setShowDialog(false);
+    setSelectedCategory(null);
+    setActionType('');
+    fetchCategories();
   };
 
   return (
@@ -113,15 +142,23 @@ const Category = () => {
           columnKeys={columnKeys}
           handleAction={handleAction}
           totalRows={count}
-          actions={['edit', 'delete']}
+          actions={['edit', 'delete', 'activate', 'deactivate']}
         />
       )}
 
       {showDialog && (
         <ConfirmDialog
-          title='Confirm Deletion'
-          message={`Are you sure you want to delete the category "${selectedCategory.name}"?`}
-          onConfirm={handleDelete}
+          title={`Confirm ${
+            actionType === 'delete'
+              ? 'Deletion'
+              : actionType === 'activate'
+              ? 'Activation'
+              : 'Deactivation'
+          }`}
+          message={`Are you sure you want to ${actionType} the category "${selectedCategory.name}"?`}
+          onConfirm={
+            actionType === 'delete' ? handleDelete : handleChangeStatus
+          }
           onCancel={() => setShowDialog(false)}
         />
       )}

@@ -49,7 +49,11 @@ const HistoryItem = ({ item, onPress, onFeedbackPress }: Props) => {
               size={16}
               style={{ color: 'rgba(37, 37, 37, 0.7)' }}
             />
-            <Text style={styles.locationText}>test</Text>
+            <Text style={styles.locationText}>
+              {item.event.mode === 'oncampus'
+                ? item.event.venue
+                : item.event.location}
+            </Text>
           </View>
         </View>
       </View>

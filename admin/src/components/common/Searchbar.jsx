@@ -4,7 +4,7 @@ import { FiSearch } from 'react-icons/fi';
 const Searchbar = ({ name, id, value, placeholder, className, onChange }) => {
   return (
     <div className='w-full'>
-      <div className='relative flex items-center'>
+      <div className='flex items-center'>
         <FiSearch
           size={20}
           className='absolute text-gray-400 pointer-events-none ml-3'
