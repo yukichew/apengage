@@ -64,19 +64,10 @@ const Event = () => {
     }
 
     toast.success(res.message);
-    const updatedEvents = events.map((event) =>
-      event.id === selectedEvent.id
-        ? {
-            ...event,
-            status: actionType === 'approve' ? 'Approved' : 'Rejected',
-          }
-        : event
-    );
-
-    setEvents(updatedEvents);
     setShowDialog(false);
     setSelectedEvent(null);
     setActionType('');
+    fetchEvents();
   };
 
   const fetchEvents = async (query = '') => {

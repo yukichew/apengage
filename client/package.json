@@ -24,6 +24,7 @@
     "react-native-document-picker": "^9.3.1",
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-dropdown-select-list": "^2.0.5",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.20.0",
     "react-native-gifted-charts": "^1.4.47",
     "react-native-linear-gradient": "^2.8.3",
@@ -40,6 +41,7 @@
     "react-native-vector-icons": "^10.1.0",
     "react-native-vision-camera": "^4.6.3",
     "react-native-worklets-core": "^1.5.0",
+    "xlsx": "^0.18.5",
     "yup": "^1.4.0"
   },
   "devDependencies": {

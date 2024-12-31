@@ -1,7 +1,6 @@
 import { BiBus } from 'react-icons/bi';
 import { FaRegUser } from 'react-icons/fa';
-import { IoSettingsOutline } from 'react-icons/io5';
-import { LuCalendarDays, LuLayoutDashboard } from 'react-icons/lu';
+import { LuLayoutDashboard } from 'react-icons/lu';
 import { MdOutlineFormatListBulleted } from 'react-icons/md';
 import { RxDashboard } from 'react-icons/rx';
 
@@ -83,17 +82,5 @@ export const sidebarLinks = [
       },
     ],
     isActive: (pathname) => pathname.includes('event'),
-  },
-  {
-    to: '/calendar',
-    label: 'Calendar',
-    icon: LuCalendarDays,
-    isActive: (pathname) => pathname.includes('calendar'),
-  },
-  {
-    to: '/settings',
-    label: 'Settings',
-    icon: IoSettingsOutline,
-    isActive: (pathname) => pathname.includes('settings'),
   },
 ];

@@ -9,6 +9,7 @@ const {
   updateTransportBookingStatus,
   getTransportBookings,
   searchTransportBookings,
+  updateTransportStatus,
 } = require('../../controllers/logistic/transportController');
 const { authenticate, isAdmin } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validator');
@@ -42,6 +43,7 @@ router.put(
   validate,
   updateTransport
 );
+router.put('/status/:id', authenticate, isAdmin, updateTransportStatus);
 router.put(
   '/booking/status/:id',
   authenticate,

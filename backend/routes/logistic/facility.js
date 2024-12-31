@@ -10,6 +10,7 @@ const {
   getFacility,
   getFacilityBookingHistory,
   searchFacilityBookings,
+  udpateFacilityStatus,
 } = require('../../controllers/logistic/facilityController');
 const { authenticate, isAdmin } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validator');
@@ -43,6 +44,7 @@ router.put(
   validate,
   updateFacility
 );
+router.put('/status/:id', authenticate, isAdmin, udpateFacilityStatus);
 router.put(
   '/booking/status/:id',
   authenticate,

@@ -10,6 +10,7 @@ const {
   udpateVenueBookingStatus,
   searchVenueBookings,
   getAvailableVenueBookings,
+  updateVenueStatus,
 } = require('../../controllers/logistic/venueController');
 const { authenticate, isAdmin } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validator');
@@ -37,6 +38,7 @@ router.put(
   validate,
   updateVenue
 );
+router.put('/status/:id', authenticate, isAdmin, updateVenueStatus);
 router.put(
   '/booking/status/:id',
   authenticate,

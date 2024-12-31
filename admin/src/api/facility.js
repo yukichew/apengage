@@ -115,3 +115,17 @@ export const searchFacilityBookings = async (query) => {
     return catchError(error);
   }
 };
+
+export const updateFacilityStatus = async (id, action) => {
+  try {
+    const { data } = await client.put('/facility/status/' + id, {
+      action,
+    });
+    return {
+      success: true,
+      message: data.message,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};

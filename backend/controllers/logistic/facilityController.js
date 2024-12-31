@@ -135,6 +135,30 @@ exports.searchFacility = async (req, res) => {
   });
 };
 
+exports.udpateFacilityStatus = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body;
+
+  if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid facility id');
+
+  const facility = await Facility.findById(id);
+  if (!facility) return sendError(res, 404, 'Facility not found');
+
+  if (action === 'activate') {
+    facility.isActive = true;
+    await facility.save();
+    return res.json({ message: 'Facility activated' });
+  }
+
+  if (action === 'deactivate') {
+    facility.isActive = false;
+    await facility.save();
+    return res.json({ message: 'Facility deactivated' });
+  }
+
+  res.status(400).json({ message: 'Invalid action' });
+};
+
 // facility bookings
 exports.bookFacility = async (req, res) => {
   const { facilityId, startTime, endTime, venueBookingId, quantity } = req.body;

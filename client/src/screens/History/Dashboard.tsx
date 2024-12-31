@@ -5,10 +5,14 @@ import {
   LayoutAnimation,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
+import RNFS from 'react-native-fs';
 import { BarChart, PieChart } from 'react-native-gifted-charts';
+import Share from 'react-native-share';
 import Toast from 'react-native-toast-message';
+import XLSX from 'xlsx';
 import { getAttendees } from '../../api/event';
 import { getFeedbacks } from '../../api/feedback';
 import { getForm } from '../../api/form';
@@ -19,6 +23,10 @@ import { Navigation } from '../../navigation/types';
 type Props = {
   route: { params: { eventId: string } };
   navigation: Navigation;
+};
+
+type Registration = {
+  response: { [key: string]: string };
 };
 
 const Dashboard = ({ route, navigation }: Props) => {
@@ -95,34 +103,27 @@ const Dashboard = ({ route, navigation }: Props) => {
     },
   ];
 
-  const genderBarData = [
-    {
-      value:
-        data?.genderDistribution.find((g: any) => g.gender === 'Male')?.count ||
-        0,
-      label: 'Male',
-      frontColor: '#2A29FF',
-      topLabelComponent: () => (
-        <Text style={{ color: 'black', fontSize: 12, marginBottom: 6 }}>
-          {data?.genderDistribution.find((g: any) => g.gender === 'Male')
-            ?.count || 0}
-        </Text>
-      ),
-    },
-    {
-      value:
-        data?.genderDistribution.find((g: any) => g.gender === 'Female')
-          ?.count || 0,
-      label: 'Female',
-      frontColor: 'rgba(222, 118, 190, 0.8)',
-      topLabelComponent: () => (
-        <Text style={{ color: 'black', fontSize: 12, marginBottom: 6 }}>
-          {data?.genderDistribution.find((g: any) => g.gender === 'Female')
-            ?.count || 0}
-        </Text>
-      ),
-    },
+  const colors = [
+    '#4caf50',
+    '#ff9800',
+    '#f44336',
+    '#2196f3',
+    '#9c27b0',
+    '#ffeb3b',
   ];
+
+  const ratingBarData = Object.keys(feedback?.ratingDistribution || {}).map(
+    (key, index) => ({
+      value: feedback.ratingDistribution[key],
+      label: key,
+      frontColor: colors[index % colors.length],
+      topLabelComponent: () => (
+        <Text style={{ color: 'black', fontSize: 12, marginBottom: 6 }}>
+          {feedback.ratingDistribution[key]}
+        </Text>
+      ),
+    })
+  );
 
   const renderLegend = () => {
     return (
@@ -153,23 +154,23 @@ const Dashboard = ({ route, navigation }: Props) => {
               marginBottom: 10,
             }}
           >
-            <View style={styles.textContainer}>
-              <Text style={styles.subtitle}>Total Participants</Text>
-              <Text style={styles.text}>{data?.totalParticipants ?? 0}</Text>
+            <View style={{ alignSelf: 'center' }}>
+              <View style={styles.textContainer}>
+                <Text style={styles.subtitle}>Total Participants</Text>
+                <Text style={styles.text}>{data?.totalParticipants ?? 0}</Text>
+              </View>
+              <View style={styles.textContainer}>
+                <Text style={styles.subtitle}>Average Rating</Text>
+                <Text style={styles.text}>{feedback?.averageRating ?? 0}</Text>
+              </View>
             </View>
-            <View style={styles.textContainer}>
-              <Text style={styles.subtitle}>Average Rating</Text>
-              <Text style={styles.text}>{feedback?.averageRating ?? 0}</Text>
-            </View>
-          </View>
-          <View style={styles.chartContainer}>
-            <View>
-              <Text style={styles.chartTitle}>Attendance Rate</Text>
+
+            <View style={{ alignItems: 'center' }}>
               <PieChart
                 data={attendancePieData}
                 donut
-                radius={90}
-                innerRadius={60}
+                radius={65}
+                innerRadius={45}
                 showGradient
                 sectionAutoFocus
                 focusOnPress
@@ -184,25 +185,55 @@ const Dashboard = ({ route, navigation }: Props) => {
               />
               {renderLegend()}
             </View>
-            <View>
-              <Text style={styles.chartTitle}>Gender Distribution</Text>
-              <BarChart
-                data={genderBarData}
-                hideRules
-                barWidth={30}
-                noOfSections={5}
-                barBorderRadius={5}
-                yAxisThickness={1}
-                xAxisThickness={1}
-                xAxisLabelTextStyle={{ fontSize: 12 }}
-                showYAxisIndices
-                isAnimated
-              />
-            </View>
+          </View>
+
+          <View>
+            <Text style={styles.chartTitle}>Rating Distribution</Text>
+            <BarChart
+              data={ratingBarData}
+              hideRules
+              barWidth={35}
+              noOfSections={5}
+              barBorderRadius={5}
+              yAxisThickness={1}
+              xAxisThickness={1}
+              xAxisLabelTextStyle={{ fontSize: 12 }}
+              showYAxisIndices
+              isAnimated
+            />
           </View>
         </View>
+
         <View style={styles.tableContainer}>
-          <Text style={styles.chartTitle}>Participant Responses</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: 10,
+              alignItems: 'center',
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 18,
+                fontFamily: 'Poppins-SemiBold',
+              }}
+            >
+              Participant Responses
+            </Text>
+            <TouchableOpacity onPress={exportToExcel}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontFamily: 'Poppins-SemiBold',
+                  color: 'blue',
+                  textDecorationLine: 'underline',
+                }}
+              >
+                Export to Excel
+              </Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.tableHeader}>
             {headers.map((header: string, index: number) => (
               <Text key={index} style={styles.tableHeaderText}>
@@ -215,6 +246,74 @@ const Dashboard = ({ route, navigation }: Props) => {
     );
   };
 
+  const renderFooter = () => {
+    return (
+      <View style={styles.tableContainer}>
+        <Text style={styles.chartTitle}>Feedback Comments</Text>
+        <View style={styles.tableHeader}>
+          <Text style={styles.tableHeaderText}>No.</Text>
+          <Text style={styles.tableHeaderText}>Rating</Text>
+          <Text style={styles.tableHeaderText}>Comment</Text>
+          <Text style={styles.tableHeaderText}>Posted By</Text>
+        </View>
+        {feedback?.feedbacks.map(
+          (
+            item: { rating: number; comment: string; createdBy: string },
+            index: number
+          ) => (
+            <View key={index} style={styles.tableRow}>
+              <Text style={styles.tableCell}>{index + 1}</Text>
+              <Text style={styles.tableCell}>{item.rating}</Text>
+              <Text style={styles.tableCell}>{item.comment}</Text>
+              <Text style={styles.tableCell}>{item.createdBy}</Text>
+            </View>
+          )
+        )}
+      </View>
+    );
+  };
+
+  const exportToExcel = async () => {
+    try {
+      const headers = form.map((field) => field.label);
+      const rows = data?.registrations.map((item: Registration) =>
+        form.map((field) => item.response[field.id] || '-')
+      );
+
+      const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Responses');
+
+      const filePath = `${RNFS.DocumentDirectoryPath}/responses.xlsx`;
+      const excelData = XLSX.write(workbook, {
+        type: 'binary',
+        bookType: 'xlsx',
+      });
+
+      await RNFS.writeFile(filePath, excelData, 'ascii');
+
+      const shareOptions = {
+        title: 'Exported Responses',
+        url: `file://${filePath}`,
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      };
+
+      Share.open(shareOptions).then((res) => {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Data exported successfully.',
+        });
+      });
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'An error occurred while exporting data.',
+      });
+    }
+  };
+
   return (
     <AppContainer navigation={navigation} showBackButton>
       {loading ? (
@@ -224,10 +323,11 @@ const Dashboard = ({ route, navigation }: Props) => {
       ) : (
         <FlatList
           ListHeaderComponent={renderHeader}
+          ListFooterComponent={renderFooter}
           data={data?.registrations || []}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={styles.tableRow}>
+            <View style={[styles.tableRow, { marginHorizontal: 20 }]}>
               {form?.map((field) => (
                 <Text key={field.id} style={styles.tableCell}>
                   {item.response[field.id] || '-'}
@@ -244,7 +344,6 @@ const Dashboard = ({ route, navigation }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: 'rgba(0, 0, 0, 0.02)',
   },
   title: {
@@ -259,23 +358,19 @@ const styles = StyleSheet.create({
   chartTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  chartContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    marginVertical: 8,
   },
   pieCenter: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   pieCenterText: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#000',
   },
   pieSubText: {
-    fontSize: 14,
+    fontSize: 12,
     color: 'rgba(0, 0, 0, 0.6)',
   },
   legendContainer: {
@@ -310,23 +405,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 15,
-    width: '48%',
+    marginBottom: 10,
   },
   tableContainer: {
-    marginTop: 20,
+    marginTop: 15,
     marginHorizontal: 20,
   },
   tableHeader: {
     flexDirection: 'row',
     backgroundColor: '#f0f0f0',
     paddingVertical: 10,
-    paddingHorizontal: 5,
+    paddingHorizontal: 6,
     borderRadius: 5,
+    alignItems: 'center',
   },
   tableHeaderText: {
     flex: 1,
-    fontWeight: 'bold',
-    fontSize: 14,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 13,
     color: 'black',
     textAlign: 'center',
   },
@@ -336,13 +432,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
-    marginHorizontal: 20,
   },
   tableCell: {
     flex: 1,
-    fontSize: 12,
-    color: 'black',
+    fontSize: 11,
     textAlign: 'center',
+    fontFamily: 'Poppins-Regular',
+    paddingHorizontal: 5,
   },
 });
 

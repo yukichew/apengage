@@ -75,19 +75,10 @@ const TransportBooking = () => {
     }
 
     toast.success(res.message);
-    const updatedBookings = bookings.map((booking) =>
-      booking.id === selectedBooking.id
-        ? {
-            ...booking,
-            status: actionType === 'approve' ? 'Approved' : 'Rejected',
-          }
-        : booking
-    );
-
-    setBookings(updatedBookings);
     setShowDialog(false);
     setSelectedBooking(null);
     setActionType('');
+    fetchbookings();
   };
 
   const fetchbookings = async (query = '') => {

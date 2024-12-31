@@ -5,6 +5,7 @@ import {
   deleteFacility,
   getFacilities,
   searchFacility,
+  updateFacilityStatus,
 } from '../../api/facility';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
@@ -22,16 +23,33 @@ const Facility = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedFacility, setSelectedFacility] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [actionType, setActionType] = useState('');
 
   const columns = ['Name', 'Type', 'Quantity'];
   const columnKeys = ['name', 'type', 'quantity'];
 
   const handleAction = (action, row) => {
-    if (action === 'edit') {
-      navigate(`/logistics/facilities/edit/${row.id}`);
-    } else if (action === 'delete') {
-      setSelectedFacility(row);
-      setShowDialog(true);
+    switch (action) {
+      case 'activate':
+        setActionType('activate');
+        setSelectedFacility(row);
+        setShowDialog(true);
+        break;
+      case 'deactivate':
+        setActionType('deactivate');
+        setSelectedFacility(row);
+        setShowDialog(true);
+        break;
+      case 'edit':
+        navigate(`/logistics/facilities/edit/${row.id}`);
+        break;
+      case 'delete':
+        setActionType('delete');
+        setSelectedFacility(row);
+        setShowDialog(true);
+        break;
+      default:
+        break;
     }
   };
 
@@ -43,14 +61,10 @@ const Facility = () => {
       return toast.error(res.error);
     }
 
-    const newFacilities = facilities.filter(
-      (facility) => facility.id !== selectedFacility.id
-    );
-    setFacilities(newFacilities);
-    setCount(count - 1);
     toast.success(res.message);
     setShowDialog(false);
     setSelectedFacility(null);
+    fetchFacilities();
   };
 
   const fetchFacilities = async (query = '') => {
@@ -80,6 +94,21 @@ const Facility = () => {
     const query = e.target.value;
     setSearchQuery(query);
     fetchFacilities(query);
+  };
+
+  const handleChangeStatus = async () => {
+    if (!selectedFacility || !actionType) return;
+
+    const res = await updateFacilityStatus(selectedFacility.id, actionType);
+    if (!res.success) {
+      return toast.error(res.error);
+    }
+
+    toast.success(res.message);
+    setShowDialog(false);
+    setSelectedFacility(null);
+    setActionType('');
+    fetchFacilities();
   };
 
   return (
@@ -113,15 +142,23 @@ const Facility = () => {
           columnKeys={columnKeys}
           handleAction={handleAction}
           totalRows={count}
-          actions={['edit', 'delete']}
+          actions={['edit', 'delete', 'activate', 'deactivate']}
         />
       )}
 
       {showDialog && (
         <ConfirmDialog
-          title='Confirm Deletion'
-          message={`Are you sure you want to delete the facility "${selectedFacility.name}"?`}
-          onConfirm={handleDeleteFacility}
+          title={`Confirm ${
+            actionType === 'delete'
+              ? 'Deletion'
+              : actionType === 'activate'
+              ? 'Activation'
+              : 'Deactivation'
+          }`}
+          message={`Are you sure you want to ${actionType} the facility "${selectedFacility.name}"?`}
+          onConfirm={
+            actionType === 'delete' ? handleDeleteFacility : handleChangeStatus
+          }
           onCancel={() => setShowDialog(false)}
         />
       )}

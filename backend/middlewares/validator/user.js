@@ -67,12 +67,7 @@ exports.resetPasswordValidator = [
 ];
 
 exports.signInValidator = [
-  check('email')
-    .normalizeEmail()
-    .isEmail()
-    .withMessage('Email is invalid')
-    .matches(/^([a-zA-Z0-9._%+-]+)@mail\.apu\.edu\.my$/)
-    .withMessage('Email must be a valid APU email address'),
+  check('email').normalizeEmail().isEmail().withMessage('Email is invalid'),
   check('password')
     .trim()
     .not()

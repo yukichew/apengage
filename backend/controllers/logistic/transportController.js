@@ -135,6 +135,30 @@ exports.searchTransport = async (req, res) => {
   });
 };
 
+exports.updateTransportStatus = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body;
+
+  if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid transport id');
+
+  const transport = await Transport.findById(id);
+  if (!transport) return sendError(res, 404, 'Transport not found');
+
+  if (action === 'activate') {
+    transport.isActive = true;
+    await transport.save();
+    return res.json({ message: 'Transport activated' });
+  }
+
+  if (action === 'deactivate') {
+    transport.isActive = false;
+    await transport.save();
+    return res.json({ message: 'Transport deactivated' });
+  }
+
+  res.status(400).json({ message: 'Invalid action' });
+};
+
 // transportation bookings
 exports.bookTransport = async (req, res) => {
   const {
@@ -149,6 +173,14 @@ exports.bookTransport = async (req, res) => {
 
   const event = await Event.findById(eventId);
   if (!event) return sendError(res, 404, 'Event not found');
+
+  if (departTo.trim().toLowerCase() === returnTo.trim().toLowerCase()) {
+    return sendError(
+      res,
+      400,
+      'Departure and return location cannot be the same location'
+    );
+  }
 
   const availableDepartTransports = await Transport.findAvailable(
     transportType,

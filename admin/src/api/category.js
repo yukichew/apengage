@@ -73,3 +73,17 @@ export const searchCategory = async (query) => {
     return catchError(error);
   }
 };
+
+export const updateCategoryStatus = async (id, action) => {
+  try {
+    const { data } = await client.put('/category/status/' + id, {
+      action,
+    });
+    return {
+      success: true,
+      message: data.message,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};

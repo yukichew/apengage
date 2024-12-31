@@ -5,6 +5,7 @@ const {
   deleteCategory,
   getCategory,
   searchCategory,
+  updateCategoryStatus,
 } = require('../../controllers/event/categoryController');
 const { authenticate, isAdmin } = require('../../middlewares/auth');
 const { validate } = require('../../middlewares/validator');
@@ -28,6 +29,7 @@ router.put(
   validate,
   updateCategory
 );
+router.put('/status/:id', authenticate, isAdmin, updateCategoryStatus);
 router.delete('/:id', authenticate, isAdmin, deleteCategory);
 router.get('/categories', authenticate, getCategories);
 router.get('/search', authenticate, searchCategory);

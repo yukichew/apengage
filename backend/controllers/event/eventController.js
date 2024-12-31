@@ -170,7 +170,7 @@ exports.searchEvents = async (req, res) => {
     query.categories = { $in: categories.split(',') };
   }
 
-  const events = await Event.find(query)
+  let eventsQuery = Event.find(query)
     .populate({
       path: 'venueBooking',
       populate: {
@@ -181,8 +181,22 @@ exports.searchEvents = async (req, res) => {
     .populate('postedBy', 'apkey')
     .populate('categories', 'name');
 
+  if (userRole === 'user') {
+    eventsQuery = eventsQuery.populate({
+      path: 'forms',
+      match: { event: { $exists: true } },
+    });
+  }
+
+  const events = await eventsQuery.exec();
+
+  const filteredEvents =
+    userRole === 'user'
+      ? events.filter((event) => event.forms.length > 0)
+      : events;
+
   res.json({
-    events: events.map((event) => {
+    events: filteredEvents.map((event) => {
       return {
         id: event._id,
         name: event.name,
@@ -291,43 +305,84 @@ exports.getAllEvents = async (req, res) => {
 
 exports.getCreatedEvents = async (req, res) => {
   const userId = req.user._id;
-  const query = { postedBy: userId };
 
-  const events = await Event.find(query)
-    .sort({ createdAt: -1 })
-    .populate({
-      path: 'venueBooking',
-      populate: {
-        path: 'venue',
-        select: 'name',
+  const events = await Event.aggregate([
+    { $match: { postedBy: userId } },
+    { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: 'venuebookings',
+        localField: 'venueBooking',
+        foreignField: '_id',
+        as: 'venueBooking',
       },
-    })
-    .populate('postedBy', 'apkey');
+    },
+    { $unwind: { path: '$venueBooking', preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: 'venues',
+        localField: 'venueBooking.venue',
+        foreignField: '_id',
+        as: 'venueBooking.venue',
+      },
+    },
+    {
+      $unwind: {
+        path: '$venueBooking.venue',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'postedBy',
+        foreignField: '_id',
+        as: 'postedBy',
+      },
+    },
+    { $unwind: { path: '$postedBy', preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: 'eventforms',
+        localField: '_id',
+        foreignField: 'event',
+        as: 'forms',
+      },
+    },
+    {
+      $project: {
+        id: '$_id',
+        name: 1,
+        desc: 1,
+        type: 1,
+        mode: 1,
+        venue: '$venueBooking.venue.name',
+        startTime: 1,
+        endTime: 1,
+        location: 1,
+        categories: 1,
+        price: 1,
+        postedBy: '$postedBy.apkey',
+        organizer: 1,
+        thumbnail: '$thumbnail.url',
+        createdAt: 1,
+        updatedAt: 1,
+        status: 1,
+        form: {
+          $cond: {
+            if: { $gt: [{ $size: '$forms' }, 0] },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+  ]);
 
-  const count = await Event.countDocuments(query);
+  const count = await Event.countDocuments({ postedBy: userId });
 
   res.json({
-    events: events.map((event) => {
-      return {
-        id: event._id,
-        name: event.name,
-        desc: event.desc,
-        type: event.type,
-        mode: event.mode,
-        venue: event?.venueBooking?.venue.name,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        location: event?.location,
-        categories: event?.categories,
-        price: event?.price,
-        postedBy: event.postedBy.apkey,
-        organizer: event.organizer,
-        thumbnail: event.thumbnail?.url,
-        createdAt: event.createdAt,
-        updatedAt: event.updatedAt,
-        status: event.status,
-      };
-    }),
+    events,
     count,
   });
 };

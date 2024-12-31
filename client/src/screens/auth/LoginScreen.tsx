@@ -26,7 +26,7 @@ const LoginScreen = ({ navigation }: Props) => {
       .email('Invalid email')
       .matches(
         /^([a-zA-Z0-9._%+-]+)@mail\.apu\.edu\.my$/,
-        'Should only be an APU email address'
+        'Email must be a valid APU email address'
       )
       .required('Email is required'),
     password: yup

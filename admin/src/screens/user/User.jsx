@@ -53,16 +53,10 @@ const User = () => {
     }
 
     toast.success(res.message);
-    const updatedUsers = users.map((user) =>
-      user.id === selectedUser.id
-        ? { ...user, status: actionType === 'activate' ? 'Active' : 'Inactive' }
-        : user
-    );
-
-    setUsers(updatedUsers);
     setShowDialog(false);
     setSelectedUser(null);
     setActionType('');
+    fetchUsers();
   };
 
   const fetchUsers = async (query = '') => {
@@ -130,7 +124,7 @@ const User = () => {
           title={`Confirm ${
             actionType.charAt(0).toUpperCase() + actionType.slice(1)
           }`}
-          message={`Are you sure you want to ${actionType} admin "${selectedUser.fullname}"?`}
+          message={`Are you sure you want to ${actionType} user "${selectedUser.fullname}"?`}
           onConfirm={handleChangeStatus}
           onCancel={() => setShowDialog(false)}
         />
