@@ -50,7 +50,7 @@ const TransportBooking = ({ bookings, loading, refreshEvents }: Props) => {
               color: 'rgba(0, 0, 0, 0.5)',
             }}
           >
-            No events found
+            No transport booking found
           </Text>
         </View>
       )}

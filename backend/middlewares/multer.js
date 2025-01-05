@@ -2,11 +2,31 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({});
 
-const fileFilter = (req, file, cb) => {
-  if (!file.mimetype.includes('image')) {
-    return cb('Invalid image format!', false);
-  }
-  cb(null, true);
+const dynamicFileFilter = (allowedMimeTypes) => {
+  return (req, file, cb) => {
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      return cb(
+        new Error(
+          `Invalid file format! Allowed formats: ${allowedMimeTypes.join(', ')}`
+        )
+      );
+    }
+    cb(null, true);
+  };
 };
 
-module.exports = multer({ storage, fileFilter });
+const createUploader = (allowedMimeTypes) =>
+  multer({
+    storage,
+    fileFilter: dynamicFileFilter(allowedMimeTypes),
+  });
+
+const imageUploader = createUploader(['image/jpeg', 'image/png', 'image/gif']);
+const fileUploader = createUploader([
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'application/pdf',
+]);
+
+module.exports = { imageUploader, fileUploader };

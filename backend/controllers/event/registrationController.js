@@ -1,3 +1,4 @@
+const cloudinary = require('../../config/cloud');
 const { sendError } = require('../../helpers/error');
 const Form = require('../../models/event/form');
 const Registration = require('../../models/event/registration');
@@ -5,8 +6,9 @@ const QRCode = require('qrcode');
 
 exports.joinEvent = async (req, res) => {
   const { id } = req.params;
-  const { response } = req.body;
+  let { response } = req.body;
   const { file } = req;
+  response = JSON.parse(response);
 
   const form = await Form.findById(id).populate('fields');
   if (!form) return sendError(res, 404, 'Event not found');
@@ -28,6 +30,7 @@ exports.joinEvent = async (req, res) => {
     const currentRegistrations = await Registration.countDocuments({
       eventForm: form._id,
     });
+
     if (currentRegistrations >= form.capacity) {
       return sendError(
         res,
@@ -49,10 +52,23 @@ exports.joinEvent = async (req, res) => {
     const fieldResponse = response[field.id];
 
     if (
+      field.type !== 'file' &&
       field.required &&
       (fieldResponse === undefined || fieldResponse === '')
     ) {
       return sendError(res, 400, `${field.label} is required.`);
+    }
+
+    if (field.type === 'file') {
+      if (field.required && !file) {
+        return sendError(res, 400, `${field.label} file is required.`);
+      }
+
+      const { secure_url: url } = await cloudinary.uploader.upload(file.path, {
+        folder: 'event_responses',
+      });
+
+      response[field.id] = url;
     }
   }
 
@@ -103,6 +119,27 @@ exports.markAttendance = async (req, res) => {
     return sendError(res, 400, 'Attendance already marked');
   }
 
+  const eventForm = await Form.findById(registration.eventForm);
+  if (!eventForm) return sendError(res, 404, 'Event form not found');
+
+  const event = await Event.findById(eventForm.event);
+  if (!event) return sendError(res, 404, 'Event not found');
+
+  const currentTime = new Date();
+  const twoHourBeforeStart = new Date(event.startTime);
+  twoHourBeforeStart.setHours(twoHourBeforeStart.getHours() - 1);
+
+  const oneHourAfterEnd = new Date(event.endTime);
+  oneHourAfterEnd.setHours(oneHourAfterEnd.getHours() + 1);
+
+  if (currentTime < twoHourBeforeStart || currentTime > oneHourAfterEnd) {
+    return sendError(
+      res,
+      400,
+      'Attendance can only be marked within =2 hours before and 1 hour after the event'
+    );
+  }
+
   registration.status = 'Attended';
   await registration.save();
 
@@ -129,52 +166,6 @@ exports.getRegistration = async (req, res) => {
       status: registration.status,
     },
   });
-};
-
-exports.getParticipatedEvents = async (req, res) => {
-  const userId = req.user._id;
-
-  const registrations = await Registration.find({
-    participant: userId,
-  }).populate({
-    path: 'eventForm',
-    populate: {
-      path: 'event',
-      populate: {
-        path: 'venueBooking',
-        populate: {
-          path: 'venue',
-          select: 'name',
-        },
-      },
-      select:
-        'name type desc startTime endTime mode organizer categories location venueBooking price thumbnail',
-    },
-  });
-
-  const events = registrations.map((registration) => ({
-    registrationId: registration._id,
-    event: {
-      id: registration.eventForm.event._id,
-      name: registration.eventForm.event.name,
-      type: registration.eventForm.event.type,
-      categories: registration.eventForm.event.categories,
-      desc: registration.eventForm.event.desc,
-      startTime: registration.eventForm.event.startTime,
-      endTime: registration.eventForm.event.endTime,
-      mode: registration.eventForm.event.mode,
-      organizer: registration.eventForm.event.organizer,
-      location: registration.eventForm.event.location,
-      venue: registration.eventForm.event.venueBooking?.venue.name,
-      price: registration.eventForm.event.price,
-      thumbnail: registration.eventForm.event.thumbnail,
-    },
-    status: registration.status,
-    qrCode: registration.qrCode,
-    response: registration.response,
-  }));
-
-  res.json({ events });
 };
 
 exports.getRegistrations = async (req, res) => {
@@ -205,7 +196,10 @@ exports.getRegistrations = async (req, res) => {
     status: 'Attended',
   });
 
-  const notAttendedRegistrations = totalRegistrations - attendedRegistrations;
+  const notAttendedRegistrations = await Registration.countDocuments({
+    eventForm: eventForm._id,
+    status: 'Absent',
+  });
 
   const genderDistribution = await Registration.aggregate([
     { $match: { eventForm: eventForm._id } },
@@ -252,4 +246,54 @@ exports.getRegistrations = async (req, res) => {
       count: gender.count,
     })),
   });
+};
+
+exports.searchParticipatedEvents = async (req, res) => {
+  const userId = req.user._id;
+  const { name } = req.query;
+
+  const matchCriteria = { participant: userId };
+  if (name) {
+    matchCriteria['eventForm.event.name'] = { $regex: name, $options: 'i' };
+  }
+
+  const registrations = await Registration.find(matchCriteria).populate({
+    path: 'eventForm',
+    populate: {
+      path: 'event',
+      populate: {
+        path: 'venueBooking',
+        populate: {
+          path: 'venue',
+          select: 'name',
+        },
+      },
+      select:
+        'name type desc startTime endTime mode organizer categories location venueBooking price thumbnail',
+    },
+  });
+
+  const events = registrations.map((registration) => ({
+    registrationId: registration._id,
+    event: {
+      id: registration.eventForm.event._id,
+      name: registration.eventForm.event.name,
+      type: registration.eventForm.event.type,
+      categories: registration.eventForm.event.categories,
+      desc: registration.eventForm.event.desc,
+      startTime: registration.eventForm.event.startTime,
+      endTime: registration.eventForm.event.endTime,
+      mode: registration.eventForm.event.mode,
+      organizer: registration.eventForm.event.organizer,
+      location: registration.eventForm.event.location,
+      venue: registration.eventForm.event.venueBooking?.venue.name,
+      price: registration.eventForm.event.price,
+      thumbnail: registration.eventForm.event.thumbnail,
+    },
+    status: registration.status,
+    qrCode: registration.qrCode,
+    response: registration.response,
+  }));
+
+  res.json({ events, count: events.length });
 };

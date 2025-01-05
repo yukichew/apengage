@@ -70,8 +70,20 @@ exports.deleteTransport = async (req, res) => {
 };
 
 exports.getTransportation = async (req, res) => {
-  const transportation = await Transport.find({}).sort({ createdAt: -1 });
-  const count = await Transport.countDocuments();
+  const userRole = req.user.role;
+  let transportation;
+  let count;
+
+  if (userRole === 'admin') {
+    transportation = await Transport.find({}).sort({ createdAt: -1 });
+    count = await Transport.countDocuments();
+  } else {
+    transportation = await Transport.find({ isActive: true }).sort({
+      createdAt: -1,
+    });
+    count = await Transport.countDocuments({ isActive: true });
+  }
+
   res.json({
     transportation: transportation.map((transport) => {
       return {
@@ -132,6 +144,7 @@ exports.searchTransport = async (req, res) => {
         updatedAt: transport.updatedAt,
       };
     }),
+    count: result.length,
   });
 };
 

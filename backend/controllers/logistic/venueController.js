@@ -71,8 +71,18 @@ exports.deleteVenue = async (req, res) => {
 };
 
 exports.getVenues = async (req, res) => {
-  const venues = await Venue.find({}).sort({ createdAt: -1 });
-  const count = await Venue.countDocuments();
+  const userRole = req.user.role;
+  let venues;
+  let count;
+
+  if (userRole === 'admin') {
+    venues = await Venue.find({}).sort({ createdAt: -1 });
+    count = await Venue.countDocuments();
+  } else {
+    venues = await Venue.find({ isActive: true }).sort({ createdAt: -1 });
+    count = await Venue.countDocuments({ isActive: true });
+  }
+
   res.json({
     venues: venues.map((venue) => {
       return {
@@ -133,6 +143,7 @@ exports.searchVenue = async (req, res) => {
         updatedAt: venue.updatedAt,
       };
     }),
+    count: result.length,
   });
 };
 
@@ -298,6 +309,9 @@ exports.udpateVenueBookingStatus = async (req, res) => {
 };
 
 exports.searchVenueBookings = async (req, res) => {
+  const userRole = req.user.role;
+  const userId = req.user._id;
+
   const { name } = req.query;
 
   const venues = await Venue.find({
@@ -306,12 +320,31 @@ exports.searchVenueBookings = async (req, res) => {
 
   const venueIds = venues.map((venue) => venue._id);
 
-  const bookings = await VenueBooking.find({
-    venue: { $in: venueIds },
-  })
-    .sort({ createdAt: -1 })
-    .populate('venue', 'name type capacity')
-    .populate('createdBy', 'apkey fullname email contact');
+  let bookings;
+  let count;
+  if (userRole === 'admin') {
+    bookings = await VenueBooking.find({
+      venue: { $in: venueIds },
+    })
+      .sort({ createdAt: -1 })
+      .populate('venue', 'name type capacity')
+      .populate('createdBy', 'apkey fullname email contact');
+    count = await VenueBooking.countDocuments({
+      venue: { $in: venueIds },
+    });
+  } else {
+    bookings = await VenueBooking.find({
+      venue: { $in: venueIds },
+      createdBy: userId,
+    })
+      .sort({ createdAt: -1 })
+      .populate('venue', 'name type capacity')
+      .populate('createdBy', 'apkey fullname email contact');
+    count = await VenueBooking.countDocuments({
+      venue: { $in: venueIds },
+      createdBy: userId,
+    });
+  }
 
   res.json({
     bookings: bookings.map((booking) => {
@@ -331,6 +364,6 @@ exports.searchVenueBookings = async (req, res) => {
         status: booking.status,
       };
     }),
-    count: bookings.length,
+    count,
   });
 };

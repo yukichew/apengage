@@ -5,7 +5,6 @@ import {
   Camera,
   useCameraDevice,
   useCodeScanner,
-  useFrameProcessor,
 } from 'react-native-vision-camera';
 import { markAttendance } from '../../../api/event';
 import AppContainer from '../../../components/containers/AppContainer';
@@ -15,11 +14,6 @@ const QRCodeScan = ({ navigation }: Props) => {
   const [hasPermission, setHasPermission] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const device = useCameraDevice('back');
-
-  const frameProcessor = useFrameProcessor((frame) => {
-    'worklet';
-    return frame;
-  }, []);
 
   const codeScanner = useCodeScanner({
     codeTypes: ['qr'],
@@ -80,7 +74,6 @@ const QRCodeScan = ({ navigation }: Props) => {
   return (
     <AppContainer navigation={navigation} showBackButton>
       <Camera
-        frameProcessor={frameProcessor}
         codeScanner={codeScanner}
         style={StyleSheet.absoluteFill}
         device={device}

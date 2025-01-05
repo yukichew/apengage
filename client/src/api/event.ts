@@ -1,50 +1,10 @@
-import { ApiResponse, EventItem } from '../constants/types';
+import { ApiResponse } from '../constants/types';
 import { catchAxiosError } from '../utils/error';
 import client from './client';
 
-export const addEvent = async (values: EventItem): Promise<ApiResponse> => {
+export const addEvent = async (values: any): Promise<ApiResponse> => {
   try {
-    const formData = new FormData();
-    formData.append('name', values.name);
-    formData.append('desc', values.desc);
-    formData.append('mode', values.mode);
-    formData.append('type', values.type);
-    formData.append('startTime', values.startTime);
-    formData.append('endTime', values.endTime);
-    formData.append('organizer', values.organizer);
-
-    if (values.venueBooking) {
-      formData.append('venueBooking', values.venueBooking);
-    }
-
-    if (values.price) {
-      formData.append('price', Number(values.price));
-    }
-
-    if (values.location) {
-      formData.append('location', values.location);
-    }
-
-    if (values.categories) {
-      values.categories.forEach((category) => {
-        formData.append('categories[]', category);
-      });
-    }
-
-    if (values.thumbnail) {
-      formData.append('thumbnail', {
-        uri: values.thumbnail.uri,
-        type: values.thumbnail.type,
-        name: values.thumbnail.name,
-      });
-    }
-
-    console.log('formData', formData);
-    const response = await client.post<ApiResponse>('/event/create', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await client.post<ApiResponse>('/event/create', values);
 
     return {
       success: true,
@@ -134,32 +94,6 @@ export const getRegistration = async (values: {
   }
 };
 
-export const getParticipatedEvents = async (): Promise<ApiResponse> => {
-  try {
-    const response = await client.get<any>('/event/events/participated');
-
-    return {
-      success: true,
-      data: response.data,
-    };
-  } catch (error: any) {
-    return catchAxiosError(error);
-  }
-};
-
-export const getOrganizedEvents = async (): Promise<ApiResponse> => {
-  try {
-    const response = await client.get<any>('/event/events/organized');
-
-    return {
-      success: true,
-      data: response.data,
-    };
-  } catch (error: any) {
-    return catchAxiosError(error);
-  }
-};
-
 export const getAttendees = async (values: {
   eventId: string;
 }): Promise<ApiResponse> => {
@@ -181,6 +115,40 @@ export const markAttendance = async (values: { qrCodeData: any }) => {
     const response = await client.post<ApiResponse>('/event/mark-attendance', {
       qrCodeData: values.qrCodeData,
     });
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};
+
+export const searchOrganizedEvents = async (
+  query: string
+): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<any>(
+      '/event/events/organized/search?name=' + query
+    );
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};
+
+export const searchParticipatedEvents = async (
+  query: string
+): Promise<ApiResponse> => {
+  try {
+    const response = await client.get<any>(
+      '/event/events/participated/search?name=' + query
+    );
+
     return {
       success: true,
       data: response.data,

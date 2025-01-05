@@ -8,7 +8,8 @@ import {
   View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { getOrganizedEvents } from '../../api/event';
+import { searchOrganizedEvents } from '../../api/event';
+import SearchBar from '../../components/common/SearchBar';
 import OrganizedItem from '../../components/custom/OrganizedItem';
 import ServiceContainer from '../../components/custom/ServiceContainer';
 import { Props } from '../../constants/types';
@@ -16,11 +17,12 @@ import { Props } from '../../constants/types';
 const OrganizedEvents = ({ navigation }: Props) => {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>('');
+  const [count, setCount] = useState<number>(0);
 
   const refreshEvents = async () => {
     setLoading(true);
-    const response = await getOrganizedEvents();
-    setEvents(response.data.events);
+    const response = await searchOrganizedEvents(query);
     if (!response.success) {
       Toast.show({
         type: 'error',
@@ -30,30 +32,56 @@ const OrganizedEvents = ({ navigation }: Props) => {
         topOffset: 60,
       });
     }
+
+    setEvents(response.data.events);
+    setCount(response.data.count);
     setLoading(false);
   };
 
   useFocusEffect(
     useCallback(() => {
       refreshEvents();
-    }, [])
+    }, [query])
   );
 
   const renderItem = ({ item }: { item: any }) => (
     <OrganizedItem
       item={item}
-      onPress={() =>
-        navigation.navigate('Dashboard', { eventId: item.id.toString() })
-      }
-      onActionPress={() => {
-        navigation.navigate('CustomForm', { eventId: item.id.toString() });
+      onPress={() => {
+        if (item.type === 'public' && !item.form) {
+          navigation.navigate('CustomForm', { eventId: item.id.toString() });
+        } else {
+          navigation.navigate('Dashboard', { eventId: item.id.toString() });
+        }
       }}
     />
   );
 
+  const handleOnChange = (text: string) => {
+    setQuery(text);
+  };
+
+  const handleClear = async () => {
+    setQuery('');
+    await refreshEvents();
+  };
+
+  const handleOnSubmit = async () => {
+    await refreshEvents();
+  };
+
   return (
     <>
       <ServiceContainer navigation={navigation} />
+
+      <SearchBar
+        placeholder='Search Organized Events'
+        onChangeText={handleOnChange}
+        onSubmitEditing={handleOnSubmit}
+        onClear={handleClear}
+        value={query}
+      />
+
       {loading ? (
         <View
           style={{
@@ -64,7 +92,7 @@ const OrganizedEvents = ({ navigation }: Props) => {
         >
           <ActivityIndicator size='large' color='rgba(0, 0, 0, 0.5)' />
         </View>
-      ) : events.length !== 0 ? (
+      ) : count !== 0 ? (
         <FlatList
           data={events}
           renderItem={renderItem}

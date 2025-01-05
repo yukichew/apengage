@@ -50,7 +50,7 @@ const FacilityBooking = ({ bookings, loading, refreshEvents }: Props) => {
               color: 'rgba(0, 0, 0, 0.5)',
             }}
           >
-            No events found
+            No facility booking found
           </Text>
         </View>
       )}

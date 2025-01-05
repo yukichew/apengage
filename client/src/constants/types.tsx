@@ -13,6 +13,7 @@ export type Field =
       value?: string;
       order?: number;
       normalizedLabel?: string;
+      desc?: string;
     }
   | {
       id: string;
@@ -27,6 +28,7 @@ export type Field =
       value?: string;
       order?: number;
       normalizedLabel?: string;
+      desc?: string;
     };
 
 export type Props = {

@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   multilineField: {
-    minHeight: 70,
+    minHeight: 90,
     height: 'auto',
     paddingVertical: 5,
   },

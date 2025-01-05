@@ -168,7 +168,7 @@ const FacilityBooking = () => {
                       <td className='font-semibold capitalize'>
                         {key.replace(/([A-Z])/g, ' $1').trim()}
                       </td>
-                      <td>
+                      <td className='pl-3'>
                         {key === 'updatedAt' || key === 'createdAt'
                           ? formatDateTime(value)
                           : value || 'N/A'}

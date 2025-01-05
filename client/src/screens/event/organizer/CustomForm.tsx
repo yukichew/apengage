@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
 import { createForm } from '../../../api/form';
@@ -36,6 +37,7 @@ const CustomForm = ({ route, navigation }: Props) => {
   const { eventId } = route.params;
   const [showDropdown, setShowDropdown] = useState(false);
   const [selected, setSelected] = useState<string>('');
+  const [currentStep, setCurrentStep] = useState(1);
 
   const initialValues = {
     deadline: '',
@@ -61,6 +63,7 @@ const CustomForm = ({ route, navigation }: Props) => {
     saveField,
     closeModal,
     openModal,
+    deleteField,
   } = useFormFields(defaultFields);
 
   const handleSelectField = (type: string) => {
@@ -77,73 +80,91 @@ const CustomForm = ({ route, navigation }: Props) => {
   };
 
   const renderItem = ({ item }: { item: Field }) => (
-    <TouchableOpacity
-      key={item.id}
-      style={styles.container}
-      onPress={() => {
-        openModal(item);
-      }}
-    >
-      <Text style={{ fontFamily: 'Poppins-Regular', paddingBottom: 5 }}>
-        {item.label}
-      </Text>
-      {item.type === 'short_ans' && (
-        <InputText
+    <>
+      <Swipeable renderRightActions={() => renderRightActions(item.id)}>
+        <TouchableOpacity
           key={item.id}
-          placeholder={item.placeholder || ''}
-          name={item.id}
-        />
-      )}
-      {item.type === 'long_ans' && (
-        <InputText
-          key={item.id}
-          placeholder={item.placeholder || ''}
-          name={item.id}
-          multiline
-          numberOfLines={4}
-        />
-      )}
-      {item.type === 'checkbox' && (
-        <Checkbox
-          key={item.id}
-          options={item.options || []}
-          selectedOptions={item.selectedOptions || []}
-          onChange={(selected) => {
-            const updatedField = { ...item, selectedOptions: selected };
-            saveField(updatedField);
+          style={styles.container}
+          onPress={() => {
+            openModal(item);
           }}
-        />
-      )}
-      {item.type === 'mcq' && (
-        <Checkbox
-          key={item.id}
-          options={item.options || []}
-          selectedOptions={item.selectedOptions || []}
-          onChange={(selected) => {
-            const updatedField = { ...item, selectedOptions: selected };
-            saveField(updatedField);
-          }}
-          multiple={false}
-        />
-      )}
-      {item.type === 'dropdown' && (
-        <SelectList
-          key={item.id}
-          setSelected={(val: string) => setSelected(val)}
-          data={item.options || []}
-          save='value'
-          boxStyles={{ width: '100%', marginVertical: 7, minHeight: 50 }}
-          inputStyles={{
-            color: 'rgba(0, 0, 0, 0.5)',
-            fontSize: 16,
-          }}
-          dropdownStyles={{ width: '100%' }}
-        />
-      )}
-      {item.type === 'file' && (
-        <Button title='Upload File' containerStyle={{ width: width - 62 }} />
-      )}
-    </TouchableOpacity>
+        >
+          <Text style={{ fontFamily: 'Poppins-Regular', paddingBottom: 5 }}>
+            {item.label}
+          </Text>
+          {item.desc && (
+            <Text
+              style={{
+                fontFamily: 'Poppins-Regular',
+                color: 'rgba(0, 0, 0, 0.5)',
+                paddingBottom: 5,
+              }}
+            >
+              {item.desc}
+            </Text>
+          )}
+          {item.type === 'short_ans' && (
+            <InputText
+              key={item.id}
+              placeholder={item.placeholder || ''}
+              name={item.id}
+            />
+          )}
+          {item.type === 'long_ans' && (
+            <InputText
+              key={item.id}
+              placeholder={item.placeholder || ''}
+              name={item.id}
+              multiline
+              numberOfLines={4}
+            />
+          )}
+          {item.type === 'checkbox' && (
+            <Checkbox
+              key={item.id}
+              options={item.options || []}
+              selectedOptions={item.selectedOptions || []}
+              onChange={(selected) => {
+                const updatedField = { ...item, selectedOptions: selected };
+                saveField(updatedField);
+              }}
+            />
+          )}
+          {item.type === 'mcq' && (
+            <Checkbox
+              key={item.id}
+              options={item.options || []}
+              selectedOptions={item.selectedOptions || []}
+              onChange={(selected) => {
+                const updatedField = { ...item, selectedOptions: selected };
+                saveField(updatedField);
+              }}
+              multiple={false}
+            />
+          )}
+          {item.type === 'dropdown' && (
+            <SelectList
+              key={item.id}
+              setSelected={(val: string) => setSelected(val)}
+              data={item.options || []}
+              save='value'
+              boxStyles={{ width: '100%', marginVertical: 7, minHeight: 50 }}
+              inputStyles={{
+                color: 'rgba(0, 0, 0, 0.5)',
+                fontSize: 16,
+              }}
+              dropdownStyles={{ width: '100%' }}
+            />
+          )}
+          {item.type === 'file' && (
+            <Button
+              title='Upload File'
+              containerStyle={{ width: width - 80 }}
+            />
+          )}
+        </TouchableOpacity>
+      </Swipeable>
+    </>
   );
 
   useEffect(() => {
@@ -167,10 +188,10 @@ const CustomForm = ({ route, navigation }: Props) => {
             required: field.required || false,
             placeholder: field.placeholder || '',
             defaultValue: field.defaultValue || '',
-            // order: field.order || 0,
             options: field.options || [],
             selectedOptions: field.selectedOptions || [],
             defaultField: field.defaultField || false,
+            desc: field.desc || '',
             normalizedLabel:
               field.normalizedLabel ||
               field.label.toLowerCase().replace(/\s+/g, '_'),
@@ -185,15 +206,14 @@ const CustomForm = ({ route, navigation }: Props) => {
           placeholder: field.placeholder || '',
           defaultValue: field.defaultValue || '',
           defaultField: field.defaultField || false,
+          desc: field.desc || '',
           normalizedLabel:
             field.normalizedLabel ||
             field.label.toLowerCase().replace(/\s+/g, '_'),
-          // order: field.order || 0,
         };
       }),
     };
 
-    console.log('Form Data:', data);
     const res = await createForm(data);
     formikActions.setSubmitting(false);
 
@@ -205,7 +225,6 @@ const CustomForm = ({ route, navigation }: Props) => {
         position: 'top',
         topOffset: 60,
       });
-      console.error(res.error);
       return;
     }
 
@@ -217,6 +236,21 @@ const CustomForm = ({ route, navigation }: Props) => {
     navigation.dispatch(StackActions.replace('Tabs'));
     formikActions.resetForm();
   };
+
+  const handleDeleteField = (fieldId: string) => {
+    deleteField(fieldId);
+  };
+
+  const renderRightActions = (fieldId: string) => (
+    <View style={styles.hiddenActionContainer}>
+      <IconButton
+        icon='trash-outline'
+        iconLibrary='Ionicons'
+        style={{ fontSize: 25, color: 'red' }}
+        onPress={() => handleDeleteField(fieldId)}
+      />
+    </View>
+  );
 
   return (
     <AppContainer navigation={navigation} showBackButton>
@@ -241,74 +275,93 @@ const CustomForm = ({ route, navigation }: Props) => {
             Create Registration Form
           </Text>
 
-          <Text
-            style={{
-              fontFamily: 'Poppins-Regular',
-              fontSize: 12,
-              marginBottom: 4,
-            }}
-          >
-            Click to edit field
-          </Text>
-
-          <DateInput
-            placeholder='Registration Deadline'
-            name='deadline'
-            minimumDate={new Date()}
-          />
-
-          <InputText placeholder='Registration Capacity' name='capacity' />
-
-          {formFields.map((field) => renderItem({ item: field }))}
-          <FieldModal
-            field={
-              selectedField || {
-                id: Date.now().toString(),
-                type: 'short_ans',
-                label: '',
-                placeholder: '',
-              }
-            }
-            onSave={saveField}
-            visible={isModalVisible}
-            onClose={closeModal}
-          />
-          <TouchableOpacity
-            style={styles.addFieldContainer}
-            onPress={() => setShowDropdown(!showDropdown)}
-          >
-            <IconButton
-              icon='add-circle-outline'
-              iconLibrary='Ionicons'
-              style={{ fontSize: 25 }}
-            />
-            <Text
-              style={{
-                marginLeft: 5,
-                fontFamily: 'Poppins-Regular',
-                fontSize: 16,
-                color: 'rgba(0, 0, 0, 0.6)',
-              }}
-            >
-              Add Field
-            </Text>
-          </TouchableOpacity>
-
-          {showDropdown && (
-            <View style={styles.dropdown}>
-              {fieldTypes.map((type) => (
-                <TouchableOpacity
-                  key={type.key}
-                  style={styles.dropdownItem}
-                  onPress={() => handleSelectField(type.key)}
-                >
-                  <Text style={styles.dropdownText}>{type.value}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+          {currentStep === 1 && (
+            <>
+              <DateInput
+                placeholder='Registration Deadline'
+                name='deadline'
+                minimumDate={new Date()}
+              />
+              <InputText placeholder='Registration Capacity' name='capacity' />
+              <Button
+                title='Next'
+                onPress={() => setCurrentStep(2)}
+                containerStyle={{ marginTop: 20 }}
+              />
+            </>
           )}
 
-          <SubmitButton title='Save' />
+          {currentStep === 2 && (
+            <>
+              <Text
+                style={{
+                  fontFamily: 'Poppins-Regular',
+                  fontSize: 12,
+                  marginBottom: 4,
+                }}
+              >
+                Click to edit field, swipe right to delete
+              </Text>
+
+              {formFields.map((field) => renderItem({ item: field }))}
+              <FieldModal
+                field={
+                  selectedField || {
+                    id: Date.now().toString(),
+                    type: 'short_ans',
+                    label: '',
+                    placeholder: '',
+                  }
+                }
+                onSave={saveField}
+                visible={isModalVisible}
+                onClose={closeModal}
+              />
+              <TouchableOpacity
+                style={styles.addFieldContainer}
+                onPress={() => setShowDropdown(!showDropdown)}
+              >
+                <IconButton
+                  icon='add-circle-outline'
+                  iconLibrary='Ionicons'
+                  style={{ fontSize: 25 }}
+                />
+                <Text
+                  style={{
+                    marginLeft: 5,
+                    fontFamily: 'Poppins-Regular',
+                    fontSize: 16,
+                    color: 'rgba(0, 0, 0, 0.6)',
+                  }}
+                >
+                  Add Field
+                </Text>
+              </TouchableOpacity>
+
+              {showDropdown && (
+                <View style={styles.dropdown}>
+                  {fieldTypes.map((type) => (
+                    <TouchableOpacity
+                      key={type.key}
+                      style={styles.dropdownItem}
+                      onPress={() => handleSelectField(type.key)}
+                    >
+                      <Text style={styles.dropdownText}>{type.value}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+
+              <View
+                style={{
+                  marginTop: 10,
+                }}
+              >
+                <Button title='Back' onPress={() => setCurrentStep(1)} />
+                <SubmitButton title='Save' />
+              </View>
+            </>
+          )}
         </ScrollView>
       </CustomFormik>
     </AppContainer>
@@ -322,8 +375,8 @@ const styles = StyleSheet.create({
   container: {
     shadowColor: 'black',
     shadowOffset: {
-      width: 2,
-      height: 3,
+      width: 1,
+      height: 2,
     },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -335,6 +388,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderLeftColor: '#2A29FF',
     borderLeftWidth: 5,
+    marginHorizontal: 6,
   },
   addFieldContainer: {
     marginTop: 20,
@@ -359,5 +413,23 @@ const styles = StyleSheet.create({
   dropdownText: {
     color: 'rgba(0, 0, 0, 0.7)',
     fontFamily: 'Poppins-Regular',
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 75,
+    borderRadius: 10,
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 16,
+  },
+  hiddenActionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginHorizontal: 10,
   },
 });

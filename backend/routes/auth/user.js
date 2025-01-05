@@ -9,8 +9,8 @@ const {
   getProfile,
   changePassword,
 } = require('../../controllers/user/userController');
-const multer = require('../../middlewares/multer');
 const { isResetTokenValid, authenticate } = require('../../middlewares/auth');
+const { imageUploader } = require('../../middlewares/multer');
 const { validate } = require('../../middlewares/validator');
 const {
   userValidator,
@@ -21,7 +21,7 @@ const {
 // Auth Routes
 router.post(
   '/create',
-  multer.single('profile'),
+  imageUploader.single('profile'),
   userValidator,
   validate,
   createUser
@@ -42,7 +42,7 @@ router.put('/change-password', authenticate, changePassword);
 router.put(
   '/edit-profile',
   authenticate,
-  multer.single('profile'),
+  imageUploader.single('profile'),
   editProfile
 );
 // router.put('/update-fcm-token', authenticate, updateFCMToken);

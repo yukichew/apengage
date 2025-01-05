@@ -63,8 +63,20 @@ exports.deleteCategory = async (req, res) => {
 };
 
 exports.getCategories = async (req, res) => {
-  const categories = await Category.find({}).sort({ createdAt: -1 });
-  const count = await Category.countDocuments();
+  const userRole = req.user.role;
+  let categories;
+  let count;
+
+  if (userRole === 'admin') {
+    categories = await Category.find({}).sort({ createdAt: -1 });
+    count = await Category.countDocuments();
+  } else {
+    categories = await Category.find({ isActive: true }).sort({
+      createdAt: -1,
+    });
+    count = await Category.countDocuments({ isActive: true });
+  }
+
   res.json({
     categories: categories.map((category) => {
       return {

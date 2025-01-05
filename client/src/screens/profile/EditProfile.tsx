@@ -82,7 +82,7 @@ const EditProfile = ({ navigation }: Props) => {
       type: 'success',
       text1: 'Successfully edited profile',
     });
-    navigation.goBack();
+    navigation.navigate('Profile');
     formikActions.resetForm();
   };
 

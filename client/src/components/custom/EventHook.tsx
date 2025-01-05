@@ -24,8 +24,8 @@ const useFormFields = (initialFields: Field[] = []) => {
         ? {
             id: Date.now().toString(),
             type,
-            label: 'New Field',
-            placeholder: 'Enter placeholder',
+            label: '',
+            placeholder: '',
             required: false,
             options: [],
             selectedOptions: type === 'mcq' ? [] : undefined,
@@ -34,8 +34,8 @@ const useFormFields = (initialFields: Field[] = []) => {
         : {
             id: Date.now().toString(),
             type,
-            label: 'New Field',
-            placeholder: 'Enter placeholder',
+            label: '',
+            placeholder: '',
             required: false,
           };
 
@@ -53,11 +53,17 @@ const useFormFields = (initialFields: Field[] = []) => {
     closeModal();
   };
 
+  const deleteField = (fieldId: string) => {
+    const updatedFields = formFields.filter((field) => field.id !== fieldId);
+    setFormFields(updatedFields);
+  };
+
   return {
     formFields,
     selectedField,
     isModalVisible,
     addFormField,
+    deleteField,
     saveField,
     openModal,
     closeModal,

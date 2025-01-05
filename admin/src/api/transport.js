@@ -68,6 +68,7 @@ export const searchTransport = async (query) => {
     return {
       success: true,
       transportation: data.transportation,
+      count: data.count,
     };
   } catch (error) {
     return catchError(error);

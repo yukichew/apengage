@@ -1,6 +1,13 @@
 import { StackActions } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   MultipleSelectList,
   SelectList,
@@ -21,6 +28,17 @@ import { eventType, mode } from '../../../constants/items';
 import { Props } from '../../../constants/types';
 
 const EventForm = ({ navigation }: Props) => {
+  const [selectedMode, setSelectedMode] = useState<string>();
+  const [selectedType, setSelectedType] = useState<string>();
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [venueBookings, setVenueBookings] = useState<any[]>([]);
+  const [selectedVenue, setSelectedVenue] = useState<string>();
+  const [page, setPage] = useState<number>(0);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [file, setFile] = useState<any>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
   const initialValues = {
     name: '',
     desc: '',
@@ -75,17 +93,8 @@ const EventForm = ({ navigation }: Props) => {
     }),
   });
 
-  const [selectedMode, setSelectedMode] = useState<string>();
-  const [selectedType, setSelectedType] = useState<string>();
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [venueBookings, setVenueBookings] = useState<any[]>([]);
-  const [selectedVenue, setSelectedVenue] = useState<string>();
-  const [page, setPage] = useState<number>(0);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [file, setFile] = useState<any>(null);
-  const scrollViewRef = useRef<ScrollView>(null);
-
   const onSubmit = async (values: typeof initialValues, formikActions: any) => {
+    setLoading(true);
     const mode = selectedMode;
     const type = selectedType;
 
@@ -125,12 +134,20 @@ const EventForm = ({ navigation }: Props) => {
       data.categories = selectedCategories;
     }
 
-    if (type === 'public' && file) {
+    if (file) {
       data.thumbnail = file;
     }
 
-    const res = await addEvent(data);
-    formikActions.setSubmitting(false);
+    const formData = new FormData();
+    Object.keys(data).forEach((key) => {
+      if (Array.isArray(data[key])) {
+        data[key].forEach((item: any) => formData.append(`${key}[]`, item));
+      } else {
+        formData.append(key, data[key]);
+      }
+    });
+
+    const res = await addEvent(formData);
     if (!res.success) {
       Toast.show({
         type: 'error',
@@ -141,11 +158,14 @@ const EventForm = ({ navigation }: Props) => {
       });
       return;
     }
+
     Toast.show({
       type: 'success',
       text1: 'Successfully created event',
     });
 
+    setLoading(false);
+    formikActions.setSubmitting(false);
     navigation.dispatch(StackActions.replace('Tabs'));
     formikActions.resetForm();
   };
@@ -380,48 +400,66 @@ const EventForm = ({ navigation }: Props) => {
 
   return (
     <AppContainer navigation={navigation}>
-      <ScrollView
-        ref={scrollViewRef}
-        style={{ paddingHorizontal: 20 }}
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
-        <CustomFormik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={onSubmit}
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size='large' color='#0000ff' />
+        </View>
+      ) : (
+        <ScrollView
+          ref={scrollViewRef}
+          style={{ paddingHorizontal: 20 }}
+          contentContainerStyle={{ flexGrow: 1 }}
         >
-          <Text
-            style={{
-              fontFamily: 'Poppins-Bold',
-              fontSize: 18,
-              marginTop: 6,
-              marginBottom: 4,
-            }}
+          <CustomFormik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={onSubmit}
           >
-            {sections[page].title}
-          </Text>
+            <Text
+              style={{
+                fontFamily: 'Poppins-Bold',
+                fontSize: 18,
+                marginTop: 6,
+                marginBottom: 4,
+              }}
+            >
+              {sections[page].title}
+            </Text>
 
-          {sections[page].content}
-          <View>
-            {page > 0 && (
-              <Button
-                title='Back'
-                onPress={() => setPage((prev) => prev - 1)}
-              />
-            )}
-            {page < sections.length - 1 ? (
-              <Button
-                title='Next'
-                onPress={() => setPage((prev) => prev + 1)}
-              />
-            ) : (
-              <SubmitButton title='Submit' />
-            )}
-          </View>
-        </CustomFormik>
-      </ScrollView>
+            {sections[page].content}
+            <View>
+              {page > 0 && (
+                <Button
+                  title='Back'
+                  onPress={() => setPage((prev) => prev - 1)}
+                />
+              )}
+              {page < sections.length - 1 ? (
+                <Button
+                  title='Next'
+                  onPress={() => setPage((prev) => prev + 1)}
+                />
+              ) : (
+                <SubmitButton title='Submit' />
+              )}
+            </View>
+          </CustomFormik>
+        </ScrollView>
+      )}
     </AppContainer>
   );
 };
 
 export default EventForm;
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+});

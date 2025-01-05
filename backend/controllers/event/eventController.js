@@ -19,8 +19,6 @@ exports.createEvent = async (req, res) => {
     organizer,
   } = req.body;
 
-  console.log(req.body);
-
   const { file } = req;
 
   let eventStatus = 'Approved';
@@ -273,7 +271,7 @@ exports.getAllEvents = async (req, res) => {
         select: 'name',
       },
     })
-    .populate('postedBy', 'apkey');
+    .populate('postedBy', 'apkey fullname email contact');
 
   const count = await Event.countDocuments(query);
 
@@ -285,15 +283,20 @@ exports.getAllEvents = async (req, res) => {
         desc: event.desc,
         type: event.type,
         mode: event.mode,
-        venue: event?.venueBooking?.venue.name,
+        venue: event.venueBooking?.venue?.name,
         startTime: event.startTime,
         endTime: event.endTime,
-        location: event?.location,
+        location: event.venueBooking?.venue?.name
+          ? event.venueBooking.venue.name
+          : event.location,
         categories: event?.categories,
         price: event?.price,
-        postedBy: event.postedBy.apkey,
+        postedBy: event.postedBy.apkey.toUpperCase(),
+        userEmail: event.postedBy.email,
+        userContact: event.postedBy.contact,
+        userFullname: event.postedBy.fullname,
         organizer: event.organizer,
-        thumbnail: event?.thumbnail.url,
+        thumbnail: event?.thumbnail?.url,
         createdAt: event.createdAt,
         updatedAt: event.updatedAt,
         status: event.status,
@@ -426,6 +429,120 @@ exports.getCreatedActiveEvents = async (req, res) => {
         status: event.status,
       };
     }),
+    count,
+  });
+};
+
+exports.udpateEventStatus = async (req, res) => {
+  const { id } = req.params;
+  const { action } = req.body;
+
+  if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid event id');
+
+  const event = await Event.findById(id);
+  if (!event) return sendError(res, 404, 'Event not found');
+
+  if (action === 'approve') {
+    event.status = 'Approved';
+    await event.save();
+    return res.json({ message: 'Event approved' });
+  }
+
+  if (action === 'reject') {
+    event.status = 'Rejected';
+    await event.save();
+    return res.json({ message: 'Event rejected' });
+  }
+
+  res.status(400).json({ message: 'Invalid action' });
+};
+
+exports.searchCreatedEvents = async (req, res) => {
+  const userId = req.user._id;
+  const { name } = req.query;
+
+  const matchCriteria = { postedBy: userId };
+  if (name) {
+    matchCriteria.name = { $regex: name, $options: 'i' };
+  }
+
+  const events = await Event.aggregate([
+    { $match: matchCriteria },
+    { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: 'venuebookings',
+        localField: 'venueBooking',
+        foreignField: '_id',
+        as: 'venueBooking',
+      },
+    },
+    { $unwind: { path: '$venueBooking', preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: 'venues',
+        localField: 'venueBooking.venue',
+        foreignField: '_id',
+        as: 'venueBooking.venue',
+      },
+    },
+    {
+      $unwind: {
+        path: '$venueBooking.venue',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'postedBy',
+        foreignField: '_id',
+        as: 'postedBy',
+      },
+    },
+    { $unwind: { path: '$postedBy', preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: 'eventforms',
+        localField: '_id',
+        foreignField: 'event',
+        as: 'forms',
+      },
+    },
+    {
+      $project: {
+        id: '$_id',
+        name: 1,
+        desc: 1,
+        type: 1,
+        mode: 1,
+        venue: '$venueBooking.venue.name',
+        startTime: 1,
+        endTime: 1,
+        location: 1,
+        categories: 1,
+        price: 1,
+        postedBy: '$postedBy.apkey',
+        organizer: 1,
+        thumbnail: '$thumbnail.url',
+        createdAt: 1,
+        updatedAt: 1,
+        status: 1,
+        form: {
+          $cond: {
+            if: { $gt: [{ $size: '$forms' }, 0] },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+  ]);
+
+  const count = await Event.countDocuments(matchCriteria);
+
+  res.json({
+    events,
     count,
   });
 };

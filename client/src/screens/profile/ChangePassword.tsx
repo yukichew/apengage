@@ -51,6 +51,7 @@ const ChangePassword = ({ navigation }: Props) => {
       text1: 'Change Password',
       text2: 'Password has been changed successfully',
     });
+    navigation.navigate('Profile');
   };
 
   return (

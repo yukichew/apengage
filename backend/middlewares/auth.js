@@ -17,9 +17,6 @@ exports.isResetTokenValid = async (req, res, next) => {
   const resetToken = await ResetToken.findOne({ owner: user._id });
   if (!resetToken) return sendError(res, 404, 'Reset token not found!');
 
-  // const isMatched = await resetToken.compareToken(token);
-  // if (!isMatched) return sendError(res, 400, 'Invalid reset token!');
-
   req.user = user;
   next();
 };
@@ -30,14 +27,21 @@ exports.authenticate = async (req, res, next) => {
   const token = authHeader.split(' ')[1];
   if (!token) return sendError(res, 401, 'Unauthorized!');
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  if (!decoded) return sendError(res, 401, 'Invalid token!');
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded) return sendError(res, 401, 'Invalid token!');
 
-  const user = await User.findById(decoded.userId);
-  if (!user) return sendError(res, 404, 'User not found!');
+    const user = await User.findById(decoded.userId);
+    if (!user) return sendError(res, 404, 'User not found!');
 
-  req.user = user;
-  next();
+    req.user = user;
+    next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return sendError(res, 401, 'Token expired!');
+    }
+    return sendError(res, 401, 'Invalid token!');
+  }
 };
 
 exports.isAdmin = async (req, res, next) => {

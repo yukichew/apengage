@@ -15,10 +15,9 @@ const placeholder = require('../../assets/placeholder.png');
 type Props = {
   item: any;
   onPress: () => void;
-  onActionPress?: () => void;
 };
 
-const OrganizedItem = ({ item, onPress, onActionPress }: Props) => {
+const OrganizedItem = ({ item, onPress }: Props) => {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case 'Approved':
@@ -68,7 +67,6 @@ const OrganizedItem = ({ item, onPress, onActionPress }: Props) => {
                 fontSize: 34,
                 marginVertical: 8,
               }}
-              onPress={onActionPress}
             />
             <Text style={styles.statusDefault}>Create Form</Text>
           </>

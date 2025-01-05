@@ -26,12 +26,28 @@ export const createForm = async (values: {
 export const joinEvent = async (values: {
   formId: string;
   response: any;
+  file?: any;
 }): Promise<ApiResponse> => {
   try {
+    const formData = new FormData();
+    formData.append('response', JSON.stringify(values.response));
+
+    if (values.file) {
+      console.log(values.file);
+      formData.append('file', {
+        uri: values.file.uri,
+        type: values.file.type,
+        name: values.file.name,
+      });
+    }
+
     const response = await client.post<ApiResponse>(
       `/form/${values.formId}/join`,
+      formData,
       {
-        response: values.response,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       }
     );
 
