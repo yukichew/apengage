@@ -50,14 +50,14 @@ const AppContainer = ({
             <Text style={styles.title}>{title}</Text>
           </View>
 
-          <Pressable style={styles.right}>
+          {/* <Pressable style={styles.right}>
             <IconButton
               icon='bell-fill'
               iconLibrary='Octicons'
               style={{ fontSize: 16, color: 'rgba(0, 0, 0, 0.4)' }}
               onPress={() => console.log('notification')}
             />
-          </Pressable>
+          </Pressable> */}
         </View>
 
         <View style={styles.content}>{children}</View>

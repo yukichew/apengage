@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   FlatList,
   LayoutAnimation,
+  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -219,7 +220,7 @@ const Dashboard = ({ route, navigation }: Props) => {
                 fontFamily: 'Poppins-SemiBold',
               }}
             >
-              Participant Responses
+              Participants
             </Text>
             <TouchableOpacity onPress={exportToExcel}>
               <Text
@@ -240,6 +241,7 @@ const Dashboard = ({ route, navigation }: Props) => {
                 {header}
               </Text>
             ))}
+            <Text style={styles.tableHeaderText}>Status</Text>
           </View>
         </View>
       </>
@@ -248,28 +250,30 @@ const Dashboard = ({ route, navigation }: Props) => {
 
   const renderFooter = () => {
     return (
-      <View style={styles.tableContainer}>
-        <Text style={styles.chartTitle}>Feedback Comments</Text>
-        <View style={styles.tableHeader}>
-          <Text style={styles.tableHeaderText}>No.</Text>
-          <Text style={styles.tableHeaderText}>Rating</Text>
-          <Text style={styles.tableHeaderText}>Comment</Text>
-          <Text style={styles.tableHeaderText}>Posted By</Text>
+      <>
+        <View style={styles.tableContainer}>
+          <Text style={styles.chartTitle}>Feedback Comments</Text>
+          <View style={styles.tableHeader}>
+            <Text style={styles.tableHeaderText}>No.</Text>
+            <Text style={styles.tableHeaderText}>Rating</Text>
+            <Text style={styles.tableHeaderText}>Comment</Text>
+            <Text style={styles.tableHeaderText}>Posted By</Text>
+          </View>
+          {feedback?.feedbacks.map(
+            (
+              item: { rating: number; comment: string; createdBy: string },
+              index: number
+            ) => (
+              <View key={index} style={styles.tableRow}>
+                <Text style={styles.tableCell}>{index + 1}</Text>
+                <Text style={styles.tableCell}>{item.rating}</Text>
+                <Text style={styles.tableCell}>{item.comment}</Text>
+                <Text style={styles.tableCell}>{item.createdBy}</Text>
+              </View>
+            )
+          )}
         </View>
-        {feedback?.feedbacks.map(
-          (
-            item: { rating: number; comment: string; createdBy: string },
-            index: number
-          ) => (
-            <View key={index} style={styles.tableRow}>
-              <Text style={styles.tableCell}>{index + 1}</Text>
-              <Text style={styles.tableCell}>{item.rating}</Text>
-              <Text style={styles.tableCell}>{item.comment}</Text>
-              <Text style={styles.tableCell}>{item.createdBy}</Text>
-            </View>
-          )
-        )}
-      </View>
+      </>
     );
   };
 
@@ -314,6 +318,11 @@ const Dashboard = ({ route, navigation }: Props) => {
     }
   };
 
+  const isValidUrl = (url: string) => {
+    const regex = /^(ftp|http|https):\/\/[^ "]+$/;
+    return regex.test(url);
+  };
+
   return (
     <AppContainer navigation={navigation} showBackButton>
       {loading ? (
@@ -321,21 +330,37 @@ const Dashboard = ({ route, navigation }: Props) => {
           <ActivityIndicator size='large' color='rgba(0, 0, 0, 0.5)' />
         </View>
       ) : (
-        <FlatList
-          ListHeaderComponent={renderHeader}
-          ListFooterComponent={renderFooter}
-          data={data?.registrations || []}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View style={[styles.tableRow, { marginHorizontal: 20 }]}>
-              {form?.map((field) => (
-                <Text key={field.id} style={styles.tableCell}>
-                  {item.response[field.id] || '-'}
-                </Text>
-              )) || null}
-            </View>
-          )}
-        />
+        <>
+          <FlatList
+            ListHeaderComponent={renderHeader}
+            ListFooterComponent={renderFooter}
+            data={data?.registrations || []}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <>
+                <View style={[styles.tableRow, { marginHorizontal: 20 }]}>
+                  {form?.map((field) => (
+                    <Text key={field.id} style={styles.tableCell}>
+                      {isValidUrl(item.response[field.id]) ? (
+                        <Text
+                          style={{ color: 'blue' }}
+                          onPress={() =>
+                            Linking.openURL(item.response[field.id])
+                          }
+                        >
+                          Click to open
+                        </Text>
+                      ) : (
+                        item.response[field.id]
+                      )}
+                    </Text>
+                  )) || null}
+                  <Text style={styles.tableCell}>{item.status}</Text>
+                </View>
+              </>
+            )}
+          />
+        </>
       )}
     </AppContainer>
   );

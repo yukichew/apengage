@@ -40,7 +40,6 @@ const ResetPassword = () => {
       token,
     };
     const res = await resetPassword(payload);
-    console.log(res);
     formikActions.setSubmitting(false);
 
     if (!res.success) {

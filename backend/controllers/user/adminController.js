@@ -94,6 +94,7 @@ exports.getUsers = async (req, res) => {
   const { role } = req.query;
   const query = {};
   if (role) query.role = role;
+  query._id = { $ne: req.user._id };
 
   const users = await User.find(query).sort({ createdAt: -1 });
   const count = await User.countDocuments(query);
@@ -150,6 +151,7 @@ exports.searchUser = async (req, res) => {
   const query = {};
   if (role) query.role = role;
   if (fullname) query.fullname = { $regex: fullname, $options: 'i' };
+  query._id = { $ne: req.user._id };
 
   const result = await User.find(query);
 
@@ -169,5 +171,6 @@ exports.searchUser = async (req, res) => {
         status: user.verified ? 'Active' : 'Inactive',
       };
     }),
+    count: result.length,
   });
 };

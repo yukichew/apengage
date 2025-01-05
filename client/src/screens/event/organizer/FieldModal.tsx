@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Modal,
@@ -24,8 +24,27 @@ const FieldModal = ({
 }) => {
   const [label, setLabel] = useState('');
   const [placeholder, setPlaceholder] = useState('');
+  const [desc, setDesc] = useState('');
   const [required, setRequired] = useState(false);
   const [options, setOptions] = useState('');
+
+  useEffect(() => {
+    if (field) {
+      setLabel(field.label || '');
+      setPlaceholder(field.placeholder || '');
+      setRequired(field.required || false);
+      setDesc(field.desc || '');
+      if (
+        field.type === 'checkbox' ||
+        field.type === 'dropdown' ||
+        field.type === 'mcq'
+      ) {
+        setOptions(field.options?.join(', ') || '');
+      } else {
+        setOptions('');
+      }
+    }
+  }, [field]);
 
   const saveChanges = () => {
     const fieldToSave = {
@@ -33,6 +52,7 @@ const FieldModal = ({
       label,
       placeholder,
       required,
+      desc,
       options: options.split(',').map((opt) => opt.trim()),
     };
     onSave(fieldToSave);
@@ -54,6 +74,7 @@ const FieldModal = ({
             onChangeText={setLabel}
             placeholder='Enter Label'
             style={styles.input}
+            placeholderTextColor={'rgba(0, 0, 0, 0.5)'}
           />
           {field.type === 'checkbox' ||
           field.type === 'dropdown' ||
@@ -63,6 +84,7 @@ const FieldModal = ({
               onChangeText={setOptions}
               placeholder='Enter options separated by commas'
               style={styles.input}
+              placeholderTextColor={'rgba(0, 0, 0, 0.5)'}
             />
           ) : field.type === 'file' ? null : (
             <TextInput
@@ -70,8 +92,19 @@ const FieldModal = ({
               onChangeText={setPlaceholder}
               placeholder='Enter Placeholder'
               style={styles.input}
+              placeholderTextColor={'rgba(0, 0, 0, 0.5)'}
             />
           )}
+
+          <TextInput
+            value={desc}
+            onChangeText={setDesc}
+            placeholder='Enter Description (Optional)'
+            style={[styles.input, { height: 90 }]}
+            placeholderTextColor={'rgba(0, 0, 0, 0.5)'}
+            multiline
+            numberOfLines={4}
+          />
           <View style={styles.switchRow}>
             <Text style={styles.switchLabel}>Required</Text>
             <Switch value={required} onValueChange={setRequired} />

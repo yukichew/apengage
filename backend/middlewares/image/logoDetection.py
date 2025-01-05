@@ -20,7 +20,7 @@ def detect_logo(logo_filename, image_filename):
     if image is None:
         return False
 
-    orb = cv2.ORB_create() # Create an ORB object
+    orb = cv2.ORB_create(nfeatures=2000)
 
     # Detect keypoints and compute the descriptors with ORB
     kp_logo, des_logo = orb.detectAndCompute(logo_img, None)
@@ -47,10 +47,23 @@ def detect_logo(logo_filename, image_filename):
     for match in matches:
         if len(match) == 2:  # ensure there are two matches
             m, n = match
-            if m.distance < 0.75 * n.distance:
+            if m.distance < 0.7 * n.distance:  # more strict ratio threshold
                 good_matches.append(m)
-                
-    return len(good_matches) > 30
+
+    # If there are enough good matches, check the homography using RANSAC
+    if len(good_matches) > 50:
+        # Get the matching points
+        src_pts = np.float32([kp_logo[m.queryIdx].pt for m in good_matches]).reshape(-1, 1, 2)
+        dst_pts = np.float32([kp_image[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
+
+        # Find the homography matrix using RANSAC
+        M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+
+        # If a valid homography is found, return True
+        if M is not None and mask is not None:
+            return True
+
+    return False
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:

@@ -68,6 +68,7 @@ export const searchVenue = async (query) => {
     return {
       success: true,
       venues: data.venues,
+      count: data.count,
     };
   } catch (error) {
     return catchError(error);

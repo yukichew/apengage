@@ -1,13 +1,13 @@
 import { Field as FormikField } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import DocumentPicker, { types } from 'react-native-document-picker';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
 import { getForm, joinEvent } from '../../../api/form';
 import Checkbox from '../../../components/common/Checkbox';
 import CustomFormik from '../../../components/common/CustomFormik';
+import FilePicker from '../../../components/common/FilePicker';
 import InputText from '../../../components/common/InputText';
 import SubmitButton from '../../../components/common/SubmitButton';
 import AppContainer from '../../../components/containers/AppContainer';
@@ -67,10 +67,21 @@ const ParticipantForm = ({ route, navigation }: Props) => {
 
   const renderItem = ({ field }: { field: Field }) => {
     return (
-      <>
-        <Text style={{ fontFamily: 'Poppins-Regular', paddingLeft: 2 }}>
-          {field.label}
-        </Text>
+      <View key={field.id} style={styles.fieldContainer}>
+        <Text style={{ fontFamily: 'Poppins-Regular' }}>{field.label}</Text>
+
+        {field.desc && (
+          <Text
+            style={{
+              fontFamily: 'Poppins-Regular',
+              color: 'rgba(0, 0, 0, 0.5)',
+              paddingBottom: 5,
+            }}
+          >
+            {field.desc}
+          </Text>
+        )}
+
         {(() => {
           switch (field.type) {
             case 'short_ans':
@@ -158,26 +169,12 @@ const ParticipantForm = ({ route, navigation }: Props) => {
               return (
                 <FormikField name={field.id} key={field.id}>
                   {({ form }: any) => (
-                    <TouchableOpacity
-                      style={styles.uploadButton}
-                      onPress={async () => {
-                        try {
-                          const result = await DocumentPicker.pick({
-                            type: [types.allFiles],
-                          });
-                          form.setFieldValue(field.id, result);
-                          console.log('Selected File:', result);
-                        } catch (err) {
-                          if (DocumentPicker.isCancel(err)) {
-                            console.log('File selection canceled');
-                          } else {
-                            console.error('Unknown Error: ', err);
-                          }
-                        }
-                      }}
-                    >
-                      <Text style={styles.uploadText}>Upload File</Text>
-                    </TouchableOpacity>
+                    <FilePicker
+                      file={selectedFile}
+                      setFile={setSelectedFile}
+                      type='allFiles'
+                      placeholder='Upload File'
+                    />
                   )}
                 </FormikField>
               );
@@ -186,7 +183,7 @@ const ParticipantForm = ({ route, navigation }: Props) => {
               return null;
           }
         })()}
-      </>
+      </View>
     );
   };
 
@@ -194,20 +191,13 @@ const ParticipantForm = ({ route, navigation }: Props) => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
   }, [formFields]);
 
-  console.log('Form Fields:', initialValues);
-
   const onSubmit = async (values: typeof initialValues, formikActions: any) => {
-    // const formData = new FormData();
-    // for (const key in values) {
-    //   formData.append(key, values[key]);
-    // }
-    // if (selectedFile) {
-    //   formData.append('file', selectedFile[0]);
-    // }
     const res = await joinEvent({
       formId,
       response: values,
+      file: selectedFile,
     });
+    console.log(values);
 
     formikActions.setSubmitting(false);
     if (!res.success) {
@@ -218,6 +208,7 @@ const ParticipantForm = ({ route, navigation }: Props) => {
         position: 'top',
         topOffset: 60,
       });
+      console.log(res.error);
       return;
     }
 
@@ -333,5 +324,22 @@ const styles = StyleSheet.create({
   dropdownText: {
     color: 'rgba(0, 0, 0, 0.7)',
     fontFamily: 'Poppins-Regular',
+  },
+  fieldContainer: {
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 1,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    marginVertical: 8,
+    alignSelf: 'center',
+    padding: 10,
+    borderLeftColor: '#2A29FF',
+    borderLeftWidth: 5,
   },
 });

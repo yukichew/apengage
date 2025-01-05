@@ -80,7 +80,7 @@ const Venue = () => {
     if (!res.success) {
       return toast.error(res.error);
     }
-
+    console.log(res);
     setVenues(res.venues);
     setCount(res.count);
     setLoading(false);

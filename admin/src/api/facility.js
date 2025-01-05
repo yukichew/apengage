@@ -68,6 +68,7 @@ export const searchFacility = async (query) => {
     return {
       success: true,
       facilities: data.facilities,
+      count: data.count,
     };
   } catch (error) {
     return catchError(error);

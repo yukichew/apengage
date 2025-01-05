@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import routes from './routes';
 import Login from './screens/Login';
+import NotFound from './screens/NotFound';
 import ResetPassword from './screens/ResetPassword';
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
         <Routes>
           <Route path='/' element={<Login />} />
           <Route path='/reset-password' element={<ResetPassword />} />
+          <Route path='*' element={<NotFound />} />
           {routes}
         </Routes>
       </BrowserRouter>

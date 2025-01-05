@@ -10,6 +10,8 @@ import Dashboard from './screens/Dashboard';
 import Event from './screens/events/Event';
 import Facility from './screens/facilities/Facility';
 import FacilityForm from './screens/facilities/FacilityForm';
+import ChangePassword from './screens/profile/ChangePassword';
+import Profile from './screens/profile/Profile';
 import Transport from './screens/transportation/Transport';
 import TransportForm from './screens/transportation/TransportForm';
 import Admin from './screens/user/Admin';
@@ -124,6 +126,16 @@ const routesConfig = [
     path: '/booking/transport',
     component: TransportBooking,
     title: 'Transportation Booking Management',
+  },
+  {
+    path: '/user/profile',
+    component: Profile,
+    title: 'Profile',
+  },
+  {
+    path: '/user/password',
+    component: ChangePassword,
+    title: 'Change Password',
   },
 ];
 

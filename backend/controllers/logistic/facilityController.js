@@ -70,8 +70,20 @@ exports.deleteFacility = async (req, res) => {
 };
 
 exports.getFacilities = async (req, res) => {
-  const facilities = await Facility.find({}).sort({ createdAt: -1 });
-  const count = await Facility.countDocuments();
+  const userRole = req.user.role;
+  let facilities;
+  let count;
+
+  if (userRole === 'admin') {
+    facilities = await Facility.find({}).sort({ createdAt: -1 });
+    count = await Facility.countDocuments();
+  } else {
+    facilities = await Facility.find({ isActive: true }).sort({
+      createdAt: -1,
+    });
+    count = await Facility.countDocuments({ isActive: true });
+  }
+
   res.json({
     facilities: facilities.map((facility) => {
       return {
@@ -132,6 +144,7 @@ exports.searchFacility = async (req, res) => {
         updatedAt: facility.updatedAt,
       };
     }),
+    count: result.length,
   });
 };
 

@@ -22,8 +22,7 @@ const checkForLogo = async (imagePath) => {
       if (code !== 0) {
         reject(`Python script exited with code ${code}`);
       }
-
-      resolve(logoDetected);
+      setTimeout(() => resolve(logoDetected), 100);
     });
   });
 };
@@ -34,7 +33,13 @@ exports.isLogoExist = async (req, res, next) => {
     return next();
   }
 
+  if (!req.file) {
+    return sendError(res, 400, 'Poster is required');
+  }
+
   const hasLogo = await checkForLogo(req.file.path);
-  if (!hasLogo) return sendError(res, 401, 'Poster must include the APU logo!');
+  if (!hasLogo) {
+    return sendError(res, 500, 'Poster must include the APU logo!');
+  }
   next();
 };

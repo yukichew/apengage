@@ -54,3 +54,27 @@ export const resetPassword = async (values) => {
     return catchError(error);
   }
 };
+
+export const getProfile = async () => {
+  try {
+    const { data } = await client.get('/user/profile');
+    return {
+      success: true,
+      admin: data.user,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};
+
+export const changePassword = async (values) => {
+  try {
+    const { data } = await client.put('/user/change-password', values);
+    return {
+      success: true,
+      message: data.message,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};

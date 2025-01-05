@@ -8,7 +8,8 @@ import {
   View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { getParticipatedEvents } from '../../api/event';
+import { searchParticipatedEvents } from '../../api/event';
+import SearchBar from '../../components/common/SearchBar';
 import FeedbackModal from '../../components/custom/FeedbackModal';
 import HistoryItem from '../../components/custom/HistoryItem';
 import { Props } from '../../constants/types';
@@ -20,11 +21,13 @@ const ParticipatedEvents = ({ navigation }: Props) => {
   const [selectedRegistrationId, setSelectedRegistrationId] = useState<
     string | null
   >(null);
+  const [query, setQuery] = useState<string>('');
+  const [count, setCount] = useState<number>(0);
 
   const refreshEvents = async () => {
     setLoading(true);
-    const response = await getParticipatedEvents();
-    setEvents(response.data.events);
+    const response = await searchParticipatedEvents(query);
+
     if (!response.success) {
       Toast.show({
         type: 'error',
@@ -34,13 +37,16 @@ const ParticipatedEvents = ({ navigation }: Props) => {
         topOffset: 60,
       });
     }
+
+    setEvents(response.data.events);
+    setCount(response.data.count);
     setLoading(false);
   };
 
   useFocusEffect(
     useCallback(() => {
       refreshEvents();
-    }, [])
+    }, [query])
   );
 
   const renderItem = ({ item }: { item: any }) => (
@@ -56,8 +62,29 @@ const ParticipatedEvents = ({ navigation }: Props) => {
     />
   );
 
+  const handleOnChange = (text: string) => {
+    setQuery(text);
+  };
+
+  const handleOnSubmit = async () => {
+    await refreshEvents();
+  };
+
+  const handleClear = async () => {
+    setQuery('');
+    await refreshEvents();
+  };
+
   return (
     <>
+      <SearchBar
+        placeholder='Search Participated Events'
+        onChangeText={handleOnChange}
+        onSubmitEditing={handleOnSubmit}
+        onClear={handleClear}
+        value={query}
+      />
+
       {loading ? (
         <View
           style={{
@@ -68,7 +95,7 @@ const ParticipatedEvents = ({ navigation }: Props) => {
         >
           <ActivityIndicator size='large' color='rgba(0, 0, 0, 0.5)' />
         </View>
-      ) : events.length !== 0 ? (
+      ) : count !== 0 ? (
         <FlatList
           data={events}
           renderItem={renderItem}

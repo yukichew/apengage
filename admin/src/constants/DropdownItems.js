@@ -4,8 +4,8 @@ export const dropdownUserItems = [
     label: 'Profile',
   },
   {
-    to: '/user/settings',
-    label: 'Settings',
+    to: '/user/password',
+    label: 'Change Password',
   },
   {
     to: '/user/logout',

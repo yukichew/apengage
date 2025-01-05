@@ -4,6 +4,7 @@ import { getEvents, searchEvents, updateEventStatus } from '../../api/event';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Loader from '../../components/common/Loader';
+import Modal from '../../components/common/Modal';
 import Searchbar from '../../components/common/Searchbar';
 import Table from '../../components/common/Table';
 import Container from '../../components/Container';
@@ -17,6 +18,7 @@ const Event = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [actionType, setActionType] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   const columns = [
     'Name',
@@ -24,7 +26,7 @@ const Event = () => {
     'Mode',
     'Start',
     'End',
-    'Venue',
+    'Location',
     'Organizer',
   ];
 
@@ -34,7 +36,7 @@ const Event = () => {
     'mode',
     'startTime',
     'endTime',
-    'venue',
+    'location',
     'organizer',
   ];
 
@@ -49,6 +51,10 @@ const Event = () => {
         setActionType('reject');
         setSelectedEvent(row);
         setShowDialog(true);
+        break;
+      case 'view':
+        setSelectedEvent(row);
+        setShowModal(true);
         break;
       default:
         break;
@@ -81,6 +87,7 @@ const Event = () => {
     }
 
     if (!res.success) {
+      console.log(res.error);
       return toast.error(res.error);
     }
 
@@ -130,7 +137,7 @@ const Event = () => {
           columnKeys={columnKeys}
           handleAction={handleAction}
           totalRows={count}
-          actions={['view', 'delete']}
+          actions={['view', 'approve', 'reject']}
         />
       )}
 
@@ -143,6 +150,35 @@ const Event = () => {
           onConfirm={handleChangeStatus}
           onCancel={() => setShowDialog(false)}
         />
+      )}
+
+      {showModal && selectedEvent && (
+        <Modal
+          isVisible={showModal}
+          onClose={() => setShowModal(false)}
+          className='w-1/2'
+        >
+          <div className='flex flex-col'>
+            <table className='w-full rounded-lg'>
+              <tbody>
+                {Object.entries(selectedEvent)
+                  .filter(([key]) => key !== 'id' && key !== 'venue')
+                  .map(([key, value]) => (
+                    <tr key={key}>
+                      <td className='font-semibold capitalize'>
+                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                      </td>
+                      <td className='pl-3'>
+                        {key === 'updatedAt' || key === 'createdAt'
+                          ? formatDateTime(value)
+                          : value || 'N/A'}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </Modal>
       )}
     </Container>
   );
