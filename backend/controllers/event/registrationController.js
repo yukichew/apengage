@@ -258,26 +258,64 @@ exports.searchParticipatedEvents = async (req, res) => {
   const userId = req.user._id;
   const { name } = req.query;
 
-  const matchCriteria = { participant: userId };
-  if (name) {
-    matchCriteria['eventForm.event.name'] = { $regex: name, $options: 'i' };
-  }
+  const matchStage = {
+    participant: userId,
+    ...(name && { 'eventForm.event.name': { $regex: name, $options: 'i' } }),
+  };
 
-  const registrations = await Registration.find(matchCriteria).populate({
-    path: 'eventForm',
-    populate: {
-      path: 'event',
-      populate: {
-        path: 'venueBooking',
-        populate: {
-          path: 'venue',
-          select: 'name',
-        },
+  const registrations = await Registration.aggregate([
+    {
+      $lookup: {
+        from: 'eventforms',
+        localField: 'eventForm',
+        foreignField: '_id',
+        as: 'eventForm',
       },
-      select:
-        'name type desc startTime endTime mode organizer categories location venueBooking price thumbnail',
     },
-  });
+    { $unwind: '$eventForm' },
+    {
+      $lookup: {
+        from: 'events',
+        localField: 'eventForm.event',
+        foreignField: '_id',
+        as: 'eventForm.event',
+      },
+    },
+    { $unwind: '$eventForm.event' },
+    {
+      $lookup: {
+        from: 'venuebookings',
+        localField: 'eventForm.event.venueBooking',
+        foreignField: '_id',
+        as: 'eventForm.event.venueBooking',
+      },
+    },
+    {
+      $unwind: {
+        path: '$eventForm.event.venueBooking',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'venues',
+        localField: 'eventForm.event.venueBooking.venue',
+        foreignField: '_id',
+        as: 'eventForm.event.venueBooking.venue',
+      },
+    },
+    {
+      $unwind: {
+        path: '$eventForm.event.venueBooking.venue',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    { $match: matchStage },
+  ]);
+
+  if (!registrations || registrations.length === 0) {
+    return res.json({ events: [], count: 0 });
+  }
 
   const events = registrations.map((registration) => ({
     registrationId: registration._id,

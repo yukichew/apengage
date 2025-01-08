@@ -12,6 +12,7 @@ import QRCodeScan from '../screens/event/organizer/QRCodeScan';
 import ParticipantForm from '../screens/event/participant/ParticipantForm';
 import Ticket from '../screens/event/participant/Ticket';
 import Dashboard from '../screens/History/Dashboard';
+import EventHistory from '../screens/History/EventHistory';
 import FacilityForm from '../screens/logistics/FacilityForm';
 import TransportForm from '../screens/logistics/TransportForm';
 import VenueForm from '../screens/logistics/VenueForm';
@@ -75,6 +76,7 @@ const AppNavigator: FC = () => {
       <Stack.Screen name='Dashboard' component={Dashboard} />
       <Stack.Screen name='QRCodeScan' component={QRCodeScan} />
       <Stack.Screen name='ChangePassword' component={ChangePassword} />
+      <Stack.Screen name='EventHistory' component={EventHistory} />
     </Stack.Navigator>
   );
 };

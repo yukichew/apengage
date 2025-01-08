@@ -48,12 +48,14 @@ const OrganizedEvents = ({ navigation }: Props) => {
     <OrganizedItem
       item={item}
       onPress={() => {
-        if (item.type === 'public' && !item.form) {
-          navigation.navigate('CustomForm', { eventId: item.id.toString() });
-        } else {
-          navigation.navigate('Dashboard', { eventId: item.id.toString() });
-        }
+        navigation.navigate('EventHistory', { event: item });
       }}
+      onDashboardPress={() =>
+        navigation.navigate('Dashboard', { eventId: item.id.toString() })
+      }
+      onFormPress={() =>
+        navigation.navigate('CustomForm', { eventId: item.id.toString() })
+      }
     />
   );
 

@@ -24,6 +24,7 @@ export type RootStackNavigatorParamsList = {
   QRCodeScan: undefined;
   Dashboard: { eventId: string };
   ChangePassword: undefined;
+  EventHistory: { event: EventItem };
 };
 
 export type Navigation =

@@ -50,6 +50,9 @@ export type EventItem = {
   venueBooking?: string;
   location?: string;
   categories?: string[];
+  status?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type User = {

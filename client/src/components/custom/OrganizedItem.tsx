@@ -15,9 +15,16 @@ const placeholder = require('../../assets/placeholder.png');
 type Props = {
   item: any;
   onPress: () => void;
+  onDashboardPress: () => void;
+  onFormPress: () => void;
 };
 
-const OrganizedItem = ({ item, onPress }: Props) => {
+const OrganizedItem = ({
+  item,
+  onPress,
+  onDashboardPress,
+  onFormPress,
+}: Props) => {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case 'Approved':
@@ -57,7 +64,21 @@ const OrganizedItem = ({ item, onPress }: Props) => {
       </View>
       <View style={styles.statusContainer}>
         <Text style={getStatusStyle(item.status)}>{item.status}</Text>
-        {item.type === 'public' && !item.form ? (
+        {item.type === 'public' && item.form ? (
+          <>
+            <IconButton
+              icon='bar-chart'
+              iconLibrary='Ionicons'
+              style={{
+                color: 'rgba(0, 0, 0, 0.6)',
+                fontSize: 34,
+                marginVertical: 8,
+              }}
+              onPress={onDashboardPress}
+            />
+            <Text style={styles.statusDefault}>Dashboard</Text>
+          </>
+        ) : item.type === 'public' && !item.form ? (
           <>
             <IconButton
               icon='form'
@@ -67,6 +88,7 @@ const OrganizedItem = ({ item, onPress }: Props) => {
                 fontSize: 34,
                 marginVertical: 8,
               }}
+              onPress={onFormPress}
             />
             <Text style={styles.statusDefault}>Create Form</Text>
           </>
@@ -80,6 +102,7 @@ const OrganizedItem = ({ item, onPress }: Props) => {
                 fontSize: 34,
                 marginVertical: 8,
               }}
+              onPress={onPress}
             />
             <Text style={styles.statusDefault}>Info</Text>
           </>
