@@ -284,7 +284,7 @@ exports.getEvent = async (req, res) => {
       desc: event.desc,
       type: event.type,
       mode: event.mode,
-      venue: event?.venueBooking?.venue.name,
+      venue: event?.venueBooking?.venue?.name,
       startTime: event.startTime,
       endTime: event.endTime,
       location: event?.location,
@@ -292,7 +292,7 @@ exports.getEvent = async (req, res) => {
       price: event?.price,
       postedBy: event.postedBy.apkey,
       organizer: event.organizer,
-      thumbnail: event?.thumbnail.url,
+      thumbnail: event?.thumbnail?.url,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
       status: event.status,
@@ -667,5 +667,42 @@ exports.searchVenueUtilization = async (req, res) => {
       status: stat.status,
     })),
     count: statistics.length,
+  });
+};
+
+exports.updateEvent = async (req, res) => {
+  const { name, desc } = req.body;
+
+  const { id } = req.params;
+  if (!isValidObjectId(id)) return sendError(res, 401, 'Invalid event id');
+
+  const event = await Event.findById(id);
+  if (!event) return sendError(res, 404, 'Event not found');
+
+  event.name = name;
+  event.desc = desc;
+
+  await event.save();
+
+  res.json({
+    event: {
+      id: event._id,
+      name: event.name,
+      desc: event.desc,
+      type: event.type,
+      mode: event.mode,
+      venue: event?.venueBooking?.venue?.name,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      location: event?.location,
+      categories: event?.categories,
+      price: event?.price,
+      postedBy: event.postedBy.apkey,
+      organizer: event.organizer,
+      thumbnail: event?.thumbnail?.url,
+      createdAt: event.createdAt,
+      updatedAt: event.updatedAt,
+      status: event.status,
+    },
   });
 };

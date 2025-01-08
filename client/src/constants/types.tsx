@@ -36,7 +36,7 @@ export type Props = {
 };
 
 export type EventItem = {
-  id?: number;
+  id: string;
   name: string;
   mode: string;
   type: string;

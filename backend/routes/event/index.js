@@ -9,6 +9,7 @@ const {
   searchCreatedEvents,
   getVenueUtilization,
   searchVenueUtilization,
+  updateEvent,
 } = require('../../controllers/event/eventController');
 const {
   getRegistration,
@@ -33,6 +34,7 @@ router.post(
   createEvent
 );
 router.put('/status/:id', authenticate, isAdmin, udpateEventStatus);
+router.put('/:id', authenticate, updateEvent);
 router.post('/mark-attendance', authenticate, markAttendance);
 router.get('/events', authenticate, getEvents);
 router.get('/search', authenticate, searchEvents);
