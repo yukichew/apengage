@@ -25,6 +25,7 @@ export type RootStackNavigatorParamsList = {
   Dashboard: { eventId: string };
   ChangePassword: undefined;
   EventHistory: { event: EventItem };
+  EventHistoryForm: { eventId: string };
 };
 
 export type Navigation =

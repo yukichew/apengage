@@ -157,3 +157,19 @@ export const searchParticipatedEvents = async (
     return catchAxiosError(error);
   }
 };
+
+export const editEvent = async (
+  id: string,
+  values: any
+): Promise<ApiResponse> => {
+  try {
+    const response = await client.put<ApiResponse>('/event/' + id, values);
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error: any) {
+    return catchAxiosError(error);
+  }
+};

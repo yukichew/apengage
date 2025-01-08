@@ -1,5 +1,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+import IconButton from '../../components/common/IconButton';
 import AppContainer from '../../components/containers/AppContainer';
 import { EventItem } from '../../constants/types';
 import { Navigation } from '../../navigation/types';
@@ -12,6 +14,15 @@ type Props = {
 
 const EventHistory = ({ route, navigation }: Props) => {
   const { event } = route.params;
+  if (!event) {
+    return Toast.show({
+      type: 'error',
+      text1: 'Failed to fetch event',
+      text2: 'Event not found',
+      position: 'top',
+      topOffset: 60,
+    });
+  }
 
   const capitalizeEachWord = (string: string) => {
     return string.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -41,6 +52,19 @@ const EventHistory = ({ route, navigation }: Props) => {
     <AppContainer navigation={navigation} showBackButton>
       <ScrollView>
         <View style={styles.container}>
+          <IconButton
+            icon='edit-3'
+            iconLibrary='Feather'
+            style={{
+              color: 'rgba(0, 0, 0, 0.6)',
+              fontSize: 22,
+              marginLeft: 'auto',
+              marginBottom: 12,
+            }}
+            onPress={() =>
+              navigation.navigate('EventHistoryForm', { eventId: event.id })
+            }
+          />
           {eventDetails.map((detail, index) => (
             <View key={index} style={styles.row}>
               <Text style={styles.label}>{detail.label}</Text>
