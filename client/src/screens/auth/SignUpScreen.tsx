@@ -1,4 +1,5 @@
 import { StackActions } from '@react-navigation/native';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
@@ -12,12 +13,13 @@ import AuthContainer from '../../components/containers/AuthContainer';
 import { Props } from '../../constants/types';
 
 const SignUpScreen = ({ navigation }: Props) => {
+  const [showPassword, setShowPassword] = useState(false);
+
   const initialValues = {
     fullname: '',
     email: '',
     password: '',
     apkey: '',
-    // confirmPassword: '',
   };
 
   const validationSchema = yup.object({
@@ -35,10 +37,6 @@ const SignUpScreen = ({ navigation }: Props) => {
       )
       .required('Password is required'),
     apkey: yup.string().trim().required('APKey is required'),
-    // confirmPassword: yup
-    //   .string()
-    //   .oneOf([yup.ref('password')], 'Passwords must match')
-    //   .required('Confirm password is required'),
   });
 
   const handleSignUp = async (
@@ -106,19 +104,11 @@ const SignUpScreen = ({ navigation }: Props) => {
           name='password'
           leftIcon='lock-outline'
           leftIconLibrary='MaterialIcons'
-          rightIcon='eye-with-line'
+          rightIcon={showPassword ? 'eye' : 'eye-with-line'}
           rightIconLibrary='Entypo'
-          secureTextEntry
+          secureTextEntry={!showPassword}
+          onPressRightIcon={() => setShowPassword(!showPassword)}
         />
-        {/* <TextInput
-          placeholder='Confirm password'
-          name='confirmPassword'
-          leftIcon='lock-outline'
-          leftIconLibrary='MaterialIcons'
-          rightIcon='eye-with-line'
-          rightIconLibrary='Entypo'
-          secureTextEntry
-        /> */}
         <SubmitButton title='SIGN UP' />
       </CustomFormik>
     </AuthContainer>

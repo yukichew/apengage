@@ -3,6 +3,7 @@ const cloudinary = require('../../config/cloud');
 const { sendError } = require('../../helpers/error');
 const VenueBooking = require('../../models/logistic/venue/venueBooking');
 const Form = require('../../models/event/form');
+const { isValidObjectId, default: mongoose } = require('mongoose');
 
 exports.createEvent = async (req, res) => {
   const {
@@ -155,67 +156,109 @@ exports.searchEvents = async (req, res) => {
   const userRole = req.user.role;
   const { name, categories } = req.query;
 
-  const query = {
-    name: { $regex: name, $options: 'i' },
-  };
-
+  const match = {};
   if (userRole === 'user') {
-    query.status = 'Approved';
-    query.type = 'public';
+    match.status = 'Approved';
+    match.type = 'public';
   }
 
   if (categories) {
-    query.categories = { $in: categories.split(',') };
+    match.categories = {
+      $in: categories
+        .split(',')
+        .map((id) => mongoose.Types.ObjectId.createFromHexString(id)),
+    };
   }
 
-  let eventsQuery = Event.find(query)
-    .populate({
-      path: 'venueBooking',
-      populate: {
-        path: 'venue',
-        select: 'name',
+  if (name) {
+    match.name = { $regex: name, $options: 'i' };
+  }
+
+  console.log('Match Object:', match);
+
+  const events = await Event.aggregate([
+    { $match: match },
+    { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: 'venuebookings',
+        localField: 'venueBooking',
+        foreignField: '_id',
+        as: 'venueBooking',
       },
-    })
-    .populate('postedBy', 'apkey')
-    .populate('categories', 'name');
+    },
+    { $unwind: { path: '$venueBooking', preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: 'venues',
+        localField: 'venueBooking.venue',
+        foreignField: '_id',
+        as: 'venueBooking.venue',
+      },
+    },
+    {
+      $unwind: {
+        path: '$venueBooking.venue',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'postedBy',
+        foreignField: '_id',
+        as: 'postedBy',
+      },
+    },
+    { $unwind: { path: '$postedBy', preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'categories',
+        foreignField: '_id',
+        as: 'categories',
+      },
+    },
+    {
+      $lookup: {
+        from: 'eventforms',
+        localField: '_id',
+        foreignField: 'event',
+        as: 'forms',
+      },
+    },
 
-  if (userRole === 'user') {
-    eventsQuery = eventsQuery.populate({
-      path: 'forms',
-      match: { event: { $exists: true } },
-    });
-  }
+    ...(userRole === 'user'
+      ? [{ $match: { 'forms.0': { $exists: true } } }]
+      : []),
+    {
+      $project: {
+        id: '$_id',
+        name: 1,
+        desc: 1,
+        type: 1,
+        mode: 1,
+        venue: '$venueBooking.venue.name',
+        startTime: 1,
+        endTime: 1,
+        location: 1,
+        categories: '$categories.name',
+        price: 1,
+        postedBy: '$postedBy.apkey',
+        organizer: 1,
+        thumbnail: '$thumbnail.url',
+        createdAt: 1,
+        updatedAt: 1,
+        status: 1,
+      },
+    },
+  ]);
 
-  const events = await eventsQuery.exec();
-
-  const filteredEvents =
-    userRole === 'user'
-      ? events.filter((event) => event.forms.length > 0)
-      : events;
+  const count = events.length;
 
   res.json({
-    events: filteredEvents.map((event) => {
-      return {
-        id: event._id,
-        name: event.name,
-        desc: event.desc,
-        type: event.type,
-        mode: event.mode,
-        venue: event?.venueBooking?.venue.name,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        location: event.venueBooking?.venue?.name || event.location,
-        categories: event?.categories.map((category) => category.name),
-        price: event?.price,
-        postedBy: event.postedBy.apkey,
-        organizer: event.organizer,
-        thumbnail: event?.thumbnail.url,
-        createdAt: event.createdAt,
-        updatedAt: event.updatedAt,
-        status: event.status,
-      };
-    }),
-    count: filteredEvents.length,
+    events,
+    count,
   });
 };
 

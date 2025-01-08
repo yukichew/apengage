@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { getCategories } from '../../api/category';
@@ -7,15 +8,17 @@ import SearchBar from '../../components/common/SearchBar';
 import AppContainer from '../../components/containers/AppContainer';
 import FlatListItem from '../../components/custom/EventItem';
 import { EventItem, Props } from '../../constants/types';
-import { useEvents } from '../../helpers/EventHelper';
 
 const Event = ({ navigation }: Props) => {
-  const { events, loading, refreshEvents } = useEvents();
   const [query, setQuery] = useState<string>('');
-  const [results, setResults] = useState<EventItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [categories, setCategories] =
     useState<{ key: string; value: string }[]>();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<
+    string | undefined
+  >();
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [count, setCount] = useState<number>(0);
 
   const fetchCategories = async () => {
     const res = await getCategories();
@@ -31,9 +34,31 @@ const Event = ({ navigation }: Props) => {
     setCategories(res.data);
   };
 
-  useEffect(() => {
-    setResults(events);
-  }, [events]);
+  const refreshEvents = async (category?: string) => {
+    setLoading(true);
+    if (!category) {
+      category = '';
+    }
+    const response = await searchEvents(query, category);
+    if (!response.success) {
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to fetch events',
+        text2: response.error,
+        position: 'top',
+        topOffset: 60,
+      });
+    }
+    setEvents(response.data.events);
+    setCount(response.data.count);
+    setLoading(false);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshEvents(selectedCategory);
+    }, [query, selectedCategory])
+  );
 
   useEffect(() => {
     fetchCategories();
@@ -43,23 +68,13 @@ const Event = ({ navigation }: Props) => {
     setQuery(text);
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
     setQuery('');
-    setResults(events);
+    await refreshEvents();
   };
 
   const handleOnSubmit = async () => {
-    if (query.trim() === '' && !selectedCategory) {
-      setResults(events);
-      return;
-    }
-
-    const response = await searchEvents(query, selectedCategory ?? undefined);
-    if (!response.success) {
-      return;
-    }
-
-    setResults(response.data);
+    await refreshEvents();
   };
 
   const renderItem = ({ item }: { item: EventItem }) => (
@@ -68,6 +83,16 @@ const Event = ({ navigation }: Props) => {
       onPress={() => navigation.navigate('EventDetails', { event: item })}
     />
   );
+
+  const handleCategorySelect = async (categoryKey: string) => {
+    if (selectedCategory === categoryKey) {
+      setSelectedCategory(undefined);
+    } else {
+      setSelectedCategory(categoryKey);
+    }
+
+    await refreshEvents(selectedCategory);
+  };
 
   const renderCategory = ({
     item,
@@ -89,25 +114,6 @@ const Event = ({ navigation }: Props) => {
     );
   };
 
-  const handleCategorySelect = (category: string) => {
-    if (selectedCategory === category) {
-      setSelectedCategory(null);
-      setQuery('');
-      setResults(events);
-    } else {
-      setSelectedCategory(category);
-      setQuery('');
-      fetchFilteredEvents(category);
-    }
-  };
-
-  const fetchFilteredEvents = async (category: string) => {
-    const response = await searchEvents('', category);
-    if (response.success) {
-      setResults(response.data);
-    }
-  };
-
   return (
     <AppContainer navigation={navigation}>
       <SearchBar
@@ -124,9 +130,9 @@ const Event = ({ navigation }: Props) => {
         keyExtractor={(item) => item.key}
         style={styles.categoryList}
       />
-      {results.length > 0 ? (
+      {count > 0 ? (
         <FlatList
-          data={results}
+          data={events}
           renderItem={renderItem}
           keyExtractor={(item) => item.id?.toString() || item.name}
           refreshControl={

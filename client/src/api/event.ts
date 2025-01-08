@@ -48,18 +48,18 @@ export const getEventHistory = async (): Promise<ApiResponse> => {
 
 export const searchEvents = async (
   query: string,
-  category?: string
+  category: string
 ): Promise<ApiResponse> => {
   try {
     const response = await client.get<any>(
-      '/event/search?name=' +
-        query +
-        (category ? '&categories=' + category : '')
+      '/event/search?name=' + query + '&categories=' + category
     );
+
+    console.log('searchEvents', response.data);
 
     return {
       success: true,
-      data: response.data.events,
+      data: response.data,
     };
   } catch (error: any) {
     return catchAxiosError(error);
