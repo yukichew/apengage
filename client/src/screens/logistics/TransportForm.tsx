@@ -1,4 +1,4 @@
-import { StackActions } from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, Switch, Text, View } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -46,8 +46,13 @@ const TransportForm = ({ navigation }: Props) => {
     departTo: yup.string().trim().required('Arrival location is required'),
   });
 
+  const extractVehicleType = (value: string) => {
+    const match = value.match(/^(Bus|Van)/);
+    return match ? match[0] : value;
+  };
+
   const onSubmit = async (values: typeof initialValues, formikActions: any) => {
-    const transportType = selected;
+    const transportType = selected ? extractVehicleType(selected) : null;
     if (!transportType) {
       Toast.show({
         type: 'error',
@@ -84,7 +89,7 @@ const TransportForm = ({ navigation }: Props) => {
     }
 
     const res = await bookTransport({
-      transportType: selected,
+      transportType: transportType as string,
       departFrom: selectedDeparture,
       departTo: values.departTo,
       returnTo: needReturnTrip ? selectedReturnToLocation : undefined,
@@ -111,7 +116,15 @@ const TransportForm = ({ navigation }: Props) => {
       text1: 'Successfully booked transport',
     });
 
-    navigation.dispatch(StackActions.replace('Tabs'));
+    navigation.dispatch(
+      CommonActions.navigate({
+        name: 'Tabs',
+        params: {
+          screen: 'History',
+        },
+      })
+    );
+
     formikActions.resetForm();
   };
 

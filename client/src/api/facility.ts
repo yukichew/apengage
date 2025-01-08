@@ -26,9 +26,8 @@ export const bookFacility = async (
   try {
     const response = await client.post<ApiResponse>('/facility/book', {
       facilityId: values.facilityId,
-      startTime: values.startTime,
-      endTime: values.endTime,
       venueBookingId: values.venueBookingId,
+      quantity: values.quantity,
     });
 
     return {

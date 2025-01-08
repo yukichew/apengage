@@ -1,3 +1,4 @@
+import { StackActions } from '@react-navigation/native';
 import { StyleSheet, Text } from 'react-native';
 import Toast from 'react-native-toast-message';
 import * as yup from 'yup';
@@ -40,6 +41,7 @@ const ForgotPasswordScreen = ({ navigation }: Props) => {
       text1: 'Forget Password Link Sent',
       text2: 'Check your email for a reset link',
     });
+    navigation.dispatch(StackActions.replace('Login'));
   };
 
   return (

@@ -1,19 +1,6 @@
 import client from '.';
 import { catchError } from '../utils/error';
 
-export const getTransportation = async () => {
-  try {
-    const { data } = await client.get('/transport/transportation');
-    return {
-      success: true,
-      transportation: data.transportation,
-      count: data.count,
-    };
-  } catch (error) {
-    return catchError(error);
-  }
-};
-
 export const addTransport = async (values) => {
   try {
     const { data } = await client.post('/transport/create', values);
@@ -68,19 +55,6 @@ export const searchTransport = async (query) => {
     return {
       success: true,
       transportation: data.transportation,
-      count: data.count,
-    };
-  } catch (error) {
-    return catchError(error);
-  }
-};
-
-export const getTransportBookings = async () => {
-  try {
-    const { data } = await client.get('/transport/bookings');
-    return {
-      success: true,
-      bookings: data.bookings,
       count: data.count,
     };
   } catch (error) {

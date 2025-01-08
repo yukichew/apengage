@@ -1,6 +1,6 @@
 import React from 'react';
 import { IoKeyOutline } from 'react-icons/io5';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { resetPassword } from '../api/auth';
@@ -14,8 +14,6 @@ const ResetPassword = () => {
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get('id');
   const token = queryParams.get('token');
-
-  const navigate = useNavigate();
   const initialValues = {
     password: '',
   };
@@ -49,8 +47,11 @@ const ResetPassword = () => {
     toast.success(
       'Password reset successfully. You can now login to your account with your new password.'
     );
+
     formikActions.resetForm();
-    window.close();
+    setTimeout(() => {
+      window.close();
+    }, 4000); // close the window after 4 seconds
   };
 
   return (

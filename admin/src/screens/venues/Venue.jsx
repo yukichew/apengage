@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import {
-  deleteVenue,
-  getVenues,
-  searchVenue,
-  updateVenueStatus,
-} from '../../api/venue';
+import { deleteVenue, searchVenue, updateVenueStatus } from '../../api/venue';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import CustomButton from '../../components/common/CustomButton';
@@ -69,18 +64,10 @@ const Venue = () => {
 
   const fetchVenues = async (query = '') => {
     setLoading(true);
-    let res;
-
-    if (query) {
-      res = await searchVenue(query);
-    } else {
-      res = await getVenues();
-    }
-
+    const res = await searchVenue(query);
     if (!res.success) {
       return toast.error(res.error);
     }
-    console.log(res);
     setVenues(res.venues);
     setCount(res.count);
     setLoading(false);

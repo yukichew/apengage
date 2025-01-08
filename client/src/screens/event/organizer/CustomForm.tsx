@@ -175,6 +175,7 @@ const CustomForm = ({ route, navigation }: Props) => {
     const data = {
       eventId,
       deadline: values.deadline,
+      capacity: parseInt(values.capacity, 10),
       fields: formFields.map((field) => {
         if (
           field.type === 'mcq' ||

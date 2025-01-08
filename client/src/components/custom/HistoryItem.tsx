@@ -39,7 +39,7 @@ const HistoryItem = ({ item, onPress, onFeedbackPress }: Props) => {
         style={styles.image}
       />
       <View style={styles.contentContainer}>
-        <Text style={styles.date}>{formatDateTime(item.event.endTime)}</Text>
+        <Text style={styles.date}>{formatDateTime(item.event.startTime)}</Text>
         <Text style={styles.title}>{item.event.name}</Text>
 
         <View style={styles.row}>

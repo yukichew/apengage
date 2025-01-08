@@ -39,7 +39,7 @@ const OrganizedItem = ({ item, onPress }: Props) => {
       />
       <View style={styles.contentContainer}>
         <Text style={styles.type}>{item.type.toUpperCase()} EVENT</Text>
-        <Text style={styles.date}>{formatDateTime(item.endTime)}</Text>
+        <Text style={styles.date}>{formatDateTime(item.startTime)}</Text>
         <Text style={styles.title}>{item.name}</Text>
 
         <View style={styles.row}>

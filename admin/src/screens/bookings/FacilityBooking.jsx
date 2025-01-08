@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
-  getFacilityBookings,
   searchFacilityBookings,
   updateBookingStatus,
 } from '../../api/facility';
@@ -79,13 +78,7 @@ const FacilityBooking = () => {
 
   const fetchBookings = async (query = '') => {
     setLoading(true);
-    let res;
-
-    if (query) {
-      res = await searchFacilityBookings(query);
-    } else {
-      res = await getFacilityBookings();
-    }
+    const res = await searchFacilityBookings(query);
 
     if (!res.success) {
       return toast.error(res.error);

@@ -7,6 +7,8 @@ const {
   getCreatedActiveEvents,
   udpateEventStatus,
   searchCreatedEvents,
+  getVenueUtilization,
+  searchVenueUtilization,
 } = require('../../controllers/event/eventController');
 const {
   getRegistration,
@@ -33,7 +35,6 @@ router.post(
 router.put('/status/:id', authenticate, isAdmin, udpateEventStatus);
 router.post('/mark-attendance', authenticate, markAttendance);
 router.get('/events', authenticate, getEvents);
-router.get('/allEvents', authenticate, isAdmin, getAllEvents);
 router.get('/search', authenticate, searchEvents);
 router.get('/registration/:id', authenticate, getRegistration);
 router.get('/registrations/:id', authenticate, getRegistrations);
@@ -44,6 +45,7 @@ router.get(
   authenticate,
   searchParticipatedEvents
 );
+router.get('/venue-utilization/search', authenticate, searchVenueUtilization);
 router.get('/:id', authenticate, getEvent);
 
 module.exports = router;

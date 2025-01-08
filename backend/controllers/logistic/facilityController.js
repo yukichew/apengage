@@ -3,6 +3,7 @@ const { sendError } = require('../../helpers/error');
 const Facility = require('../../models/logistic/facility');
 const FacilityBooking = require('../../models/logistic/facility/facilityBooking');
 const VenueBooking = require('../../models/logistic/venue/venueBooking');
+const { mailTransport, plainEmailTemplate } = require('../../helpers/mail');
 
 // facility
 exports.createFacility = async (req, res) => {
@@ -70,19 +71,10 @@ exports.deleteFacility = async (req, res) => {
 };
 
 exports.getFacilities = async (req, res) => {
-  const userRole = req.user.role;
-  let facilities;
-  let count;
-
-  if (userRole === 'admin') {
-    facilities = await Facility.find({}).sort({ createdAt: -1 });
-    count = await Facility.countDocuments();
-  } else {
-    facilities = await Facility.find({ isActive: true }).sort({
-      createdAt: -1,
-    });
-    count = await Facility.countDocuments({ isActive: true });
-  }
+  const facilities = await Facility.find({ isActive: true }).sort({
+    createdAt: -1,
+  });
+  const count = await Facility.countDocuments({ isActive: true });
 
   res.json({
     facilities: facilities.map((facility) => {
@@ -174,7 +166,7 @@ exports.udpateFacilityStatus = async (req, res) => {
 
 // facility bookings
 exports.bookFacility = async (req, res) => {
-  const { facilityId, startTime, endTime, venueBookingId, quantity } = req.body;
+  const { facilityId, venueBookingId, quantity } = req.body;
   if (!isValidObjectId(facilityId))
     return sendError(res, 401, 'Invalid Facility id');
 
@@ -186,16 +178,7 @@ exports.bookFacility = async (req, res) => {
   );
   if (!venueBooking) return sendError(res, 404, 'Venue booking not found');
 
-  if (
-    new Date(startTime) < new Date(venueBooking.startTime) ||
-    new Date(endTime) > new Date(venueBooking.endTime)
-  ) {
-    return sendError(
-      res,
-      400,
-      'Facility booking time must be within the venue booking time range.'
-    );
-  }
+  const { startTime, endTime } = venueBooking;
 
   const isAvailable = await Facility.isAvailable(
     facility,
@@ -203,6 +186,7 @@ exports.bookFacility = async (req, res) => {
     endTime,
     quantity
   );
+
   if (!isAvailable)
     return sendError(
       res,
@@ -316,12 +300,30 @@ exports.udpateFacilityBookingStatus = async (req, res) => {
   if (action === 'approve') {
     booking.status = 'Approved';
     await booking.save();
+    mailTransport().sendMail({
+      from: process.env.MAILGUN_USER,
+      to: user.email,
+      subject: 'Facility Booking Approved',
+      html: plainEmailTemplate(
+        'Facility Booking Approved',
+        'Your facility booking has been approved.'
+      ),
+    });
     return res.json({ message: 'Booking approved' });
   }
 
   if (action === 'reject') {
     booking.status = 'Rejected';
     await booking.save();
+    mailTransport().sendMail({
+      from: process.env.MAILGUN_USER,
+      to: user.email,
+      subject: 'Facility Booking Rejected',
+      html: plainEmailTemplate(
+        'Facility Booking Rejected',
+        'Your facility booking has been rejected.'
+      ),
+    });
     return res.json({ message: 'Booking rejected' });
   }
 

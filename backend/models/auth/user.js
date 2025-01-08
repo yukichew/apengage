@@ -48,19 +48,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    verified: {
-      type: Boolean,
-      default: false,
-      required: true,
+    status: {
+      type: String,
+      enum: ['Pending', 'Active', 'Inactive'],
+      default: 'Pending',
     },
     role: {
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
     },
-    // fcmToken: {
-    //   type: String,
-    // },
   },
   {
     timestamps: true,

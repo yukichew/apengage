@@ -1,19 +1,6 @@
 import client from '.';
 import { catchError } from '../utils/error';
 
-export const getVenues = async () => {
-  try {
-    const { data } = await client.get('/venue/venues');
-    return {
-      success: true,
-      venues: data.venues,
-      count: data.count,
-    };
-  } catch (error) {
-    return catchError(error);
-  }
-};
-
 export const addVenue = async (values) => {
   try {
     const { data } = await client.post('/venue/create', values);
@@ -68,19 +55,6 @@ export const searchVenue = async (query) => {
     return {
       success: true,
       venues: data.venues,
-      count: data.count,
-    };
-  } catch (error) {
-    return catchError(error);
-  }
-};
-
-export const getVenueBookings = async () => {
-  try {
-    const { data } = await client.get('/venue/bookings');
-    return {
-      success: true,
-      bookings: data.bookings,
       count: data.count,
     };
   } catch (error) {

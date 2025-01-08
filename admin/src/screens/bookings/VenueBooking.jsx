@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import {
-  getVenueBookings,
-  searchVenueBookings,
-  updateBookingStatus,
-} from '../../api/venue';
+import { searchVenueBookings, updateBookingStatus } from '../../api/venue';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Loader from '../../components/common/Loader';
@@ -65,13 +61,7 @@ const VenueBooking = () => {
 
   const fetchbookings = async (query = '') => {
     setLoading(true);
-    let res;
-
-    if (query) {
-      res = await searchVenueBookings(query);
-    } else {
-      res = await getVenueBookings();
-    }
+    const res = await searchVenueBookings(query);
 
     if (!res.success) {
       return toast.error(res.error);

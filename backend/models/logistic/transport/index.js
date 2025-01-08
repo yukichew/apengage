@@ -26,22 +26,36 @@ const transportSchema = new mongoose.Schema(
   }
 );
 
-transportSchema.statics.findAvailable = async function (type, date) {
+transportSchema.statics.findAvailable = async function (type, dateRange) {
+  const { departDate, returnDate } = dateRange;
+
   const allTransports = await this.find({ type, isActive: true });
 
   const unavailableTransports = await this.model('TransportBooking')
     .find({
-      'transport.departure': { $in: allTransports.map((t) => t._id) },
       $or: [
-        { departDate: { $lte: date }, returnDate: { $gte: date } },
-        { departDate: date },
+        {
+          'transport.departure': { $in: allTransports.map((t) => t._id) },
+          departDate: { $lte: departDate },
+          returnDate: { $gte: departDate },
+        },
+        {
+          'transport.return': { $in: allTransports.map((t) => t._id) },
+          departDate: { $lte: returnDate },
+          returnDate: { $gte: returnDate },
+        },
       ],
     })
-    .select('transport.departure');
+    .select('transport.departure transport.return');
 
-  const unavailableIds = unavailableTransports.map(
-    (booking) => booking.transport.departure
-  );
+  const unavailableIds = [
+    ...new Set(
+      unavailableTransports.flatMap((booking) => [
+        booking.transport.departure,
+        booking.transport.return,
+      ])
+    ),
+  ];
 
   return this.find({ type, _id: { $nin: unavailableIds }, isActive: true });
 };

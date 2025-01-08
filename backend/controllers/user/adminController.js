@@ -2,6 +2,7 @@ const { isValidObjectId } = require('mongoose');
 const { sendError } = require('../../helpers/error');
 const User = require('../../models/auth/user');
 const { mailTransport, plainEmailTemplate } = require('../../helpers/mail');
+const Registration = require('../../models/event/registration');
 
 exports.createAdmin = async (req, res) => {
   const { email, fullname } = req.body;
@@ -16,13 +17,13 @@ exports.createAdmin = async (req, res) => {
     fullname,
     password: process.env.DEFAULT_PASSWORD,
     role: 'admin',
-    verified: true,
+    status: 'Active',
   });
 
   await newAdmin.save();
 
   mailTransport().sendMail({
-    from: process.env.MAILTRAP_TESTEMAIL,
+    from: process.env.MAILGUN_USER,
     to: newAdmin.email,
     subject: 'Admin Account Created',
     html: plainEmailTemplate(
@@ -38,7 +39,7 @@ exports.createAdmin = async (req, res) => {
       id: newAdmin._id,
       email: newAdmin.email,
       fullname: newAdmin.fullname,
-      status: newAdmin.verified ? 'Active' : 'Inactive',
+      status: newAdmin.status,
     },
   });
 };
@@ -61,7 +62,7 @@ exports.updateAdmin = async (req, res) => {
       id: user._id,
       email: user.email,
       fullname: user.fullname,
-      status: user.verified ? 'Active' : 'Inactive',
+      status: user.status,
     },
   });
 };
@@ -76,48 +77,29 @@ exports.updateUserStatus = async (req, res) => {
   if (!user) return sendError(res, 404, 'User not found');
 
   if (action === 'activate') {
-    user.verified = true;
+    user.status = 'Active';
     await user.save();
     return res.json({ message: 'User activated' });
   }
 
   if (action === 'deactivate') {
-    user.verified = false;
+    user.status = 'Inactive';
     await user.save();
+
+    mailTransport().sendMail({
+      from: process.env.MAILGUN_USER,
+      to: user.email,
+      subject: 'Welcome Message',
+      html: plainEmailTemplate(
+        'Account Deactivated',
+        'Your account has been deactivated. Please contact the admin for more information.'
+      ),
+    });
+
     return res.json({ message: 'User deactivated' });
   }
 
   res.status(400).json({ message: 'Invalid action' });
-};
-
-exports.getUsers = async (req, res) => {
-  const { role } = req.query;
-  const query = {};
-  if (role) query.role = role;
-  query._id = { $ne: req.user._id };
-
-  const users = await User.find(query).sort({ createdAt: -1 });
-  const count = await User.countDocuments(query);
-
-  res.json({
-    users: users.map((user) => {
-      return {
-        id: user._id,
-        fullname: user.fullname,
-        email: user.email,
-        apkey: user?.apkey,
-        contact: user?.contact,
-        gender: user?.gender,
-        course: user?.course,
-        intake: user?.intake,
-        profile: user.profile?.url,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-        status: user.verified ? 'Active' : 'Inactive',
-      };
-    }),
-    count,
-  });
 };
 
 exports.getUser = async (req, res) => {
@@ -140,7 +122,7 @@ exports.getUser = async (req, res) => {
       intake: user?.intake,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      status: user.verified ? 'Active' : 'Inactive',
+      status: user.status,
     },
   });
 };
@@ -168,9 +150,87 @@ exports.searchUser = async (req, res) => {
         intake: user?.intake,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
-        status: user.verified ? 'Active' : 'Inactive',
+        status: user.status,
       };
     }),
     count: result.length,
+  });
+};
+
+exports.searchAbsentUsers = async (req, res) => {
+  const { name } = req.query;
+
+  const matchStage = {
+    $match: {
+      status: 'Absent',
+    },
+  };
+
+  const groupStage = {
+    $group: {
+      _id: '$participant',
+      absentCount: { $sum: 1 },
+    },
+  };
+
+  const secondMatchStage = {
+    $match: {
+      absentCount: { $gt: 3 },
+    },
+  };
+
+  const lookupStage = {
+    $lookup: {
+      from: 'users',
+      localField: '_id',
+      foreignField: '_id',
+      as: 'userDetails',
+    },
+  };
+
+  const unwindStage = {
+    $unwind: '$userDetails',
+  };
+
+  const projectStage = {
+    $project: {
+      id: '$userDetails._id',
+      fullname: '$userDetails.fullname',
+      email: '$userDetails.email',
+      apkey: '$userDetails.apkey',
+      contact: '$userDetails.contact',
+      gender: '$userDetails.gender',
+      course: '$userDetails.course',
+      intake: '$userDetails.intake',
+      profile: '$userDetails.profile.url',
+      createdAt: '$userDetails.createdAt',
+      updatedAt: '$userDetails.updatedAt',
+      status: '$userDetails.status',
+      absentCount: 1,
+    },
+  };
+
+  const pipeline = [
+    matchStage,
+    groupStage,
+    secondMatchStage,
+    lookupStage,
+    unwindStage,
+    projectStage,
+  ];
+
+  if (name) {
+    pipeline.push({
+      $match: {
+        fullname: { $regex: name, $options: 'i' },
+      },
+    });
+  }
+
+  const absentUsers = await Registration.aggregate(pipeline);
+
+  res.json({
+    users: absentUsers,
+    count: absentUsers.length,
   });
 };

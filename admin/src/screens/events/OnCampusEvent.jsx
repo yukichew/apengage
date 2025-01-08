@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { searchEvents, updateEventStatus } from '../../api/event';
+import { searchVenueUtilization } from '../../api/event';
 import Breadcrumb from '../../components/common/BreadCrumb';
-import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Loader from '../../components/common/Loader';
 import Modal from '../../components/common/Modal';
 import Searchbar from '../../components/common/Searchbar';
@@ -10,48 +9,34 @@ import Table from '../../components/common/Table';
 import Container from '../../components/Container';
 import { formatDateTime } from '../../utils/formatDate';
 
-const Event = () => {
+const OnCampusEvent = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
-  const [showDialog, setShowDialog] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [actionType, setActionType] = useState('');
   const [showModal, setShowModal] = useState(false);
 
   const columns = [
     'Name',
     'Type',
-    'Mode',
-    'Start',
-    'End',
-    'Location/ Venue',
     'Organizer',
+    'Venue',
+    'Wasted Space',
+    'Participants',
   ];
 
   const columnKeys = [
     'name',
     'type',
-    'mode',
-    'startTime',
-    'endTime',
-    'location',
     'organizer',
+    'venue',
+    'wastedCapacity',
+    'participant',
   ];
 
   const handleAction = (action, row) => {
     switch (action) {
-      case 'approve':
-        setActionType('approve');
-        setSelectedEvent(row);
-        setShowDialog(true);
-        break;
-      case 'reject':
-        setActionType('reject');
-        setSelectedEvent(row);
-        setShowDialog(true);
-        break;
       case 'view':
         setSelectedEvent(row);
         setShowModal(true);
@@ -61,24 +46,9 @@ const Event = () => {
     }
   };
 
-  const handleChangeStatus = async () => {
-    if (!selectedEvent || !actionType) return;
-
-    const res = await updateEventStatus(selectedEvent.id, actionType);
-    if (!res.success) {
-      return toast.error(res.error);
-    }
-
-    toast.success(res.message);
-    setShowDialog(false);
-    setSelectedEvent(null);
-    setActionType('');
-    fetchEvents();
-  };
-
   const fetchEvents = async (query = '') => {
     setLoading(true);
-    const res = await searchEvents(query);
+    const res = await searchVenueUtilization(query);
 
     if (!res.success) {
       return toast.error(res.error);
@@ -107,7 +77,12 @@ const Event = () => {
 
   return (
     <Container>
-      <Breadcrumb pageName='Event Management' />
+      <Breadcrumb pageName='Venue Utilization Management' />
+
+      <p className='text-sm text-gray-500 mb-4'>
+        Only on-campus events that have number of participants that is less than
+        half of the venue capacity are displayed.
+      </p>
 
       {/* header */}
       <div className='flex justify-between items-center mb-3'>
@@ -130,18 +105,7 @@ const Event = () => {
           columnKeys={columnKeys}
           handleAction={handleAction}
           totalRows={count}
-          actions={['view', 'approve', 'reject']}
-        />
-      )}
-
-      {showDialog && (
-        <ConfirmDialog
-          title={`Confirm ${
-            actionType.charAt(0).toUpperCase() + actionType.slice(1)
-          }`}
-          message={`Are you sure you want to ${actionType} event "${selectedEvent.id}"?`}
-          onConfirm={handleChangeStatus}
-          onCancel={() => setShowDialog(false)}
+          actions={['view']}
         />
       )}
 
@@ -177,4 +141,4 @@ const Event = () => {
   );
 };
 
-export default Event;
+export default OnCampusEvent;

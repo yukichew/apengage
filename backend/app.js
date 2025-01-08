@@ -17,11 +17,12 @@ const adminRouter = require('./routes/auth/admin');
 const facilityRouter = require('./routes/logistic/facility');
 const transportRouter = require('./routes/logistic/transport');
 const feedbackRouter = require('./routes/event/feedback');
+const dashboardRouter = require('./routes/dashboard');
 
 const app = express();
 
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: 'http://192.168.100.111:3000' }));
 app.use(morgan('dev'));
 
 app.use('/api/user', userRouter);
@@ -33,6 +34,7 @@ app.use('/api/facility', facilityRouter);
 app.use('/api/transport', transportRouter);
 app.use('/api/form', formRouter);
 app.use('/api/feedback', feedbackRouter);
+app.use('/api/dashboard', dashboardRouter);
 
 app.use((err, req, res, next) => {
   sendError(res, 500, err.message);

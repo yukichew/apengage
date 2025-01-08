@@ -15,7 +15,7 @@ import IconButton from '../../components/common/IconButton';
 import AppContainer from '../../components/containers/AppContainer';
 import { EventItem } from '../../constants/types';
 import { Navigation } from '../../navigation/types';
-import { formatDate, formatTime } from '../../utils/formatDate';
+import { formatDate, formatDateTime, formatTime } from '../../utils/formatDate';
 
 type Props = {
   route: { params: { event: EventItem } };
@@ -42,33 +42,29 @@ const EventDetails = ({ route, navigation }: Props) => {
 
   const handleShare = async () => {
     try {
+      const eventLocation =
+        event.mode === 'oncampus' ? event.venue : event.location;
+      const formattedStartTime = formatDateTime(new Date(event.startTime));
       const shareOptions = {
         title: `Check out this event: ${event.name}`,
         message: `Hey, check out this event: ${
           event.name
-        } happening on ${new Date(event.startTime).toLocaleDateString()} at ${
-          event.venue
-        }. It's ${event.price ? `RM ${event.price}` : 'FREE'}!`,
+        } happening on ${formattedStartTime} at ${eventLocation}. It's ${
+          event.price ? `RM ${event.price}` : 'FREE'
+        }!`,
         url: event.thumbnail,
       };
 
-      const res = await Share.open(shareOptions);
+      await Share.open(shareOptions);
     } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === 'User did not share') {
-          console.log('User canceled sharing.');
-        } else {
-          console.error('Share failed:', err);
-          Toast.show({
-            type: 'error',
-            text1: 'Sharing Failed',
-            text2: 'Please try again later.',
-            position: 'top',
-            topOffset: 60,
-          });
-        }
-      } else {
-        console.error('An unknown error occurred:', err);
+      if (err instanceof Error && err.message !== 'User did not share') {
+        Toast.show({
+          type: 'error',
+          text1: 'Failed to share event',
+          text2: err.message,
+          position: 'top',
+          topOffset: 60,
+        });
       }
     }
   };
@@ -110,12 +106,9 @@ const EventDetails = ({ route, navigation }: Props) => {
                   />
                 </View>
                 <View style={{ left: 10 }}>
-                  <Text style={styles.text}>
-                    {formatDate(new Date(event.startTime))}
-                  </Text>
+                  <Text style={styles.text}>{formatDate(event.startTime)}</Text>
                   <Text style={styles.desc}>
-                    {formatTime(new Date(event.startTime))} -{' '}
-                    {formatTime(new Date(event.endTime))}
+                    {formatTime(event.startTime)} - {formatTime(event.endTime)}
                   </Text>
                 </View>
               </View>

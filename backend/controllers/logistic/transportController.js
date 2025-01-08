@@ -3,6 +3,7 @@ const { sendError } = require('../../helpers/error');
 const Transport = require('../../models/logistic/transport');
 const TransportBooking = require('../../models/logistic/transport/transportBooking');
 const Event = require('../../models/event');
+const { mailTransport, plainEmailTemplate } = require('../../helpers/mail');
 
 // transport
 exports.createTransport = async (req, res) => {
@@ -70,19 +71,10 @@ exports.deleteTransport = async (req, res) => {
 };
 
 exports.getTransportation = async (req, res) => {
-  const userRole = req.user.role;
-  let transportation;
-  let count;
-
-  if (userRole === 'admin') {
-    transportation = await Transport.find({}).sort({ createdAt: -1 });
-    count = await Transport.countDocuments();
-  } else {
-    transportation = await Transport.find({ isActive: true }).sort({
-      createdAt: -1,
-    });
-    count = await Transport.countDocuments({ isActive: true });
-  }
+  const transportation = await Transport.find({ isActive: true }).sort({
+    createdAt: -1,
+  });
+  const count = await Transport.countDocuments({ isActive: true });
 
   res.json({
     transportation: transportation.map((transport) => {
@@ -195,32 +187,34 @@ exports.bookTransport = async (req, res) => {
     );
   }
 
-  const availableDepartTransports = await Transport.findAvailable(
-    transportType,
-    departDate
-  );
+  const availableTransports = await Transport.findAvailable(transportType, {
+    departDate,
+    returnDate,
+  });
 
-  if (availableDepartTransports.length === 0) {
+  if (availableTransports.length === 0) {
     return sendError(res, 400, 'No transport available for departure');
   }
 
-  let assignedDepartTransport = availableDepartTransports[0];
-  let assignedReturnTransport;
+  // Prioritize transports available for both departure and return
+  const matchedTransport = availableTransports.find((t) =>
+    availableTransports.some((rt) => rt._id.equals(t._id))
+  );
 
+  const assignedDepartTransport = matchedTransport || availableTransports[0];
+
+  // Handle return transport
+  let assignedReturnTransport = null;
   if (returnDate) {
-    const availableReturnTransports = await Transport.findAvailable(
-      transportType,
-      returnDate
-    );
-
-    if (availableReturnTransports.length === 0) {
-      return sendError(res, 400, 'No transport available for return');
-    }
-
     assignedReturnTransport =
-      availableReturnTransports.find((t) =>
-        t._id.equals(assignedDepartTransport._id)
-      ) || availableReturnTransports[0];
+      matchedTransport ||
+      availableTransports.find(
+        (t) => !t._id.equals(assignedDepartTransport._id)
+      );
+
+    if (!assignedReturnTransport) {
+      return sendError(res, 400, 'No transport available for the return trip');
+    }
   }
 
   const currentTime = new Date();
@@ -237,7 +231,7 @@ exports.bookTransport = async (req, res) => {
     createdBy: req.user.id,
     transport: {
       departure: assignedDepartTransport._id,
-      return: assignedReturnTransport,
+      return: assignedReturnTransport?._id,
     },
     event: eventId,
     status: hoursDifference > 48 ? 'Approved' : 'Pending',
@@ -324,12 +318,30 @@ exports.updateTransportBookingStatus = async (req, res) => {
   if (action === 'approve') {
     booking.status = 'Approved';
     await booking.save();
+    mailTransport().sendMail({
+      from: process.env.MAILGUN_USER,
+      to: user.email,
+      subject: 'Transport Booking Approved',
+      html: plainEmailTemplate(
+        'Transport Booking Approved',
+        'Your transport booking has been approved.'
+      ),
+    });
     return res.json({ message: 'Booking approved' });
   }
 
   if (action === 'reject') {
     booking.status = 'Rejected';
     await booking.save();
+    mailTransport().sendMail({
+      from: process.env.MAILGUN_USER,
+      to: user.email,
+      subject: 'Transport Booking Rejected',
+      html: plainEmailTemplate(
+        'Transport Booking Rejected',
+        'Your transport booking has been rejected.'
+      ),
+    });
     return res.json({ message: 'Booking rejected' });
   }
 

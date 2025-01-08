@@ -9,12 +9,11 @@ exports.generateTOTP = () => {
 
 exports.mailTransport = () =>
   nodemailer.createTransport({
-    // host: 'smtp.mailgun.org',
-    host: 'sandbox.smtp.mailtrap.io',
-    port: process.env.MAILTRAP_PORT,
+    host: 'smtp.mailgun.org',
+    port: process.env.MAILGUN_PORT,
     auth: {
-      user: process.env.MAILTRAP_USER,
-      pass: process.env.MAILTRAP_PASSWORD,
+      user: process.env.MAILGUN_USER,
+      pass: process.env.MAILGUN_PASSWORD,
     },
   });
 

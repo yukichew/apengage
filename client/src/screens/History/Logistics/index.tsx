@@ -91,20 +91,38 @@ const Logistics = () => {
         <Button
           title='Venue'
           onPress={() => handleButtonPress('venue')}
-          containerStyle={styles.buttonStyle}
-          textStyle={styles.buttonTextStyle}
+          containerStyle={[
+            styles.buttonStyle,
+            selectedCategory === 'venue' && styles.selectedButtonStyle,
+          ]}
+          textStyle={[
+            styles.buttonTextStyle,
+            selectedCategory === 'venue' && styles.selectedButtonTextStyle,
+          ]}
         />
         <Button
           title='Facility'
           onPress={() => handleButtonPress('facility')}
-          containerStyle={styles.buttonStyle}
-          textStyle={styles.buttonTextStyle}
+          containerStyle={[
+            styles.buttonStyle,
+            selectedCategory === 'facility' && styles.selectedButtonStyle,
+          ]}
+          textStyle={[
+            styles.buttonTextStyle,
+            selectedCategory === 'facility' && styles.selectedButtonTextStyle,
+          ]}
         />
         <Button
           title='Transport'
           onPress={() => handleButtonPress('transport')}
-          containerStyle={styles.buttonStyle}
-          textStyle={styles.buttonTextStyle}
+          containerStyle={[
+            styles.buttonStyle,
+            selectedCategory === 'transport' && styles.selectedButtonStyle,
+          ]}
+          textStyle={[
+            styles.buttonTextStyle,
+            selectedCategory === 'transport' && styles.selectedButtonTextStyle,
+          ]}
         />
       </View>
       {renderBookingHistory()}
@@ -129,11 +147,17 @@ const styles = StyleSheet.create({
     width: '32%',
     backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: '#2A29FF',
     height: 40,
   },
   buttonTextStyle: {
-    color: 'black',
+    color: '#2A29FF',
     fontSize: 15,
+  },
+  selectedButtonStyle: {
+    backgroundColor: 'rgba(42, 114, 255, 0.15)',
+  },
+  selectedButtonTextStyle: {
+    color: '#2A29FF',
   },
 });

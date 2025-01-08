@@ -8,12 +8,14 @@ import Category from './screens/categories/Category';
 import CategoryForm from './screens/categories/CategoryForm';
 import Dashboard from './screens/Dashboard';
 import Event from './screens/events/Event';
+import OnCampusEvent from './screens/events/OnCampusEvent';
 import Facility from './screens/facilities/Facility';
 import FacilityForm from './screens/facilities/FacilityForm';
 import ChangePassword from './screens/profile/ChangePassword';
 import Profile from './screens/profile/Profile';
 import Transport from './screens/transportation/Transport';
 import TransportForm from './screens/transportation/TransportForm';
+import AbsentUser from './screens/user/AbsentUser';
 import Admin from './screens/user/Admin';
 import AdminForm from './screens/user/AdminForm';
 import User from './screens/user/User';
@@ -31,6 +33,11 @@ const routesConfig = [
     path: '/user/users',
     component: User,
     title: 'User Management',
+  },
+  {
+    path: '/user/absent',
+    component: AbsentUser,
+    title: 'Absent User Management',
   },
   {
     path: '/user/admins',
@@ -136,6 +143,11 @@ const routesConfig = [
     path: '/user/password',
     component: ChangePassword,
     title: 'Change Password',
+  },
+  {
+    path: '/event/venue-utilization',
+    component: OnCampusEvent,
+    title: 'Venue Utilization Management',
   },
 ];
 
