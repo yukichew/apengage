@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { getUsers, searchUser, updateUserStatus } from '../../api/user';
+import { searchUser, updateUserStatus } from '../../api/user';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import CustomButton from '../../components/common/CustomButton';
@@ -60,21 +60,12 @@ const Admin = () => {
 
   const fetchUsers = async (query = '') => {
     setLoading(true);
-    let res;
-
     const params = new URLSearchParams({ role: 'admin' });
-    if (query) params.append('fullname', query);
-
-    if (query) {
-      res = await searchUser(params);
-    } else {
-      res = await getUsers('admin');
-    }
-
+    params.append('fullname', query);
+    const res = await searchUser(params);
     if (!res.success) {
       return toast.error(res.error);
     }
-
     setUsers(res.users);
     setCount(res.count);
     setLoading(false);
@@ -112,7 +103,7 @@ const Admin = () => {
       {loading ? (
         <Loader />
       ) : count === 0 ? (
-        <div className='text-center'>No user found</div>
+        <div className='text-center'>No admin found</div>
       ) : (
         <Table
           data={users}

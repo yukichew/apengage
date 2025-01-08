@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { searchEvents, updateEventStatus } from '../../api/event';
+import { searchAbsentUser, updateUserStatus } from '../../api/user';
 import Breadcrumb from '../../components/common/BreadCrumb';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Loader from '../../components/common/Loader';
@@ -10,50 +10,33 @@ import Table from '../../components/common/Table';
 import Container from '../../components/Container';
 import { formatDateTime } from '../../utils/formatDate';
 
-const Event = () => {
-  const [events, setEvents] = useState([]);
+const AbsentUser = () => {
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
   const [showDialog, setShowDialog] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [actionType, setActionType] = useState('');
   const [showModal, setShowModal] = useState(false);
 
-  const columns = [
-    'Name',
-    'Type',
-    'Mode',
-    'Start',
-    'End',
-    'Location/ Venue',
-    'Organizer',
-  ];
-
-  const columnKeys = [
-    'name',
-    'type',
-    'mode',
-    'startTime',
-    'endTime',
-    'location',
-    'organizer',
-  ];
+  const columns = ['Name', 'Email', 'AP Key', 'Absent'];
+  const columnKeys = ['fullname', 'email', 'apkey', 'absentCount'];
 
   const handleAction = (action, row) => {
     switch (action) {
-      case 'approve':
-        setActionType('approve');
-        setSelectedEvent(row);
+      case 'unblock':
+        setActionType('activate');
+        setSelectedUser(row);
         setShowDialog(true);
         break;
-      case 'reject':
-        setActionType('reject');
-        setSelectedEvent(row);
+      case 'block':
+        setActionType('deactivate');
+        setSelectedUser(row);
         setShowDialog(true);
         break;
       case 'view':
-        setSelectedEvent(row);
+        setSelectedUser(row);
         setShowModal(true);
         break;
       default:
@@ -62,109 +45,115 @@ const Event = () => {
   };
 
   const handleChangeStatus = async () => {
-    if (!selectedEvent || !actionType) return;
+    if (!selectedUser || !actionType) return;
 
-    const res = await updateEventStatus(selectedEvent.id, actionType);
+    const res = await updateUserStatus(selectedUser.id, actionType);
     if (!res.success) {
       return toast.error(res.error);
     }
 
     toast.success(res.message);
     setShowDialog(false);
-    setSelectedEvent(null);
+    setSelectedUser(null);
     setActionType('');
-    fetchEvents();
+    fetchUsers();
   };
 
-  const fetchEvents = async (query = '') => {
+  const fetchUsers = async (query = '') => {
     setLoading(true);
-    const res = await searchEvents(query);
-
+    const params = new URLSearchParams({ role: 'admin' });
+    params.append('fullname', query);
+    const res = await searchAbsentUser(params);
     if (!res.success) {
       return toast.error(res.error);
     }
-
-    const formattedEvents = res.events.map((event) => ({
-      ...event,
-      startTime: formatDateTime(event.startTime),
-      endTime: formatDateTime(event.endTime),
-    }));
-
-    setEvents(formattedEvents);
+    setUsers(res.users);
     setCount(res.count);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchEvents();
+    fetchUsers();
   }, []);
 
   const handleSearchChange = (e) => {
-    const query = e.target.value;
+    const query = e.target.value.trim();
     setSearchQuery(query);
-    fetchEvents(query);
+    fetchUsers(query);
   };
 
   return (
     <Container>
-      <Breadcrumb pageName='Event Management' />
+      <Breadcrumb pageName='User Management' />
+
+      <p className='text-sm text-gray-500 mb-4'>
+        Only users with absent count more than 3 are shown.
+      </p>
 
       {/* header */}
       <div className='flex justify-between items-center mb-3'>
         <Searchbar
           value={searchQuery}
           onChange={handleSearchChange}
-          placeholder='Search event'
-          className='w-64'
+          placeholder='Search user'
         />
       </div>
 
       {loading ? (
         <Loader />
       ) : count === 0 ? (
-        <div className='text-center'>No event found</div>
+        <div className='text-center'>No user found</div>
       ) : (
         <Table
-          data={events}
+          data={users}
           columns={columns}
           columnKeys={columnKeys}
           handleAction={handleAction}
           totalRows={count}
-          actions={['view', 'approve', 'reject']}
+          actions={['view', 'block', 'unblock']}
         />
       )}
 
       {showDialog && (
         <ConfirmDialog
           title={`Confirm ${
-            actionType.charAt(0).toUpperCase() + actionType.slice(1)
+            actionType === 'activate' ? 'Unblock' : 'Blocking'
           }`}
-          message={`Are you sure you want to ${actionType} event "${selectedEvent.id}"?`}
+          message={`Are you sure you want to ${
+            actionType === 'activate' ? 'unblock' : 'block'
+          } the user "${selectedUser.fullname}"?`}
           onConfirm={handleChangeStatus}
           onCancel={() => setShowDialog(false)}
         />
       )}
 
-      {showModal && selectedEvent && (
+      {showModal && selectedUser && (
         <Modal
           isVisible={showModal}
           onClose={() => setShowModal(false)}
           className='w-1/2'
         >
           <div className='flex flex-col'>
+            {selectedUser.profile && (
+              <img
+                src={selectedUser.profile}
+                alt='Profile'
+                className='w-20 h-20 rounded-full mb-4 object-cover'
+              />
+            )}
             <table className='w-full rounded-lg'>
               <tbody>
-                {Object.entries(selectedEvent)
-                  .filter(([key]) => key !== 'id')
+                {Object.entries(selectedUser)
+                  .filter(([key]) => key !== 'profile' && key !== 'id')
                   .map(([key, value]) => (
                     <tr key={key}>
                       <td className='font-semibold capitalize'>
                         {key.replace(/([A-Z])/g, ' $1').trim()}
                       </td>
-                      <td className='pl-3'>
+                      <td>
                         {key === 'updatedAt' || key === 'createdAt'
                           ? formatDateTime(value)
-                          : value}
+                          : value || 'N/A'}
                       </td>
                     </tr>
                   ))}
@@ -177,4 +166,4 @@ const Event = () => {
   );
 };
 
-export default Event;
+export default AbsentUser;

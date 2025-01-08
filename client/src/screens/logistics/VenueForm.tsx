@@ -1,4 +1,4 @@
-import { StackActions } from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, Text } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -90,7 +90,15 @@ const VenueForm = ({ navigation }: Props) => {
       text1: 'Successfully booked venue',
     });
 
-    navigation.dispatch(StackActions.replace('Tabs'));
+    navigation.dispatch(
+      CommonActions.navigate({
+        name: 'Tabs',
+        params: {
+          screen: 'History',
+        },
+      })
+    );
+
     formikActions.resetForm();
   };
 

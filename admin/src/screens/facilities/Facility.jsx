@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   deleteFacility,
-  getFacilities,
   searchFacility,
   updateFacilityStatus,
 } from '../../api/facility';
@@ -69,18 +68,10 @@ const Facility = () => {
 
   const fetchFacilities = async (query = '') => {
     setLoading(true);
-    let res;
-
-    if (query) {
-      res = await searchFacility(query);
-    } else {
-      res = await getFacilities();
-    }
-
+    const res = await searchFacility(query);
     if (!res.success) {
       return toast.error(res.error);
     }
-
     setFacilities(res.facilities);
     setCount(res.count);
     setLoading(false);

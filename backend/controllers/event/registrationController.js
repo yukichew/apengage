@@ -18,14 +18,17 @@ exports.joinEvent = async (req, res) => {
     participant: req.user._id,
   });
 
+  // Check if user has already registered for the event
   if (existingRegistration) {
     return sendError(res, 400, 'You have already registered for this event.');
   }
 
+  // Check if registration deadline has passed
   if (new Date() > form.deadline) {
     return sendError(res, 400, 'Registration deadline has passed.');
   }
 
+  // Check if event has reached maximum capacity
   if (form.capacity && form.capacity > 0) {
     const currentRegistrations = await Registration.countDocuments({
       eventForm: form._id,
@@ -51,6 +54,7 @@ exports.joinEvent = async (req, res) => {
   for (const field of formFields) {
     const fieldResponse = response[field.id];
 
+    // Check if all required fields are filled
     if (
       field.type !== 'file' &&
       field.required &&
@@ -64,6 +68,7 @@ exports.joinEvent = async (req, res) => {
         return sendError(res, 400, `${field.label} file is required.`);
       }
 
+      // upload file to cloudinary
       const { secure_url: url } = await cloudinary.uploader.upload(file.path, {
         folder: 'event_responses',
       });
@@ -80,6 +85,7 @@ exports.joinEvent = async (req, res) => {
 
   await registration.save();
 
+  // Generate QR code
   const qrCodeData = {
     registrationId: registration._id,
     eventForm: form._id,

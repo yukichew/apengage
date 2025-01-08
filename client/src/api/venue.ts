@@ -8,7 +8,7 @@ export const getVenues = async (): Promise<ApiResponse> => {
 
     const venues = response.data.venues.map((venue: any) => ({
       key: venue.id,
-      value: venue.name,
+      value: `${venue.name} (${venue.capacity})`,
     }));
 
     return {

@@ -197,7 +197,6 @@ const ParticipantForm = ({ route, navigation }: Props) => {
       response: values,
       file: selectedFile,
     });
-    console.log(values);
 
     formikActions.setSubmitting(false);
     if (!res.success) {
@@ -208,7 +207,6 @@ const ParticipantForm = ({ route, navigation }: Props) => {
         position: 'top',
         topOffset: 60,
       });
-      console.log(res.error);
       return;
     }
 
@@ -218,7 +216,6 @@ const ParticipantForm = ({ route, navigation }: Props) => {
     });
 
     navigation.navigate('History');
-
     formikActions.resetForm();
   };
 

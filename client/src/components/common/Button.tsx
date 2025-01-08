@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Pressable,
+  StyleProp,
   StyleSheet,
   Text,
   TextStyle,
@@ -10,8 +11,8 @@ import {
 type Props = {
   title: string;
   onPress?: () => void;
-  containerStyle?: ViewStyle;
-  textStyle?: TextStyle;
+  containerStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 };
 
 const Button = ({ title, onPress, containerStyle, textStyle }: Props) => {

@@ -52,7 +52,7 @@ router.put(
 );
 router.delete('/:id', authenticate, isAdmin, deleteTransport);
 router.get('/transportation', authenticate, getTransportation);
-router.get('/search', authenticate, searchTransport);
+router.get('/search', authenticate, isAdmin, searchTransport);
 router.get('/bookings', authenticate, getTransportBookings);
 router.get('/bookings/search', authenticate, searchTransportBookings);
 router.get('/:id', authenticate, getTransport);

@@ -1,4 +1,4 @@
-import { StackActions } from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, Text } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -7,42 +7,22 @@ import * as yup from 'yup';
 import { bookFacility, getFacilities } from '../../api/facility';
 import { getVenueBookings } from '../../api/venue';
 import CustomFormik from '../../components/common/CustomFormik';
-import DateInput from '../../components/common/DateInput';
+import InputText from '../../components/common/InputText';
 import SubmitButton from '../../components/common/SubmitButton';
 import AppContainer from '../../components/containers/AppContainer';
 import { Props } from '../../constants/types';
 
 const FacilityForm = ({ navigation }: Props) => {
   const initialValues = {
-    startTime: '',
-    endTime: '',
+    quantity: '',
   };
 
   const validationSchema = yup.object({
-    startTime: yup
+    quantity: yup
       .string()
       .trim()
-      .required('Start time is missing')
-      .test(
-        'is-greater',
-        'Start time must be later than current time',
-        function (value) {
-          const startTime = new Date(value);
-          return startTime > new Date();
-        }
-      ),
-    endTime: yup
-      .string()
-      .required('End time is missing')
-      .test(
-        'is-after-start',
-        'End time must be later than start time',
-        function (value) {
-          const startTime = new Date(this.parent.startTime);
-          const endTime = new Date(value);
-          return endTime > startTime;
-        }
-      ),
+      .required('Required quantity is missing')
+      .matches(/^[0-9]+$/, 'Quantity must be a number'),
   });
 
   const [selected, setSelected] = useState<string>();
@@ -79,9 +59,8 @@ const FacilityForm = ({ navigation }: Props) => {
 
     const res = await bookFacility({
       facilityId,
-      startTime: values.startTime,
-      endTime: values.endTime,
       venueBookingId,
+      quantity: Number(values.quantity),
     });
 
     formikActions.setSubmitting(false);
@@ -89,7 +68,7 @@ const FacilityForm = ({ navigation }: Props) => {
     if (!res.success) {
       Toast.show({
         type: 'error',
-        text1: 'Failed to book venue',
+        text1: 'Failed to book facility',
         text2: res.error,
         position: 'top',
         topOffset: 60,
@@ -99,10 +78,18 @@ const FacilityForm = ({ navigation }: Props) => {
 
     Toast.show({
       type: 'success',
-      text1: 'Successfully booked venue',
+      text1: 'Successfully booked facility',
     });
 
-    navigation.dispatch(StackActions.replace('Tabs'));
+    navigation.dispatch(
+      CommonActions.navigate({
+        name: 'Tabs',
+        params: {
+          screen: 'History',
+        },
+      })
+    );
+
     formikActions.resetForm();
   };
 
@@ -165,16 +152,7 @@ const FacilityForm = ({ navigation }: Props) => {
           >
             Book Facility
           </Text>
-          <DateInput
-            placeholder='Start Time'
-            name='startTime'
-            minimumDate={new Date()}
-          />
-          <DateInput
-            placeholder='End Time'
-            name='endTime'
-            minimumDate={new Date()}
-          />
+          <InputText placeholder='Quantity' name='quantity' />
           <SelectList
             setSelected={(val: string) => {
               const selectedFacility = facilities.find(
@@ -220,7 +198,7 @@ const FacilityForm = ({ navigation }: Props) => {
                   ?.value || 'Select Booked Venue',
             }}
           />
-          <SubmitButton title='Next' />
+          <SubmitButton title='Submit' />
         </CustomFormik>
       </ScrollView>
     </AppContainer>

@@ -117,29 +117,29 @@ const Table = ({
         <thead className=''>
           <tr>
             {/* index column */}
-            <th className='px-4 py-2 text-center text-base border-y font-semibold w-12'>
+            <th className='px-3 py-2 text-center text-base border-y font-semibold w-12'>
               No.
             </th>
             {columns.map((col, index) => (
               <th
                 key={index}
-                className='px-4 py-2 text-left text-base border-y font-semibold'
+                className='px-3 py-2 text-left text-base border-y font-semibold'
               >
                 {col}
               </th>
             ))}
-            <th className='px-4 py-2 text-center text-base border-y font-semibold w-40'>
+            <th className='px-3 py-2 text-center text-base border-y font-semibold w-40'>
               Created At
             </th>
             {data.some((row) => row.updatedAt) && (
-              <th className='px-4 py-2 text-center text-base border-y font-semibold w-40'>
+              <th className='px-3 py-2 text-center text-base border-y font-semibold w-40'>
                 Updated At
               </th>
             )}
-            <th className='px-4 py-2 text-center text-base border-y font-semibold w-30'>
+            <th className='px-3 py-2 text-center text-base border-y font-semibold w-30'>
               Status
             </th>
-            <th className='px-4 py-2 text-center text-base border-y font-semibold w-28'>
+            <th className='px-3 py-2 text-center text-base border-y font-semibold w-28'>
               Action
             </th>
           </tr>
@@ -149,32 +149,32 @@ const Table = ({
           {currentRows.map((row, index) => (
             <tr key={index} className='hover:bg-gray-50'>
               {/* index column */}
-              <td className='px-4 py-2 text-sm text-center text-gray-600 border-y'>
+              <td className='px-3 py-2 text-sm text-center text-gray-600 border-y'>
                 {(currentPage - 1) * rowsPerPage + index + 1}
               </td>
               {columnKeys.map((key, colIndex) => (
                 <td
                   key={colIndex}
-                  className='px-4 py-2 text-sm text-left text-gray-600 border-y'
+                  className='px-3 py-2 text-sm text-left text-gray-600 border-y'
                 >
                   {row[key]}
                 </td>
               ))}
 
               {/* createdAt column */}
-              <td className='px-4 py-2 text-sm text-center border-y'>
+              <td className='px-3 py-2 text-sm text-center border-y'>
                 {formatDateTime(row.createdAt)}
               </td>
 
               {/* updatedAt column */}
               {row.updatedAt && (
-                <td className='px-4 py-2 text-sm text-center border-y'>
+                <td className='px-3 py-2 text-sm text-center border-y'>
                   {formatDateTime(row.updatedAt)}
                 </td>
               )}
 
               {/* status column */}
-              <td className='px-4 py-2 text-sm text-center border-y'>
+              <td className='px-3 py-2 text-sm text-center border-y'>
                 <span
                   className={`${getStatusClass(
                     row.status
@@ -185,7 +185,7 @@ const Table = ({
               </td>
 
               {/* action column */}
-              <td className='px-4 py-2 text-center text-sm text-gray-400 border-y font-poppins'>
+              <td className='px-3 py-2 text-center text-sm text-gray-400 border-y font-poppins'>
                 <div className='flex items-center justify-center space-x-3'>
                   {actions.includes('view') && (
                     <div className='relative group'>
@@ -243,6 +243,28 @@ const Table = ({
                         </span>
                       </div>
                     )}
+                  {actions.includes('block') && row.status !== 'Inactive' && (
+                    <div className='relative group'>
+                      <RxLockClosed
+                        className='cursor-pointer hover:text-gray-800'
+                        onClick={() => handleAction('block', row)}
+                      />
+                      <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-600 text-white text-xs rounded py-1 px-2'>
+                        Block
+                      </span>
+                    </div>
+                  )}
+                  {actions.includes('unblock') && row.status !== 'Active' && (
+                    <div className='relative group'>
+                      <RxLockOpen2
+                        className='cursor-pointer hover:text-gray-800'
+                        onClick={() => handleAction('unblock', row)}
+                      />
+                      <span className='absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-600 text-white text-xs rounded py-1 px-2'>
+                        Unblock
+                      </span>
+                    </div>
+                  )}
                   {actions.includes('approve') && row.status === 'Pending' && (
                     <div className='relative group'>
                       <GiCheckMark

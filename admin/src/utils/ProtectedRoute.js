@@ -14,7 +14,7 @@ const ProtectedRoute = ({ children }) => {
       const token = sessionStorage.getItem('token');
       if (!token) {
         toast.error('You do not have access to this page.');
-        return <Navigate to='/login' replace />;
+        return <Navigate to='/' replace />;
       }
 
       const decodedToken = jwtDecode(token);
@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children }) => {
 
       if (decodedToken.exp < currentTime) {
         await logout();
-        return <Navigate to='/login' replace />;
+        return <Navigate to='/' replace />;
       }
 
       const userRole = await getUserRole();

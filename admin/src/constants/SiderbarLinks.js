@@ -24,6 +24,10 @@ export const sidebarLinks = [
         to: '/user/admins',
         label: 'Admin',
       },
+      {
+        to: '/user/absent',
+        label: 'Absent User',
+      },
     ],
     isActive: (pathname) => pathname.includes('user'),
   },
@@ -79,6 +83,10 @@ export const sidebarLinks = [
       {
         to: '/event/events',
         label: 'Event',
+      },
+      {
+        to: '/event/venue-utilization',
+        label: 'Venue Utilization',
       },
     ],
     isActive: (pathname) => pathname.includes('event'),

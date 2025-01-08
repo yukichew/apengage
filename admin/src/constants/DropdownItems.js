@@ -8,7 +8,7 @@ export const dropdownUserItems = [
     label: 'Change Password',
   },
   {
-    to: '/user/logout',
+    to: '/',
     label: 'Logout',
   },
 ];

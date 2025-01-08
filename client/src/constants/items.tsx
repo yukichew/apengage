@@ -1,3 +1,5 @@
+import { Text } from 'react-native';
+
 export const fieldTypes = [
   { key: 'short_ans', value: 'Short Answer' },
   { key: 'long_ans', value: 'Paragraph' },
@@ -24,12 +26,53 @@ export const eventType = [
 ];
 
 export const transportType = [
-  { key: '1', value: 'Bus' },
-  { key: '2', value: 'Van' },
+  { key: '1', value: 'Bus (44)' },
+  { key: '2', value: 'Van (20)' },
 ];
 
 export const location = [
   { key: '1', value: 'APU Campus' },
   { key: '2', value: 'Fortune Park' },
   { key: '2', value: 'LRT Bukit Jalil' },
+];
+
+export const terms = [
+  {
+    key: '1',
+    value: (
+      <>
+        Private event is an internal event which does
+        <Text style={{ fontFamily: 'Poppins-Bold' }}> NOT</Text> require
+        participants to register and is invisible to the users. (e.g., Club
+        Meeting)
+      </>
+    ),
+  },
+  {
+    key: '2',
+    value: (
+      <>
+        Public event is an event which requires participants to register and is
+        <Text style={{ fontFamily: 'Poppins-Bold' }}> visible</Text> to every
+        user. (e.g., Hackathon)
+      </>
+    ),
+  },
+  {
+    key: '3',
+    value: (
+      <>
+        If you create an event 48 hours before the event, the status of the
+        event will be set to{' '}
+        <Text style={{ fontFamily: 'Poppins-SemiBold', color: 'green' }}>
+          "Approved"
+        </Text>{' '}
+        automatically, otherwise it will be set to{' '}
+        <Text style={{ fontFamily: 'Poppins-SemiBold', color: 'red' }}>
+          "Pending"
+        </Text>
+        .
+      </>
+    ),
+  },
 ];

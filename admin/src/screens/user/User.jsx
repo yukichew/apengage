@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getUsers, searchUser, updateUserStatus } from '../../api/user';
+import { searchUser } from '../../api/user';
 import Breadcrumb from '../../components/common/BreadCrumb';
-import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Loader from '../../components/common/Loader';
 import Modal from '../../components/common/Modal';
 import Searchbar from '../../components/common/Searchbar';
@@ -14,10 +13,8 @@ const User = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [count, setCount] = useState(0);
-  const [showDialog, setShowDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [actionType, setActionType] = useState('');
   const [showModal, setShowModal] = useState(false);
 
   const columns = ['Name', 'Email', 'AP Key'];
@@ -25,16 +22,6 @@ const User = () => {
 
   const handleAction = (action, row) => {
     switch (action) {
-      case 'activate':
-        setActionType('activate');
-        setSelectedUser(row);
-        setShowDialog(true);
-        break;
-      case 'deactivate':
-        setActionType('deactivate');
-        setSelectedUser(row);
-        setShowDialog(true);
-        break;
       case 'view':
         setSelectedUser(row);
         setShowModal(true);
@@ -44,38 +31,14 @@ const User = () => {
     }
   };
 
-  const handleChangeStatus = async () => {
-    if (!selectedUser || !actionType) return;
-
-    const res = await updateUserStatus(selectedUser.id, actionType);
-    if (!res.success) {
-      return toast.error(res.error);
-    }
-
-    toast.success(res.message);
-    setShowDialog(false);
-    setSelectedUser(null);
-    setActionType('');
-    fetchUsers();
-  };
-
   const fetchUsers = async (query = '') => {
     setLoading(true);
-    let res;
-
     const params = new URLSearchParams({ role: 'user' });
-    if (query) params.append('fullname', query);
-
-    if (query) {
-      res = await searchUser(params);
-    } else {
-      res = await getUsers('user');
-    }
-
+    params.append('fullname', query);
+    const res = await searchUser(params);
     if (!res.success) {
       return toast.error(res.error);
     }
-
     setUsers(res.users);
     setCount(res.count);
     setLoading(false);
@@ -115,18 +78,7 @@ const User = () => {
           columnKeys={columnKeys}
           handleAction={handleAction}
           totalRows={count}
-          actions={['view', 'edit', 'activate', 'deactivate']}
-        />
-      )}
-
-      {showDialog && (
-        <ConfirmDialog
-          title={`Confirm ${
-            actionType.charAt(0).toUpperCase() + actionType.slice(1)
-          }`}
-          message={`Are you sure you want to ${actionType} user "${selectedUser.fullname}"?`}
-          onConfirm={handleChangeStatus}
-          onCancel={() => setShowDialog(false)}
+          actions={['view']}
         />
       )}
 

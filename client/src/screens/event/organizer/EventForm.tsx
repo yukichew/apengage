@@ -1,7 +1,6 @@
-import { StackActions } from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -24,7 +23,7 @@ import FilePicker from '../../../components/common/FilePicker';
 import InputText from '../../../components/common/InputText';
 import SubmitButton from '../../../components/common/SubmitButton';
 import AppContainer from '../../../components/containers/AppContainer';
-import { eventType, mode } from '../../../constants/items';
+import { eventType, mode, terms } from '../../../constants/items';
 import { Props } from '../../../constants/types';
 
 const EventForm = ({ navigation }: Props) => {
@@ -156,6 +155,7 @@ const EventForm = ({ navigation }: Props) => {
         position: 'top',
         topOffset: 60,
       });
+      setLoading(false);
       return;
     }
 
@@ -164,9 +164,16 @@ const EventForm = ({ navigation }: Props) => {
       text1: 'Successfully created event',
     });
 
-    setLoading(false);
     formikActions.setSubmitting(false);
-    navigation.dispatch(StackActions.replace('Tabs'));
+    setLoading(false);
+    navigation.dispatch(
+      CommonActions.navigate({
+        name: 'Tabs',
+        params: {
+          screen: 'History',
+        },
+      })
+    );
     formikActions.resetForm();
   };
 
@@ -205,6 +212,24 @@ const EventForm = ({ navigation }: Props) => {
   }, []);
 
   const sections = [
+    {
+      title: 'Terms and Conditions',
+      content: (
+        <>
+          <Text style={styles.termsText}>
+            Please read before you proceed with the request.
+          </Text>
+          <View style={{ paddingHorizontal: 10 }}>
+            {terms.map((term) => (
+              <View key={term.key} style={styles.termRow}>
+                <Text style={styles.termKey}>{term.key}.</Text>
+                <Text style={styles.termValue}>{term.value}</Text>
+              </View>
+            ))}
+          </View>
+        </>
+      ),
+    },
     {
       title: 'Create Event',
       content: (
@@ -400,52 +425,46 @@ const EventForm = ({ navigation }: Props) => {
 
   return (
     <AppContainer navigation={navigation}>
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size='large' color='#0000ff' />
-        </View>
-      ) : (
-        <ScrollView
-          ref={scrollViewRef}
-          style={{ paddingHorizontal: 20 }}
-          contentContainerStyle={{ flexGrow: 1 }}
+      <ScrollView
+        ref={scrollViewRef}
+        style={{ paddingHorizontal: 20 }}
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
+        <CustomFormik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={onSubmit}
         >
-          <CustomFormik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={onSubmit}
+          <Text
+            style={{
+              fontFamily: 'Poppins-Bold',
+              fontSize: 18,
+              marginTop: 6,
+              marginBottom: 4,
+            }}
           >
-            <Text
-              style={{
-                fontFamily: 'Poppins-Bold',
-                fontSize: 18,
-                marginTop: 6,
-                marginBottom: 4,
-              }}
-            >
-              {sections[page].title}
-            </Text>
+            {sections[page].title}
+          </Text>
 
-            {sections[page].content}
-            <View>
-              {page > 0 && (
-                <Button
-                  title='Back'
-                  onPress={() => setPage((prev) => prev - 1)}
-                />
-              )}
-              {page < sections.length - 1 ? (
-                <Button
-                  title='Next'
-                  onPress={() => setPage((prev) => prev + 1)}
-                />
-              ) : (
-                <SubmitButton title='Submit' />
-              )}
-            </View>
-          </CustomFormik>
-        </ScrollView>
-      )}
+          {sections[page].content}
+          <View>
+            {page > 0 && (
+              <Button
+                title='Back'
+                onPress={() => setPage((prev) => prev - 1)}
+              />
+            )}
+            {page < sections.length - 1 ? (
+              <Button
+                title='Next'
+                onPress={() => setPage((prev) => prev + 1)}
+              />
+            ) : (
+              <SubmitButton title='Submit' />
+            )}
+          </View>
+        </CustomFormik>
+      </ScrollView>
     </AppContainer>
   );
 };
@@ -461,5 +480,29 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
+  },
+  termsText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    color: 'rgba(0, 0, 0, 0.5)',
+    marginBottom: 12,
+    marginLeft: 2,
+  },
+  termRow: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  termKey: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    color: 'rgba(0, 0, 0, 0.8)',
+  },
+  termValue: {
+    flex: 15,
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    color: 'rgba(0, 0, 0, 0.8)',
+    textAlign: 'justify',
   },
 });

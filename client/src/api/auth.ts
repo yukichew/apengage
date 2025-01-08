@@ -151,24 +151,3 @@ export const getCurrentUser = async () => {
     return catchAxiosError(error);
   }
 };
-
-// export const updateFCMTokent = async (values: {
-//   fcmToken: string;
-// }): Promise<ApiResponse> => {
-//   try {
-//     const response = await client.put<ApiResponse>('/user/update-fcm-token', {
-//       ...values,
-//     });
-
-//     const { token, user } = response.data;
-//     if (token) await saveToken(token);
-//     if (user) await AsyncStorage.setItem('currentUser', JSON.stringify(user));
-
-//     return {
-//       success: true,
-//       user: response.data.user,
-//     };
-//   } catch (error: any) {
-//     return catchAxiosError(error);
-//   }
-// };

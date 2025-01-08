@@ -19,6 +19,14 @@ exports.createForm = async (req, res) => {
     );
   }
 
+  if (new Date(deadline) > new Date(event.startTime)) {
+    return sendError(
+      res,
+      400,
+      'The deadline cannot be later than the event start time.'
+    );
+  }
+
   if (event.mode === 'oncampus' && event.venueBooking) {
     const venue = await Venue.findById(event.venueBooking.venue);
     if (!venue) {

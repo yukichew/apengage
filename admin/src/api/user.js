@@ -1,19 +1,6 @@
 import client from '.';
 import { catchError } from '../utils/error';
 
-export const getUsers = async (query) => {
-  try {
-    const { data } = await client.get('/admin/users?role=' + query);
-    return {
-      success: true,
-      users: data.users,
-      count: data.count,
-    };
-  } catch (error) {
-    return catchError(error);
-  }
-};
-
 export const searchUser = async (query) => {
   try {
     const { data } = await client.get(`/admin/search?${query}`);
@@ -69,6 +56,19 @@ export const updateAdmin = async (id, values) => {
     return {
       success: true,
       user: data.user,
+    };
+  } catch (error) {
+    return catchError(error);
+  }
+};
+
+export const searchAbsentUser = async (query) => {
+  try {
+    const { data } = await client.get(`/admin/users/absent/search?${query}`);
+    return {
+      success: true,
+      users: data.users,
+      count: data.count,
     };
   } catch (error) {
     return catchError(error);

@@ -47,7 +47,7 @@ router.put(
 );
 router.delete('/:id', authenticate, isAdmin, deleteVenue);
 router.get('/venues', authenticate, getVenues);
-router.get('/search', authenticate, searchVenue);
+router.get('/search', authenticate, isAdmin, searchVenue);
 router.get('/bookings', authenticate, getVenueBookings);
 router.get('/bookings/available', authenticate, getAvailableVenueBookings);
 router.get('/bookings/search', authenticate, searchVenueBookings);

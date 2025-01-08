@@ -80,9 +80,10 @@ export type VenueBooking = {
 
 export type FacilityBooking = {
   facilityId: string;
-  startTime: string;
-  endTime: string;
+  startTime?: string;
+  endTime?: string;
   venueBookingId: string;
+  quantity: number;
 };
 
 export type TransportBooking = {

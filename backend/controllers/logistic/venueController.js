@@ -4,6 +4,7 @@ const Venue = require('../../models/logistic/venue');
 const VenueBooking = require('../../models/logistic/venue/venueBooking');
 const venue = require('../../models/logistic/venue');
 const user = require('../../models/auth/user');
+const { mailTransport, plainEmailTemplate } = require('../../helpers/mail');
 
 // venue
 exports.createVenue = async (req, res) => {
@@ -71,17 +72,8 @@ exports.deleteVenue = async (req, res) => {
 };
 
 exports.getVenues = async (req, res) => {
-  const userRole = req.user.role;
-  let venues;
-  let count;
-
-  if (userRole === 'admin') {
-    venues = await Venue.find({}).sort({ createdAt: -1 });
-    count = await Venue.countDocuments();
-  } else {
-    venues = await Venue.find({ isActive: true }).sort({ createdAt: -1 });
-    count = await Venue.countDocuments({ isActive: true });
-  }
+  const venues = await Venue.find({ isActive: true }).sort({ createdAt: -1 });
+  const count = await Venue.countDocuments({ isActive: true });
 
   res.json({
     venues: venues.map((venue) => {
@@ -159,12 +151,30 @@ exports.updateVenueStatus = async (req, res) => {
   if (action === 'activate') {
     venue.isActive = true;
     await venue.save();
+    mailTransport().sendMail({
+      from: process.env.MAILGUN_USER,
+      to: user.email,
+      subject: 'Venue Booking Approved',
+      html: plainEmailTemplate(
+        'Venue Booking Approved',
+        'Your venue booking has been approved.'
+      ),
+    });
     return res.json({ message: 'Venue activated' });
   }
 
   if (action === 'deactivate') {
     venue.isActive = false;
     await venue.save();
+    mailTransport().sendMail({
+      from: process.env.MAILGUN_USER,
+      to: user.email,
+      subject: 'Venue Booking Rejected',
+      html: plainEmailTemplate(
+        'Venue Booking Rejected',
+        'Your venue booking has been rejected.'
+      ),
+    });
     return res.json({ message: 'Venue deactivated' });
   }
 

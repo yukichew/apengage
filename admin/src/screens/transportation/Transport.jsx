@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   deleteTransport,
-  getTransportation,
   searchTransport,
   updateTransportStatus,
 } from '../../api/transport';
@@ -69,18 +68,10 @@ const Transport = () => {
 
   const fetchTransportation = async (query = '') => {
     setLoading(true);
-    let res;
-
-    if (query) {
-      res = await searchTransport(query);
-    } else {
-      res = await getTransportation();
-    }
-
+    const res = await searchTransport(query);
     if (!res.success) {
       return toast.error(res.error);
     }
-
     setTransportation(res.transportation);
     setCount(res.count);
     setLoading(false);

@@ -204,7 +204,7 @@ exports.searchEvents = async (req, res) => {
         venue: event?.venueBooking?.venue.name,
         startTime: event.startTime,
         endTime: event.endTime,
-        location: event?.location,
+        location: event.venueBooking?.venue?.name || event.location,
         categories: event?.categories.map((category) => category.name),
         price: event?.price,
         postedBy: event.postedBy.apkey,
@@ -215,6 +215,7 @@ exports.searchEvents = async (req, res) => {
         status: event.status,
       };
     }),
+    count: filteredEvents.length,
   });
 };
 
@@ -253,56 +254,6 @@ exports.getEvent = async (req, res) => {
       updatedAt: event.updatedAt,
       status: event.status,
     },
-  });
-};
-
-// Admin only
-exports.getAllEvents = async (req, res) => {
-  const { ...filters } = req.query;
-
-  const query = { ...filters };
-
-  const events = await Event.find(query)
-    .sort({ createdAt: -1 })
-    .populate({
-      path: 'venueBooking',
-      populate: {
-        path: 'venue',
-        select: 'name',
-      },
-    })
-    .populate('postedBy', 'apkey fullname email contact');
-
-  const count = await Event.countDocuments(query);
-
-  res.json({
-    events: events.map((event) => {
-      return {
-        id: event._id,
-        name: event.name,
-        desc: event.desc,
-        type: event.type,
-        mode: event.mode,
-        venue: event.venueBooking?.venue?.name,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        location: event.venueBooking?.venue?.name
-          ? event.venueBooking.venue.name
-          : event.location,
-        categories: event?.categories,
-        price: event?.price,
-        postedBy: event.postedBy.apkey.toUpperCase(),
-        userEmail: event.postedBy.email,
-        userContact: event.postedBy.contact,
-        userFullname: event.postedBy.fullname,
-        organizer: event.organizer,
-        thumbnail: event?.thumbnail?.url,
-        createdAt: event.createdAt,
-        updatedAt: event.updatedAt,
-        status: event.status,
-      };
-    }),
-    count,
   });
 };
 
@@ -544,5 +495,134 @@ exports.searchCreatedEvents = async (req, res) => {
   res.json({
     events,
     count,
+  });
+};
+
+exports.searchVenueUtilization = async (req, res) => {
+  const { name } = req.query;
+
+  const matchStage = {
+    $match: { mode: 'oncampus', status: 'Past' },
+  };
+
+  if (name) {
+    matchStage.$match['venueDetails.name'] = {
+      $regex: name,
+      $options: 'i',
+    };
+  }
+
+  const statistics = await Event.aggregate([
+    matchStage,
+    {
+      $lookup: {
+        from: 'venuebookings',
+        localField: 'venueBooking',
+        foreignField: '_id',
+        as: 'venueBookingDetails',
+      },
+    },
+    {
+      $unwind: {
+        path: '$venueBookingDetails',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'venues',
+        localField: 'venueBookingDetails.venue',
+        foreignField: '_id',
+        as: 'venueDetails',
+      },
+    },
+    {
+      $unwind: { path: '$venueDetails', preserveNullAndEmptyArrays: true },
+    },
+    {
+      $lookup: {
+        from: 'eventforms',
+        localField: '_id',
+        foreignField: 'event',
+        as: 'eventFormDetails',
+      },
+    },
+    {
+      $unwind: { path: '$eventFormDetails', preserveNullAndEmptyArrays: true },
+    },
+    {
+      $lookup: {
+        from: 'registrations',
+        localField: 'eventFormDetails._id',
+        foreignField: 'eventForm',
+        as: 'registrations',
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'postedBy',
+        foreignField: '_id',
+        as: 'postedByDetails',
+      },
+    },
+    {
+      $unwind: { path: '$postedByDetails', preserveNullAndEmptyArrays: true },
+    },
+    {
+      $addFields: {
+        participantCount: { $size: '$registrations' },
+        wastedCapacity: {
+          $subtract: ['$venueDetails.capacity', { $size: '$registrations' }],
+        },
+      },
+    },
+    {
+      $project: {
+        id: '$_id',
+        name: 1,
+        organizer: 1,
+        startTime: 1,
+        endTime: 1,
+        mode: 1,
+        type: 1,
+        participantCount: 1,
+        wastedCapacity: 1,
+        status: 1,
+        postedBy: '$postedByDetails.apkey',
+        venue: '$venueDetails.name',
+        venueType: '$venueDetails.type',
+        venueCapacity: '$venueDetails.capacity',
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    },
+    {
+      $match: {
+        $expr: { $gt: ['$wastedCapacity', { $divide: ['$venueCapacity', 2] }] },
+      },
+    },
+  ]);
+
+  res.json({
+    statistics: statistics.map((stat) => ({
+      id: stat.id,
+      name: stat.name,
+      organizer: stat.organizer,
+      participant: stat.participantCount,
+      wastedCapacity: stat.wastedCapacity,
+      venue: stat.venue,
+      venueType: stat.venueType,
+      venueCapacity: stat.venueCapacity,
+      startTime: stat.startTime,
+      endTime: stat.endTime,
+      mode: stat.mode,
+      type: stat.type,
+      postedBy: stat.postedBy,
+      createdAt: stat.createdAt,
+      updatedAt: stat.updatedAt,
+      status: stat.status,
+    })),
+    count: statistics.length,
   });
 };

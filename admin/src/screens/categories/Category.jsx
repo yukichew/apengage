@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   deleteCategory,
-  getCategories,
   searchCategory,
   updateCategoryStatus,
 } from '../../api/category';
@@ -69,13 +68,7 @@ const Category = () => {
 
   const fetchCategories = async (query = '') => {
     setLoading(true);
-    let res;
-
-    if (query) {
-      res = await searchCategory(query);
-    } else {
-      res = await getCategories();
-    }
+    const res = await searchCategory(query);
 
     if (!res.success) {
       return toast.error(res.error);
