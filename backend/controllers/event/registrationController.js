@@ -1,6 +1,7 @@
 const cloudinary = require('../../config/cloud');
 const { sendError } = require('../../helpers/error');
 const Form = require('../../models/event/form');
+const Event = require('../../models/event');
 const Registration = require('../../models/event/registration');
 const QRCode = require('qrcode');
 
@@ -18,12 +19,12 @@ exports.joinEvent = async (req, res) => {
     participant: req.user._id,
   });
 
-  // Check if user has already registered for the event
+  // check if user has already registered for the event
   if (existingRegistration) {
     return sendError(res, 400, 'You have already registered for this event.');
   }
 
-  // Check if registration deadline has passed
+  // check if registration deadline has passed
   if (new Date() > form.deadline) {
     return sendError(res, 400, 'Registration deadline has passed.');
   }
@@ -317,27 +318,30 @@ exports.searchParticipatedEvents = async (req, res) => {
     return res.json({ events: [], count: 0 });
   }
 
-  const events = registrations.map((registration) => ({
-    registrationId: registration._id,
-    event: {
-      id: registration.eventForm.event._id,
-      name: registration.eventForm.event.name,
-      type: registration.eventForm.event.type,
-      categories: registration.eventForm.event.categories,
-      desc: registration.eventForm.event.desc,
-      startTime: registration.eventForm.event.startTime,
-      endTime: registration.eventForm.event.endTime,
-      mode: registration.eventForm.event.mode,
-      organizer: registration.eventForm.event.organizer,
-      location: registration.eventForm.event.location,
-      venue: registration.eventForm.event.venueBooking?.venue.name,
-      price: registration.eventForm.event.price,
-      thumbnail: registration.eventForm.event.thumbnail,
-    },
-    status: registration.status,
-    qrCode: registration.qrCode,
-    response: registration.response,
-  }));
+  const events = registrations.map((registration) => {
+    const event = registration.eventForm.event || {};
+    return {
+      registrationId: registration._id,
+      event: {
+        id: event._id,
+        name: event.name,
+        type: event.type,
+        categories: event.categories,
+        desc: event.desc,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        mode: event.mode,
+        organizer: event.organizer,
+        location: event.location,
+        venue: event.venueBooking?.venue?.name,
+        price: event.price,
+        thumbnail: event.thumbnail,
+      },
+      status: registration.status,
+      qrCode: registration.qrCode,
+      response: registration.response,
+    };
+  });
 
   res.json({ events, count: events.length });
 };

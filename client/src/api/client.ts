@@ -3,7 +3,7 @@ import { navigationRef } from '../navigation/RootNavigator';
 import { clearToken, getToken } from './auth';
 
 const client = axios.create({
-  baseURL: 'http://192.168.100.111:8000/api',
+  baseURL: 'http://192.168.68.145:8000/api',
 });
 
 client.interceptors.request.use(

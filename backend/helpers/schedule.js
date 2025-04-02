@@ -1,8 +1,9 @@
 const cron = require('node-cron');
 const Event = require('../models/event');
 const Registration = require('../models/event/registration');
+const EventForm = require('../models/event/form');
 
-cron.schedule('*/30 * * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
   try {
     const now = new Date();
     await Event.updateMany(
@@ -16,9 +17,13 @@ cron.schedule('*/30 * * * *', async () => {
     });
 
     for (const event of eventsToUpdate) {
+      const eventForm = await EventForm.findOne({ event: event._id });
+      if (!eventForm) {
+        continue;
+      }
       await Registration.updateMany(
         {
-          eventForm: event._id,
+          eventForm: eventForm._id,
           status: 'Upcoming',
         },
         { $set: { status: 'Absent' } }

@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   image: {
     position: 'absolute',
     borderRadius: 20,
-    width: width - 80,
+    width: width - 75,
     height: 250,
   },
 });

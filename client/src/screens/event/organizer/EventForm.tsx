@@ -402,6 +402,7 @@ const EventForm = ({ navigation }: Props) => {
             keyboardType='numeric'
             leftIcon='attach-money'
             leftIconLibrary='MaterialIcons'
+            note='Enter 0 if free'
           />
           <MultipleSelectList
             setSelected={(val: string[]) => setSelectedCategories(val)}

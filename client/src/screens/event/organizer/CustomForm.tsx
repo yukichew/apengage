@@ -283,7 +283,11 @@ const CustomForm = ({ route, navigation }: Props) => {
                 name='deadline'
                 minimumDate={new Date()}
               />
-              <InputText placeholder='Registration Capacity' name='capacity' />
+              <InputText
+                placeholder='Registration Capacity'
+                name='capacity'
+                note='For online event, enter 0 if unlimited capacity'
+              />
               <Button
                 title='Next'
                 onPress={() => setCurrentStep(2)}

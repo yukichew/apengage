@@ -386,7 +386,11 @@ exports.getCreatedEvents = async (req, res) => {
 
 exports.getCreatedActiveEvents = async (req, res) => {
   const userId = req.user._id;
-  const query = { postedBy: userId, status: { $nin: ['Past', 'Rejected'] } };
+  const query = {
+    postedBy: userId,
+    status: { $nin: ['Past', 'Rejected'] },
+    mode: 'online',
+  };
 
   const events = await Event.find(query)
     .sort({ createdAt: -1 })

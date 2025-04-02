@@ -26,6 +26,7 @@ type Props = {
   numberOfLines?: number;
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
   label?: string;
+  note?: string;
   onPressRightIcon?: () => void;
 };
 
@@ -84,6 +85,7 @@ const InputText = ({
         {rightIcon &&
           renderIcon(rightIcon, rightIconLibrary, props.onPressRightIcon)}
       </View>
+      {props.note && <Text style={styles.note}>** {props.note}</Text>}
       {error && isInputTouched ? (
         <Text style={styles.errorMessage}>{error}</Text>
       ) : null}
@@ -127,6 +129,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'rgba(0, 0, 0, 0.7)',
     marginBottom: 5,
+  },
+  note: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 12,
+    color: 'rgba(0, 0, 0, 0.5)',
+    marginLeft: 5,
   },
 });
 

@@ -88,6 +88,7 @@ const Event = () => {
       ...event,
       startTime: formatDateTime(event.startTime),
       endTime: formatDateTime(event.endTime),
+      location: event.mode === 'oncampus' ? event.venue : event.location,
     }));
 
     setEvents(formattedEvents);

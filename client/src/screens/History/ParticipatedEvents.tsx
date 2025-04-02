@@ -29,6 +29,7 @@ const ParticipatedEvents = ({ navigation }: Props) => {
     const response = await searchParticipatedEvents(query);
 
     if (!response.success) {
+      console.error(response.error);
       Toast.show({
         type: 'error',
         text1: 'Failed to fetch events',
